@@ -54,8 +54,8 @@ cd -
 
 #this package
 cd $CMSSW_BASE/src
-git clone https://github.com/pfs/TopLJets2015.git
-cd TopLJets2015
+git clone https://github.com/beatrizlopes/TopLJets.git
+cd TopLJets
 git submodule init
 git submodule update
 scram b -j 8
