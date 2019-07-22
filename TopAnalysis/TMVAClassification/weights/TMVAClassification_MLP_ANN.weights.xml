@@ -1,0 +1,206 @@
+<?xml version="1.0"?>
+<MethodSetup Method="MLP::MLP_ANN">
+  <GeneralInfo>
+    <Info name="TMVA Release" value="4.2.1 [262657]"/>
+    <Info name="ROOT Release" value="6.10/09 [395785]"/>
+    <Info name="Creator" value="bribeiro"/>
+    <Info name="Date" value="Sun May 19 19:11:56 2019"/>
+    <Info name="Host" value="Linux cmsbuild76.cern.ch 2.6.32-696.30.1.el6.x86_64 #1 SMP Tue May 22 06:09:36 CEST 2018 x86_64 x86_64 x86_64 GNU/Linux"/>
+    <Info name="Dir" value="/afs/cern.ch/user/b/bribeiro/CMSSW_9_4_11/src/TopLJets2015/TopAnalysis"/>
+    <Info name="Training events" value="406177"/>
+    <Info name="TrainingTime" value="2.43249865e+03"/>
+    <Info name="AnalysisType" value="Classification"/>
+  </GeneralInfo>
+  <Options>
+    <Option name="NCycles" modified="No">500</Option>
+    <Option name="HiddenLayers" modified="No">N,N-1</Option>
+    <Option name="NeuronType" modified="No">sigmoid</Option>
+    <Option name="RandomSeed" modified="No">1</Option>
+    <Option name="EstimatorType" modified="No">CE</Option>
+    <Option name="NeuronInputType" modified="No">sum</Option>
+    <Option name="V" modified="No">False</Option>
+    <Option name="VerbosityLevel" modified="No">Default</Option>
+    <Option name="VarTransform" modified="No">None</Option>
+    <Option name="H" modified="No">False</Option>
+    <Option name="CreateMVAPdfs" modified="No">False</Option>
+    <Option name="IgnoreNegWeightsInTraining" modified="No">False</Option>
+    <Option name="TrainingMethod" modified="No">BP</Option>
+    <Option name="LearningRate" modified="No">2.000000e-02</Option>
+    <Option name="DecayRate" modified="No">1.000000e-02</Option>
+    <Option name="TestRate" modified="No">10</Option>
+    <Option name="EpochMonitoring" modified="No">False</Option>
+    <Option name="Sampling" modified="No">1.000000e+00</Option>
+    <Option name="SamplingEpoch" modified="No">1.000000e+00</Option>
+    <Option name="SamplingImportance" modified="No">1.000000e+00</Option>
+    <Option name="SamplingTraining" modified="No">True</Option>
+    <Option name="SamplingTesting" modified="No">False</Option>
+    <Option name="ResetStep" modified="No">50</Option>
+    <Option name="Tau" modified="No">3.000000e+00</Option>
+    <Option name="BPMode" modified="No">sequential</Option>
+    <Option name="BatchSize" modified="No">-1</Option>
+    <Option name="ConvergenceImprove" modified="No">1.000000e-30</Option>
+    <Option name="ConvergenceTests" modified="No">-1</Option>
+    <Option name="UseRegulator" modified="No">False</Option>
+    <Option name="UpdateLimit" modified="No">10000</Option>
+    <Option name="CalculateErrors" modified="No">False</Option>
+    <Option name="WeightRange" modified="No">1.000000e+00</Option>
+  </Options>
+  <Variables NVar="13">
+    <Variable VarIndex="0" Expression="deltaphill" Label="deltaphill" Title="deltaphill" Unit="" Internal="deltaphill" Type="F" Min="-3.14156985e+00" Max="3.14159226e+00"/>
+    <Variable VarIndex="1" Expression="deltarll" Label="deltarll" Title="deltarll" Unit="" Internal="deltarll" Type="F" Min="1.64457694e-01" Max="5.40846539e+00"/>
+    <Variable VarIndex="2" Expression="nljets" Label="nljets" Title="nljets" Unit="" Internal="nljets" Type="I" Min="0.00000000e+00" Max="1.10000000e+01"/>
+    <Variable VarIndex="3" Expression="mlb" Label="mlb" Title="mlb" Unit="" Internal="mlb" Type="F" Min="1.24630642e+01" Max="8.99902527e+02"/>
+    <Variable VarIndex="4" Expression="b1pt" Label="b1pt" Title="b1pt" Unit="" Internal="b1pt" Type="F" Min="3.00004272e+01" Max="8.46668518e+02"/>
+    <Variable VarIndex="5" Expression="l1pt" Label="l1pt" Title="l1pt" Unit="" Internal="l1pt" Type="F" Min="3.00000362e+01" Max="9.76605896e+02"/>
+    <Variable VarIndex="6" Expression="l2pt" Label="l2pt" Title="l2pt" Unit="" Internal="l2pt" Type="F" Min="2.00002556e+01" Max="7.53897339e+02"/>
+    <Variable VarIndex="7" Expression="mll" Label="mll" Title="mll" Unit="" Internal="mll" Type="F" Min="2.00020638e+01" Max="1.75826331e+03"/>
+    <Variable VarIndex="8" Expression="h" Label="h" Title="h" Unit="" Internal="h" Type="F" Min="2.31003445e-02" Max="1.35384131e+03"/>
+    <Variable VarIndex="9" Expression="scalarhtb" Label="scalarhtb" Title="scalarhtb" Unit="" Internal="scalarhtb" Type="F" Min="3.00004272e+01" Max="1.43618481e+03"/>
+    <Variable VarIndex="10" Expression="scalarhtj" Label="scalarhtj" Title="scalarhtj" Unit="" Internal="scalarhtj" Type="F" Min="0.00000000e+00" Max="2.14373901e+03"/>
+    <Variable VarIndex="11" Expression="metpt" Label="metpt" Title="metpt" Unit="" Internal="metpt" Type="F" Min="1.11017637e-01" Max="8.45336975e+02"/>
+    <Variable VarIndex="12" Expression="metphi" Label="metphi" Title="metphi" Unit="" Internal="metphi" Type="F" Min="-3.14158797e+00" Max="3.14158797e+00"/>
+  </Variables>
+  <Spectators NSpec="0"/>
+  <Classes NClass="2">
+    <Class Name="Signal" Index="0"/>
+    <Class Name="Background" Index="1"/>
+  </Classes>
+  <Transformations NTransformations="0"/>
+  <MVAPdfs/>
+  <Weights>
+    <Layout NLayers="4">
+      <Layer Index="0" NNeurons="14">
+        <Neuron NSynapses="13">
+          nan nan nan nan nan -nan nan nan nan nan nan nan nan 
+        </Neuron>
+        <Neuron NSynapses="13">
+          nan nan nan nan nan -nan nan nan nan nan nan nan nan 
+        </Neuron>
+        <Neuron NSynapses="13">
+          nan nan nan nan nan -nan nan nan nan nan nan nan nan 
+        </Neuron>
+        <Neuron NSynapses="13">
+          nan nan nan nan nan -nan nan nan nan nan nan nan nan 
+        </Neuron>
+        <Neuron NSynapses="13">
+          nan nan nan nan nan -nan nan nan nan nan nan nan nan 
+        </Neuron>
+        <Neuron NSynapses="13">
+          nan nan nan nan nan -nan nan nan nan nan nan nan nan 
+        </Neuron>
+        <Neuron NSynapses="13">
+          nan nan nan nan nan -nan nan nan nan nan nan nan nan 
+        </Neuron>
+        <Neuron NSynapses="13">
+          nan nan nan nan nan -nan nan nan nan nan nan nan nan 
+        </Neuron>
+        <Neuron NSynapses="13">
+          nan nan nan nan nan -nan nan nan nan nan nan nan nan 
+        </Neuron>
+        <Neuron NSynapses="13">
+          nan nan nan nan nan -nan nan nan nan nan nan nan nan 
+        </Neuron>
+        <Neuron NSynapses="13">
+          nan nan nan nan nan -nan nan nan nan nan nan nan nan 
+        </Neuron>
+        <Neuron NSynapses="13">
+          nan nan nan nan nan -nan nan nan nan nan nan nan nan 
+        </Neuron>
+        <Neuron NSynapses="13">
+          nan nan nan nan nan -nan nan nan nan nan nan nan nan 
+        </Neuron>
+        <Neuron NSynapses="13">
+          nan nan nan nan nan -nan nan nan nan nan nan nan nan 
+        </Neuron>
+      </Layer>
+      <Layer Index="1" NNeurons="14">
+        <Neuron NSynapses="12">
+          nan nan nan nan nan nan nan nan nan nan nan nan 
+        </Neuron>
+        <Neuron NSynapses="12">
+          nan nan nan nan nan nan nan nan nan nan nan nan 
+        </Neuron>
+        <Neuron NSynapses="12">
+          nan nan nan nan nan nan nan nan nan nan nan nan 
+        </Neuron>
+        <Neuron NSynapses="12">
+          nan nan nan nan nan nan nan nan nan nan nan nan 
+        </Neuron>
+        <Neuron NSynapses="12">
+          nan nan nan nan nan nan nan nan nan nan nan nan 
+        </Neuron>
+        <Neuron NSynapses="12">
+          -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan 
+        </Neuron>
+        <Neuron NSynapses="12">
+          nan nan nan nan nan nan nan nan nan nan nan nan 
+        </Neuron>
+        <Neuron NSynapses="12">
+          nan nan nan nan nan nan nan nan nan nan nan nan 
+        </Neuron>
+        <Neuron NSynapses="12">
+          nan nan nan nan nan nan nan nan nan nan nan nan 
+        </Neuron>
+        <Neuron NSynapses="12">
+          nan nan nan nan nan nan nan nan nan nan nan nan 
+        </Neuron>
+        <Neuron NSynapses="12">
+          nan nan nan nan nan nan nan nan nan nan nan nan 
+        </Neuron>
+        <Neuron NSynapses="12">
+          nan nan nan nan nan nan nan nan nan nan nan nan 
+        </Neuron>
+        <Neuron NSynapses="12">
+          nan nan nan nan nan nan nan nan nan nan nan nan 
+        </Neuron>
+        <Neuron NSynapses="12">
+          nan nan nan nan nan nan nan nan nan nan nan nan 
+        </Neuron>
+      </Layer>
+      <Layer Index="2" NNeurons="13">
+        <Neuron NSynapses="1">
+          nan 
+        </Neuron>
+        <Neuron NSynapses="1">
+          nan 
+        </Neuron>
+        <Neuron NSynapses="1">
+          nan 
+        </Neuron>
+        <Neuron NSynapses="1">
+          nan 
+        </Neuron>
+        <Neuron NSynapses="1">
+          nan 
+        </Neuron>
+        <Neuron NSynapses="1">
+          nan 
+        </Neuron>
+        <Neuron NSynapses="1">
+          nan 
+        </Neuron>
+        <Neuron NSynapses="1">
+          nan 
+        </Neuron>
+        <Neuron NSynapses="1">
+          nan 
+        </Neuron>
+        <Neuron NSynapses="1">
+          nan 
+        </Neuron>
+        <Neuron NSynapses="1">
+          nan 
+        </Neuron>
+        <Neuron NSynapses="1">
+          nan 
+        </Neuron>
+        <Neuron NSynapses="1">
+          -nan 
+        </Neuron>
+      </Layer>
+      <Layer Index="3" NNeurons="1">
+        <Neuron NSynapses="0"/>
+      </Layer>
+    </Layout>
+  </Weights>
+</MethodSetup>

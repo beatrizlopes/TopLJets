@@ -1,0 +1,84 @@
+<?xml version="1.0"?>
+<MethodSetup Method="CrossValidation::BDTG_LS">
+  <GeneralInfo>
+    <Info name="TMVA Release" value="4.2.1 [262657]"/>
+    <Info name="ROOT Release" value="6.13/08 [396552]"/>
+    <Info name="Creator" value="bribeiro"/>
+    <Info name="Date" value="Fri Jun 28 12:56:26 2019"/>
+    <Info name="Host" value="Linux lcgapp-centos7-x86-64-6.cern.ch 3.10.0-693.21.1.el7.x86_64 #1 SMP Wed Mar 7 19:03:37 UTC 2018 x86_64 x86_64 x86_64 GNU/Linux"/>
+    <Info name="Dir" value="/afs/cern.ch/user/b/bribeiro/CMSSW_9_4_11/src/TopLJets2015/TopAnalysis"/>
+    <Info name="Training events" value="14170"/>
+    <Info name="TrainingTime" value="4.05311584e-06"/>
+    <Info name="AnalysisType" value="Regression"/>
+  </GeneralInfo>
+  <Options>
+    <Option name="V" modified="No">False</Option>
+    <Option name="VerbosityLevel" modified="No">Default</Option>
+    <Option name="VarTransform" modified="No">None</Option>
+    <Option name="H" modified="No">False</Option>
+    <Option name="CreateMVAPdfs" modified="No">False</Option>
+    <Option name="IgnoreNegWeightsInTraining" modified="No">False</Option>
+    <Option name="EncapsulatedMethodName" modified="Yes">BDTG_LS</Option>
+    <Option name="EncapsulatedMethodTypeName" modified="Yes">BDT</Option>
+    <Option name="NumFolds" modified="Yes">5</Option>
+    <Option name="OutputEnsembling" modified="Yes">None</Option>
+    <Option name="SplitExpr" modified="Yes"/>
+  </Options>
+  <Variables NVar="34">
+    <Variable VarIndex="0" Expression="mll" Label="mll" Title="mll" Unit="" Internal="mll" Type="F" Min="3.40282347e+38" Max="-3.40282347e+38"/>
+    <Variable VarIndex="1" Expression="nljets" Label="nljets" Title="nljets" Unit="" Internal="nljets" Type="F" Min="3.40282347e+38" Max="-3.40282347e+38"/>
+    <Variable VarIndex="2" Expression="nbjets" Label="nbjets" Title="nbjets" Unit="" Internal="nbjets" Type="F" Min="3.40282347e+38" Max="-3.40282347e+38"/>
+    <Variable VarIndex="3" Expression="metpt" Label="metpt" Title="metpt" Unit="" Internal="metpt" Type="F" Min="3.40282347e+38" Max="-3.40282347e+38"/>
+    <Variable VarIndex="4" Expression="metphi" Label="metphi" Title="metphi" Unit="" Internal="metphi" Type="F" Min="3.40282347e+38" Max="-3.40282347e+38"/>
+    <Variable VarIndex="5" Expression="l1pt" Label="l1pt" Title="l1pt" Unit="" Internal="l1pt" Type="F" Min="3.40282347e+38" Max="-3.40282347e+38"/>
+    <Variable VarIndex="6" Expression="l1eta" Label="l1eta" Title="l1eta" Unit="" Internal="l1eta" Type="F" Min="3.40282347e+38" Max="-3.40282347e+38"/>
+    <Variable VarIndex="7" Expression="l1phi" Label="l1phi" Title="l1phi" Unit="" Internal="l1phi" Type="F" Min="3.40282347e+38" Max="-3.40282347e+38"/>
+    <Variable VarIndex="8" Expression="l1m" Label="l1m" Title="l1m" Unit="" Internal="l1m" Type="F" Min="3.40282347e+38" Max="-3.40282347e+38"/>
+    <Variable VarIndex="9" Expression="l2pt" Label="l2pt" Title="l2pt" Unit="" Internal="l2pt" Type="F" Min="3.40282347e+38" Max="-3.40282347e+38"/>
+    <Variable VarIndex="10" Expression="l2eta" Label="l2eta" Title="l2eta" Unit="" Internal="l2eta" Type="F" Min="3.40282347e+38" Max="-3.40282347e+38"/>
+    <Variable VarIndex="11" Expression="l2phi" Label="l2phi" Title="l2phi" Unit="" Internal="l2phi" Type="F" Min="3.40282347e+38" Max="-3.40282347e+38"/>
+    <Variable VarIndex="12" Expression="l2m" Label="l2m" Title="l2m" Unit="" Internal="l2m" Type="F" Min="3.40282347e+38" Max="-3.40282347e+38"/>
+    <Variable VarIndex="13" Expression="b1pt" Label="b1pt" Title="b1pt" Unit="" Internal="b1pt" Type="F" Min="3.40282347e+38" Max="-3.40282347e+38"/>
+    <Variable VarIndex="14" Expression="b1eta" Label="b1eta" Title="b1eta" Unit="" Internal="b1eta" Type="F" Min="3.40282347e+38" Max="-3.40282347e+38"/>
+    <Variable VarIndex="15" Expression="b1phi" Label="b1phi" Title="b1phi" Unit="" Internal="b1phi" Type="F" Min="3.40282347e+38" Max="-3.40282347e+38"/>
+    <Variable VarIndex="16" Expression="b1m" Label="b1m" Title="b1m" Unit="" Internal="b1m" Type="F" Min="3.40282347e+38" Max="-3.40282347e+38"/>
+    <Variable VarIndex="17" Expression="b2pt" Label="b2pt" Title="b2pt" Unit="" Internal="b2pt" Type="F" Min="3.40282347e+38" Max="-3.40282347e+38"/>
+    <Variable VarIndex="18" Expression="b2eta" Label="b2eta" Title="b2eta" Unit="" Internal="b2eta" Type="F" Min="3.40282347e+38" Max="-3.40282347e+38"/>
+    <Variable VarIndex="19" Expression="b2phi" Label="b2phi" Title="b2phi" Unit="" Internal="b2phi" Type="F" Min="3.40282347e+38" Max="-3.40282347e+38"/>
+    <Variable VarIndex="20" Expression="b2m" Label="b2m" Title="b2m" Unit="" Internal="b2m" Type="F" Min="3.40282347e+38" Max="-3.40282347e+38"/>
+    <Variable VarIndex="21" Expression="deltarll" Label="deltarll" Title="deltarll" Unit="" Internal="deltarll" Type="F" Min="3.40282347e+38" Max="-3.40282347e+38"/>
+    <Variable VarIndex="22" Expression="deltaphill" Label="deltaphill" Title="deltaphill" Unit="" Internal="deltaphill" Type="F" Min="3.40282347e+38" Max="-3.40282347e+38"/>
+    <Variable VarIndex="23" Expression="mlb" Label="mlb" Title="mlb" Unit="" Internal="mlb" Type="F" Min="3.40282347e+38" Max="-3.40282347e+38"/>
+    <Variable VarIndex="24" Expression="px2" Label="px2" Title="px2" Unit="" Internal="px2" Type="F" Min="3.40282347e+38" Max="-3.40282347e+38"/>
+    <Variable VarIndex="25" Expression="py2" Label="py2" Title="py2" Unit="" Internal="py2" Type="F" Min="3.40282347e+38" Max="-3.40282347e+38"/>
+    <Variable VarIndex="26" Expression="pz2" Label="pz2" Title="pz2" Unit="" Internal="pz2" Type="F" Min="3.40282347e+38" Max="-3.40282347e+38"/>
+    <Variable VarIndex="27" Expression="E2" Label="E2" Title="E2" Unit="" Internal="E2" Type="F" Min="3.40282347e+38" Max="-3.40282347e+38"/>
+    <Variable VarIndex="28" Expression="yvis" Label="yvis" Title="yvis" Unit="" Internal="yvis" Type="F" Min="3.40282347e+38" Max="-3.40282347e+38"/>
+    <Variable VarIndex="29" Expression="ysum" Label="ysum" Title="ysum" Unit="" Internal="ysum" Type="F" Min="3.40282347e+38" Max="-3.40282347e+38"/>
+    <Variable VarIndex="30" Expression="max_dy" Label="max_dy" Title="max_dy" Unit="" Internal="max_dy" Type="F" Min="3.40282347e+38" Max="-3.40282347e+38"/>
+    <Variable VarIndex="31" Expression="min_dy" Label="min_dy" Title="min_dy" Unit="" Internal="min_dy" Type="F" Min="3.40282347e+38" Max="-3.40282347e+38"/>
+    <Variable VarIndex="32" Expression="rec_ytt" Label="rec_ytt" Title="rec_ytt" Unit="" Internal="rec_ytt" Type="F" Min="3.40282347e+38" Max="-3.40282347e+38"/>
+    <Variable VarIndex="33" Expression="rec_mtt" Label="rec_mtt" Title="rec_mtt" Unit="" Internal="rec_mtt" Type="F" Min="3.40282347e+38" Max="-3.40282347e+38"/>
+  </Variables>
+  <Spectators NSpec="10">
+    <Spectator SpecIndex="0" Expression="run" Label="run" Title="run" Unit="" Internal="run" Type="F" Min="3.40282347e+38" Max="-3.40282347e+38"/>
+    <Spectator SpecIndex="1" Expression="lumi" Label="lumi" Title="lumi" Unit="" Internal="lumi" Type="F" Min="3.40282347e+38" Max="-3.40282347e+38"/>
+    <Spectator SpecIndex="2" Expression="ev" Label="ev" Title="ev" Unit="" Internal="ev" Type="F" Min="3.40282347e+38" Max="-3.40282347e+38"/>
+    <Spectator SpecIndex="3" Expression="rho" Label="rho" Title="rho" Unit="" Internal="rho" Type="F" Min="3.40282347e+38" Max="-3.40282347e+38"/>
+    <Spectator SpecIndex="4" Expression="nvtx" Label="nvtx" Title="nvtx" Unit="" Internal="nvtx" Type="F" Min="3.40282347e+38" Max="-3.40282347e+38"/>
+    <Spectator SpecIndex="5" Expression="channel" Label="channel" Title="channel" Unit="" Internal="channel" Type="F" Min="3.40282347e+38" Max="-3.40282347e+38"/>
+    <Spectator SpecIndex="6" Expression="mpp" Label="mpp" Title="mpp" Unit="" Internal="mpp" Type="F" Min="3.40282347e+38" Max="-3.40282347e+38"/>
+    <Spectator SpecIndex="7" Expression="ypp" Label="ypp" Title="ypp" Unit="" Internal="ypp" Type="F" Min="3.40282347e+38" Max="-3.40282347e+38"/>
+    <Spectator SpecIndex="8" Expression="gen_mtt" Label="gen_mtt" Title="gen_mtt" Unit="" Internal="gen_mtt" Type="F" Min="3.40282347e+38" Max="-3.40282347e+38"/>
+    <Spectator SpecIndex="9" Expression="gen_ytt" Label="gen_ytt" Title="gen_ytt" Unit="" Internal="gen_ytt" Type="F" Min="3.40282347e+38" Max="-3.40282347e+38"/>
+  </Spectators>
+  <Classes NClass="1">
+    <Class Name="Regression" Index="0"/>
+  </Classes>
+  <Targets NTrgt="1">
+    <Target TargetIndex="0" Expression="rec_mtt/gen_mtt" Label="target" Title="target" Unit="" Internal="target" Type="F" Min="3.40282347e+38" Max="-3.40282347e+38"/>
+  </Targets>
+  <Transformations NTransformations="0"/>
+  <MVAPdfs/>
+  <Weights JobName="TMVACrossValidation" SplitExpr="" NumFolds="5" EncapsulatedMethodName="BDTG_LS" EncapsulatedMethodTypeName="BDT" OutputEnsembling="None"/>
+</MethodSetup>

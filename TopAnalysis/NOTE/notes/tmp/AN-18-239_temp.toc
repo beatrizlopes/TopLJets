@@ -1,0 +1,13 @@
+\contentsline {section}{\numberline {1}Introduction}{2}{section.1}
+\contentsline {section}{\numberline {2}Data and simulation samples}{2}{section.2}
+\contentsline {section}{\numberline {3}Event selection}{3}{section.3}
+\contentsline {subsection}{\numberline {3.1}Central detector selection}{3}{subsection.3.1}
+\contentsline {subsection}{\numberline {3.2}PPS detector selection}{6}{subsection.3.2}
+\contentsline {subsection}{\numberline {3.3}Matching the central and the forward kinematics}{9}{subsection.3.3}
+\contentsline {section}{\numberline {4}Background determination}{9}{section.4}
+\contentsline {section}{\numberline {5}Determination of Roman Pot acceptance}{9}{section.5}
+\contentsline {section}{\numberline {6}Determination of $\sigma (pp\rightarrow pp 2\ell 1b\xspace )$ through a statistical analysis}{12}{section.6}
+\contentsline {subsection}{\numberline {6.1}Method employed in the statistical analysis}{13}{subsection.6.1}
+\contentsline {subsection}{\numberline {6.2}Summary of the inputs to the statistical analysis}{14}{subsection.6.2}
+\contentsline {subsection}{\numberline {6.3}Results}{14}{subsection.6.3}
+\contentsline {section}{\numberline {7}Conclusions}{14}{section.7}
