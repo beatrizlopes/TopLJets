@@ -16,6 +16,7 @@
 #include <iostream>
 #include <algorithm>
 #include <string>
+#include <fstream>
 
 #include "TMath.h"
 #include <TNtuple.h>
@@ -39,37 +40,40 @@ vector<double> attributeCombinatorialRPmass(TH1* n0, TH1* n1, TH1* xi0, TH1* xi1
   vector<double> randomxi0;
   vector<double> randomxi1;
 
-  //generate n random trks for each pixel                                                                                                                                       
+  //generate n random trks for each pixel                                                                                                   
   int nrandomtrks0 = (int)n0->GetRandom();
   int nrandomtrks1 = (int)n1->GetRandom();
 
-  //generate a random xi for each trk                                                                                                                                           
+  //generate a random xi for each trk                                                                                                       
+
   for(int itrk=0; itrk<(int)nrandomtrks0; itrk++)
     {
       randomxi0.push_back(xi0->GetRandom());
+   
       for(int i=0; i<(int)nrandomtrks1; i++)
 	{
 	  randomxi1.push_back(xi1->GetRandom());
+	}
+    }
 
-	  //for the 2 lists of xis calculate the fake reconstructed mass                                                                                                        
-	  for (int j=0; j<(int)randomxi0.size();j++)
-	    {
-	      for(int k=0; k<(int)randomxi1.size();k++)
-		{
-		  new_fake_M=0;
-		  new_fake_M = 13000*TMath::Sqrt(randomxi0[j]*randomxi1[k]);
-		  new_fake_y = 0.5*TMath::Log(randomxi0[j]/randomxi1[k]);
-		  if(new_fake_M<fake_M) {fake_M = new_fake_M; fake_y = new_fake_y;}
-		}
-	    }
+  for(int i=0;i<(int)nrandomtrks0; i++)
+    {
+      for(int j=0;j<(int)nrandomtrks1; j++)
+	{
+	  //for the 2 lists of xis calculate the fake reconstructed mass                                                                  
+	  new_fake_M=0;
+	  new_fake_M = 13000*TMath::Sqrt(randomxi0[i]*randomxi1[j]);
+	  new_fake_y = 0.5*TMath::Log(randomxi0[i]/randomxi1[j]);
+	  if(new_fake_M<fake_M) {fake_M = new_fake_M; fake_y = new_fake_y;}
+  
 	}
     }
 
   my.push_back(fake_M);
   my.push_back(fake_y);
-
+  
   return my;
-} //21May
+} //21May - edited 30Jul
 
 void RunExclusiveTop(TString filename,
                      TString outname,
@@ -104,7 +108,7 @@ void RunExclusiveTop(TString filename,
   TFile *fOut=TFile::Open(dirName+"/"+baseName,"RECREATE");
   fOut->cd();
 
-  TNtuple *outTsel=new TNtuple("sel","sel","run:lumi:ev:nvtx:rho:channel:mll:nljets:nbjets:ht:metpt:metphi:l1pt:l1eta:l1phi:l1m:l2pt:l2eta:l2phi:l2m:b1pt:b1eta:b1phi:b1m:b2pt:b2eta:b2phi:b2m:px2:py2:pz2:E2:yvis:ysum:max_dy:min_dy:deltarll:deltaphill:mlb:mpp:ypp:gen_mtt:gen_ytt");
+  TNtuple *outTsel=new TNtuple("sel","sel","run:lumi:ev:nvtx:rho:channel:mll:nljets:nbjets:ht:metpt:metphi:l1pt:l1eta:l1phi:l1m:l2pt:l2eta:l2phi:l2m:b1pt:b1eta:b1phi:b1m:b2pt:b2eta:b2phi:b2m:px2:py2:pz2:E2:yvis:ysum:max_dy:min_dy:deltarll:deltaphill:mlb:mpp:ypp:gen_mtt:gen_ytt:weight");
   outTsel->SetDirectory(fOut);
 
   bool hasETrigger,hasMTrigger,hasMMTrigger,hasEETrigger,hasEMTrigger; //hasATrigger;
@@ -112,6 +116,7 @@ void RunExclusiveTop(TString filename,
   float beamXangle(0);
   int nRPtk(0),RPid[50];
   float RPfarcsi[50];//RPnearcsi[50];
+  //vector<double> WGTS;
 
   //READ TREE FROM FILE
   TFile *f = TFile::Open(filename);  
@@ -124,30 +129,48 @@ void RunExclusiveTop(TString filename,
 
   cout << "...producing " << outname << " from " << nentries << " events" << endl;
 
-
   ////Get ntrks and csis from a data file
-  TFile *fakefile = TFile::Open("/afs/cern.ch/user/b/bribeiro/CMSSW_9_4_11/src/TopLJets2015/TopAnalysis/test/analysis/pps/xidata.root");
+  TFile *fakefile = TFile::Open("/afs/cern.ch/work/b/bribeiro/ab05162/xiData.root");
 
-  TH1* fake_nfwdtrk0 = (TH1*)fakefile->Get("mm_23_ntkrp");
-  TH1* fake_nfwdtrk1 = (TH1*)fakefile->Get("mm_123_ntkrp");
+  TH1* fake_mm_nfwdtrk0 = (TH1*)fakefile->Get("mm_23_ntkrp");
+  TH1* fake_mm_nfwdtrk1 = (TH1*)fakefile->Get("mm_123_ntkrp");
 
-  TH1* fake_xi0 = (TH1*)fakefile->Get("mm_23_csirp");
-  TH1* fake_xi1 = (TH1*)fakefile->Get("mm_123_csirp");
+  TH1* fake_mm_xi0 = (TH1*)fakefile->Get("mm_23_csirp");
+  TH1* fake_mm_xi1 = (TH1*)fakefile->Get("mm_123_csirp");
 
-  if (fake_nfwdtrk0!=0 && fake_nfwdtrk1!=0 && fake_xi0!=0 && fake_xi1!=0)
+  TH1* fake_em_nfwdtrk0 = (TH1*)fakefile->Get("em_23_ntkrp");
+  TH1* fake_em_nfwdtrk1 = (TH1*)fakefile->Get("em_123_ntkrp");
+
+  TH1* fake_em_xi0 = (TH1*)fakefile->Get("em_23_csirp");
+  TH1* fake_em_xi1 = (TH1*)fakefile->Get("em_123_csirp");
+
+  TH1* fake_ee_nfwdtrk0 = (TH1*)fakefile->Get("ee_23_ntkrp");
+  TH1* fake_ee_nfwdtrk1 = (TH1*)fakefile->Get("ee_123_ntkrp");
+
+  TH1* fake_ee_xi0 = (TH1*)fakefile->Get("ee_23_csirp");
+  TH1* fake_ee_xi1 = (TH1*)fakefile->Get("ee_123_csirp");
+
+  if (fake_mm_nfwdtrk0!=0 && fake_em_nfwdtrk1!=0 && fake_ee_xi0!=0 && fake_em_xi1!=0)
     {
       std::cout << "Read fwdtrk and xi distributions from file" << std::endl;
-      fake_nfwdtrk0->SetDirectory(0);
-      fake_nfwdtrk1->SetDirectory(0);
-      fake_xi0->SetDirectory(0);
-      fake_xi1->SetDirectory(0);
+      fake_mm_nfwdtrk0->SetDirectory(0);
+      fake_mm_nfwdtrk1->SetDirectory(0);
+      fake_mm_xi0->SetDirectory(0);
+      fake_mm_xi1->SetDirectory(0);
+      fake_em_nfwdtrk0->SetDirectory(0);
+      fake_em_nfwdtrk1->SetDirectory(0);
+      fake_em_xi0->SetDirectory(0);
+      fake_em_xi1->SetDirectory(0);
+      fake_ee_nfwdtrk0->SetDirectory(0);
+      fake_ee_nfwdtrk1->SetDirectory(0);
+      fake_ee_xi0->SetDirectory(0);
+      fake_ee_xi1->SetDirectory(0);
     }
      
   else std::cout << "Couldnt read nfwdtrks and xi histograms from file" << std::endl;                                                                                                                                                              
   fakefile->Close();
 
   /////////////
-
 
   //Check if its signal MC
   bool isSignal = false;
@@ -181,8 +204,9 @@ void RunExclusiveTop(TString filename,
   //ht.addHist("lmeta",        new TH1F("lmeta",       ";Lepton 1 pseudo-rapidity;Events",10,0,2.5));
   ht.addHist("lppt",         new TH1F("lppt",        ";Lepton 2 transverse momentum [GeV];Events",56,20,300));
   //ht.addHist("lpeta",        new TH1F("lpeta",       ";Lepton 2 pseudo-rapidity;Events",10,0,2.5));
-  Float_t mllbins[]={0,20,50,60,70,75,85,90,95,100,105,115,125,200,300,500};
-  ht.addHist("mll",          new TH1F("mll",         ";Dilepton invariant mass [GeV];Events",sizeof(mllbins)/sizeof(Float_t)-1,mllbins));
+  //Float_t mllbins[]={0,20,50,60,70,75,85,90,95,100,105,115,125,200,300,500};
+  //ht.addHist("mll",          new TH1F("mll",         ";Dilepton invariant mass [GeV];Events",sizeof(mllbins)/sizeof(Float_t)-1,mllbins));
+  ht.addHist("mll",          new TH1F("mll",         ";Dilepton invariant mass [GeV];Events",50,0,500));
   ht.addHist("drll",         new TH1F("drll",        ";#DeltaR(l,l');Events",50,0,6));
   ht.addHist("Mlb",         new TH1F("Mlb",        ";Invariant mass of lb ;Events",50,0,300));
   ht.addHist("mRP",         new TH1F("mRP",        ";Mass of pp ;Events",50,0,5000));
@@ -215,7 +239,7 @@ void RunExclusiveTop(TString filename,
   ht.addHist("ratevsrun",    new TH1F("ratevsrun",   ";Run number; #sigma [pb]",int(lumiPerRun.size()),0,float(lumiPerRun.size())));
 
   ht.addHist("mrp_vs_mll",      new TH2F("mRP vs. m_{ll}",";m_{RP};m_{ll};Events",100,0,900,100,0,900));
-  ht.addHist("Mlb_minM_vs_minDeltaR",      new TH2F("Mlb min vs. Mlb minDeltaR",";m_{lb} min ;m_{lb} min #Delta R;Events",100,0,300,100,0,300));
+  //ht.addHist("Mlb_minM_vs_minDeltaR",      new TH2F("Mlb min vs. Mlb minDeltaR",";m_{lb} min ;m_{lb} min #Delta R;Events",100,0,300,100,0,300));
 
   int i=0;
   for(auto key : lumiPerRun) {
@@ -575,18 +599,18 @@ void RunExclusiveTop(TString filename,
 
       //if(bJets.size()>1) {additionalcat+="_2b";
       // cats.push_back(selCat+additionalcat);}      
-      
-      if(bJets.size()>0 && lb_min.M()<160) {additionalcat+="_lowMlb";      
-	cats.push_back(selCat+additionalcat);}
-
-      else if(bJets.size()>0 && lb_min.M()>=160) {additionalcat+="_highMlb";
-	  cats.push_back(selCat+additionalcat);}
 
       if(isSF && !isZ) {additionalcat+="_notZ";
         cats.push_back(selCat+additionalcat);}
 
       if(isZ) {additionalcat+="_Zpeak";
         cats.push_back(selCat+additionalcat);}
+      
+      if(bJets.size()>0 && lb_min.M()<160) {additionalcat+="_lowMlb";      
+	cats.push_back(selCat+additionalcat);}
+
+      else if(bJets.size()>0 && lb_min.M()>=160) {additionalcat+="_highMlb";
+	  cats.push_back(selCat+additionalcat);}
 
       //selection efficiency                   
       for(auto gen_cat : gen_cats) {
@@ -629,6 +653,7 @@ void RunExclusiveTop(TString filename,
         
         //update weight for plotter
         plotwgts[0]=wgt;
+	//WGTS.push_back(plotwgts[0]);      
       }
         
       //control histograms
@@ -645,8 +670,8 @@ void RunExclusiveTop(TString filename,
 	ht.fill("Mlb", lb_min.M(),  plotwgts, cats);
 	if(lb_min.M()<160)  ht.fill("evyields",  2,  plotwgts, cats);
 	if(bJets.size()>1)  ht.fill("evyields",  4,  plotwgts, cats);
-	ht.fill("Mlb_minDeltaR",lb_minDeltaR.M(), plotwgts, cats);
-	ht.fill2D("Mlb_minM_vs_minDeltaR",lb_min.M(),lb_minDeltaR.M(), plotwgts, cats);
+	//ht.fill("Mlb_minDeltaR",lb_minDeltaR.M(), plotwgts, cats);
+	//ht.fill2D("Mlb_minM_vs_minDeltaR",lb_min.M(),lb_minDeltaR.M(), plotwgts, cats);
 	ht.fill("jet1pt", allJets[0].Pt(),  plotwgts, cats);
       }
 
@@ -700,7 +725,11 @@ void RunExclusiveTop(TString filename,
 
       if(!ev.isData && !isSignal) 
 	{
-	  vector<double> MY = attributeCombinatorialRPmass(fake_nfwdtrk0, fake_nfwdtrk1, fake_xi0, fake_xi1);
+	  ////////////////////////
+	  vector<double> MY;
+	  if(selCode==13*13) MY = attributeCombinatorialRPmass(fake_mm_nfwdtrk0, fake_mm_nfwdtrk1, fake_mm_xi0, fake_mm_xi1);
+	  if(selCode==11*13) MY = attributeCombinatorialRPmass(fake_em_nfwdtrk0, fake_em_nfwdtrk1, fake_em_xi0, fake_em_xi1);
+	  if(selCode==11*11) MY = attributeCombinatorialRPmass(fake_ee_nfwdtrk0, fake_ee_nfwdtrk1, fake_ee_xi0, fake_ee_xi1);
 	  goodmRP=MY[0];
 	  goodyRP=MY[1];
 	}
@@ -785,16 +814,16 @@ void RunExclusiveTop(TString filename,
 	    // mRP = 13000*sqrt(pixel0_xi[i]*pixel1_xi[j])
 	    // yRP = 0.5*TMath::Log(pixel0_xi[i]/pixel1_xi[j])
 
+	    goodmRP = 10000;
+	    goodyRP = 10;
+
 	    for(int i=0; i<ntks[23];i++)
 	      {
 		for(int j=0;j<ntks[123];j++)
 		  {
-		    goodmRP = 10000;
-		    goodyRP = 10;
 		    double mRP = 13000*sqrt(farCsi0[i]*farCsi1[j]);
 		    double yRP = 0.5*TMath::Log(farCsi0[i]/farCsi1[j]);////		    
-		    if(goodmRP>mRP) goodmRP=mRP;
-		    if(goodyRP>yRP) goodyRP=yRP;
+		    if(mRP<goodmRP) {goodmRP=mRP; goodyRP=yRP;}
 		    ncomptrks++;		    
 		  }
 	      }
@@ -840,7 +869,7 @@ void RunExclusiveTop(TString filename,
 	  float yvis=(bJets[0]+bJets[1]+leptons[0]+leptons[1]).Rapidity();
 	  float	ysum=fabs(bJets[0].Rapidity())+fabs(bJets[1].Rapidity())+fabs(leptons[0].Rapidity())+fabs(leptons[1].Rapidity());
 	  float max_dy= max(fabs((bJets[0]+leptons[0]).Rapidity())-fabs((bJets[1]+leptons[1]).Rapidity()),  fabs((bJets[0]+leptons[1]).Rapidity())-fabs((bJets[1]+leptons[0]).Rapidity()));
-          float	min_dy=max( fabs((bJets[0]+leptons[0]).Rapidity())-fabs((bJets[1]+leptons[1]).Rapidity()),  fabs((bJets[0]+leptons[1]).Rapidity())-fabs((bJets[1]+leptons[0]).Rapidity()));
+          float	min_dy=min( fabs((bJets[0]+leptons[0]).Rapidity())-fabs((bJets[1]+leptons[1]).Rapidity()),  fabs((bJets[0]+leptons[1]).Rapidity())-fabs((bJets[1]+leptons[0]).Rapidity()));
 
 
 	  //  TNtuple *outTsel=new TNtuple("sel","sel","run:lumi:ev:nvtx:rho:channel:mll:nljets:nbjets:ht:metpt:metphi:l1pt:l1eta:l1phi:l1m:l2pt:l2eta:l2phi:l2m:b1pt:b1eta:b1phi:b1m:b2pt:b2eta:b2phi:b2m:px2:py2:pz2:E2:yvis:ysum:max_dy:min_dy:deltarll:deltaphill:mlb:mpp:ypp:gen_mtt:gen_ytt");
@@ -855,12 +884,20 @@ void RunExclusiveTop(TString filename,
 			    bJets[1].Pt(),(float)bJets[1].Eta(),(float)bJets[1].Phi(),(float)bJets[1].M(),
 			    px2,py2,pz2,E2,yvis,ysum,max_dy,min_dy,(float)
 			    leptons[0].DeltaR(leptons[1]),(float) leptons[0].DeltaPhi(leptons[1]), (float) lb_min.M(), (float)			      
-			    goodmRP,(float) goodyRP, (float) gen_mtt, (float) gen_ytt};
+			    goodmRP,(float) goodyRP, (float) gen_mtt, (float) gen_ytt, (float) plotwgts[0]};
 	  
 	  outTsel->Fill(varsel);
 	}
     }
-   
+  /*
+  ofstream weightfile;
+  weightfile.open("MCweights.txt");
+
+  for(int i=0;i<(int)WGTS.size();i++)
+    weightfile << i << " " << WGTS[i] << "\n";
+
+  weightfile.close();
+  */
   //close input file
   f->Close();
   

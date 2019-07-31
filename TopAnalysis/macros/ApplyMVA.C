@@ -31,17 +31,15 @@ void BDThistograms(TString fileName)
   TFile* inputfile = TFile::Open(fileName,"UPDATE");
   TTree* tree = (TTree*)inputfile->Get("BDT");
  
-  float ch = 0, BDTout = 0;
+  float ch = 0, BDTout = 0, weight = 1;
   TString channel = "";
   tree->SetBranchAddress("channel",&ch);
   tree->SetBranchAddress("BDToutput",&BDTout);
+  tree->SetBranchAddress("weight",&weight);
 
   TH1F *ee_hist = new TH1F("ee_2b_BDT_output","ee_2b_BDT_output",50,-0.5,0.5);
   TH1F *mm_hist = new TH1F("mm_2b_BDT_output","mm_2b_BDT_output",50,-0.5,0.5);
   TH1F *em_hist = new TH1F("em_2b_BDT_output","em_2b_BDT_output",50,-0.5,0.5);
-
-  double weight = 1;
-  if(fileName.Contains("MC")) weight = 0.00000000001;
 
   for(int i = 0;i<tree->GetEntries();i++)
     {
@@ -50,6 +48,14 @@ void BDThistograms(TString fileName)
       else if(ch==143) em_hist->Fill(BDTout,weight);
       else if(ch==169) mm_hist->Fill(BDTout,weight);
     }
+
+  ee_hist->GetXaxis()->SetTitle("BDT output");
+  mm_hist->GetXaxis()->SetTitle("BDT output");
+  em_hist->GetXaxis()->SetTitle("BDT output");
+
+  ee_hist->GetYaxis()->SetTitle("Events");
+  mm_hist->GetYaxis()->SetTitle("Events");
+  em_hist->GetYaxis()->SetTitle("Events");
 
   inputfile->cd();
   ee_hist->Write(0,TObject::kOverwrite);
@@ -78,7 +84,7 @@ int ApplyMVA(TString filename)
   TString outfileName( filename );
   TFile* outputFile = TFile::Open( outfileName, "UPDATE" );
   
-  TNtuple* OutTree= new TNtuple("BDT","BDT","run:lumi:ev:nvtx:rho:channel:mll:nljets:nbjets:ht:metpt:metphi:l1pt:l1eta:l1phi:l1m:l2pt:l2eta:l2phi:l2m:b1pt:b1eta:b1phi:b1m:b2pt:b2eta:b2phi:b2m:px2:py2:pz2:E2:yvis:ysum:max_dy:min_dy:deltarll:deltaphill:mlb:mpp:ypp:gen_mtt:gen_ytt:rec_mtt:rec_ytt:reg_mtt:reg_ytt:BDToutput");
+  TNtuple* OutTree= new TNtuple("BDT","BDT","run:lumi:ev:nvtx:rho:channel:mll:nljets:nbjets:ht:metpt:metphi:l1pt:l1eta:l1phi:l1m:l2pt:l2eta:l2phi:l2m:b1pt:b1eta:b1phi:b1m:b2pt:b2eta:b2phi:b2m:px2:py2:pz2:E2:yvis:ysum:max_dy:min_dy:deltarll:deltaphill:mlb:mpp:ypp:gen_mtt:gen_ytt:rec_mtt:rec_ytt:reg_mtt:reg_ytt:weight:BDToutput");
 
   //  signalOutTree->SetDirectory(outputFile);     
   OutTree->SetDirectory(outputFile);     
@@ -90,7 +96,7 @@ int ApplyMVA(TString filename)
 
   std::cout << "==> Start TMVA Reader" << std::endl;
 
-  Float_t run,lumi,ev,nvtx,rho,channel,mll,nljets,nbjets,ht,metpt,metphi,l1pt,l1eta,l1phi,l1m,l2pt,l2eta,l2phi,l2m,b1pt,b1eta,b1phi,b1m,b2pt,b2eta,b2phi,b2m,px2,py2,pz2,E2,yvis,ysum,max_dy,min_dy,deltarll,deltaphill,mlb,mpp,ypp,gen_mtt,gen_ytt,rec_mtt,rec_ytt,reg_mtt,reg_ytt;
+  Float_t run,lumi,ev,nvtx,rho,channel,mll,nljets,nbjets,ht,metpt,metphi,l1pt,l1eta,l1phi,l1m,l2pt,l2eta,l2phi,l2m,b1pt,b1eta,b1phi,b1m,b2pt,b2eta,b2phi,b2m,px2,py2,pz2,E2,yvis,ysum,max_dy,min_dy,deltarll,deltaphill,mlb,mpp,ypp,gen_mtt,gen_ytt,rec_mtt,rec_ytt,reg_mtt,reg_ytt,weight;
 
   // load the input trees
   TChain *bkgchain = new TChain("Reg");
@@ -102,10 +108,10 @@ int ApplyMVA(TString filename)
   reader->AddSpectator("ev",&ev);
   reader->AddSpectator("rho",&rho);
   reader->AddSpectator("nvtx",&nvtx);
-  reader->AddVariable("channel",&channel);
+  //  reader->AddVariable("channel",&channel);
   reader->AddVariable("mll",&mll);
-  reader->AddVariable("nljets",&nljets);
-  reader->AddVariable("nbjets",&nbjets);
+  //reader->AddVariable("nljets",&nljets);
+  //reader->AddVariable("nbjets",&nbjets);
   //  loader->AddSpectator("ht");                                                                                                                                                     
   reader->AddVariable("metpt",&metpt);
   reader->AddVariable("metphi",&metphi);
@@ -141,11 +147,13 @@ int ApplyMVA(TString filename)
   reader->AddVariable("ypp",&ypp);
   //  reader->AddSpectator("gen_mtt",&gen_mtt);
   // reader->AddSpectator("gen_ytt",&gen_ytt);
-  reader->AddVariable("rec_mtt",&rec_mtt);
-  reader->AddVariable("rec_ytt",&rec_ytt);
+  //reader->AddVariable("rec_mtt",&rec_mtt);
+  //reader->AddVariable("rec_ytt",&rec_ytt);
   reader->AddVariable("reg_mtt",&reg_mtt);
   reader->AddVariable("reg_ytt",&reg_ytt);
+  reader->AddSpectator("weight",&weight);
   
+
   TString method =  "BDT method";
   reader->BookMVA( "BDT method", "dataset/weights/TMVAClassification_BDT.weights.xml" );
 
@@ -201,27 +209,32 @@ int ApplyMVA(TString filename)
   bkgchain->SetBranchAddress("rec_mtt",&rec_mtt);  
   bkgchain->SetBranchAddress("reg_ytt",&reg_ytt);
   bkgchain->SetBranchAddress("reg_mtt",&reg_mtt);  
+  bkgchain->SetBranchAddress("weight",&weight);  
 
   for (Long64_t ievt=0; ievt<nBEvent; ievt++) {
     if (ievt%10 == 0){
       std::cout << "--- ... Processing event: " << ievt << std::endl;
     }
-    bkgchain->GetEntry(ievt);
-    // get the classifiers for each of the signal/background classifications
-    BDToutput = reader->EvaluateMVA(method);
 
-    float vars[48] = {run,lumi,ev,rho,nvtx,channel,mll,nljets,
-		      nbjets,ht,
-		      metpt,metphi,l1pt,l1eta,l1phi,l1m,l2pt,l2eta,
-		      l2phi,l2m,
-		      b1pt,b1eta,b1phi,b1m,b2pt,b2eta,b2phi,b2m,
-		      px2,py2,pz2,E2,yvis,ysum,max_dy,min_dy,
-		      deltarll,deltaphill,mlb,mpp,ypp,gen_mtt,gen_ytt,
-		      rec_mtt,rec_ytt,reg_mtt,reg_ytt,BDToutput};
+    // if(mpp<9000 && ypp<9)
+    // { 
+	bkgchain->GetEntry(ievt);
+	// get the classifiers for each of the signal/background classifications
+	BDToutput = reader->EvaluateMVA(method);
 
-    OutTree->Fill(vars);
-    }
+	float vars[49] = {run,lumi,ev,rho,nvtx,channel,mll,nljets,
+			  nbjets,ht,
+			  metpt,metphi,l1pt,l1eta,l1phi,l1m,l2pt,l2eta,
+			  l2phi,l2m,
+			  b1pt,b1eta,b1phi,b1m,b2pt,b2eta,b2phi,b2m,
+			  px2,py2,pz2,E2,yvis,ysum,max_dy,min_dy,
+			  deltarll,deltaphill,mlb,mpp,ypp,gen_mtt,gen_ytt,
+			  rec_mtt,rec_ytt,reg_mtt,reg_ytt,weight,BDToutput};
 
+	OutTree->Fill(vars);
+	//   }
+  }
+  
   outputFile->cd();                                                                                                                           outputFile->Write();
   outputFile->Close();
   

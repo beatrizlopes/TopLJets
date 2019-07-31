@@ -67,7 +67,10 @@ case $WHAT in
             -i ${inputfileTESTSEL} --tag ${inputfileTag} \
             -o testsel.root --genWeights genweights_${githash}.root \
             --njobs 1 -q local  --debug \
-            --era era2017 -m ExclusiveTop::RunExclusiveTop --ch 0 --runSysts;
+            --era era2017 -m Ex
+
+
+clusiveTop::RunExclusiveTop --ch 0 --runSysts;
         ;;
 
     SEL )

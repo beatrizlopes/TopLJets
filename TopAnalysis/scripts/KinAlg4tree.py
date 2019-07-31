@@ -34,7 +34,7 @@ def KinematicsAlgorithm():
             print "unable to read tree from file. Skipping file ",inFileName
             continue
         #newtree=ROOT.TTree("sel2","sel2")
-        newtree=ROOT.TNtuple("sel2","sel2","run:lumi:ev:nvtx:rho:channel:mll:nljets:nbjets:ht:metpt:metphi:l1pt:l1eta:l1phi:l1m:l2pt:l2eta:l2phi:l2m:b1pt:b1eta:b1phi:b1m:b2pt:b2eta:b2phi:b2m:px2:py2:pz2:E2:yvis:ysum:max_dy:min_dy:deltarll:deltaphill:mlb:mpp:ypp:gen_mtt:gen_ytt:rec_mtt:rec_ytt")
+        newtree=ROOT.TNtuple("sel2","sel2","run:lumi:ev:nvtx:rho:channel:mll:nljets:nbjets:ht:metpt:metphi:l1pt:l1eta:l1phi:l1m:l2pt:l2eta:l2phi:l2m:b1pt:b1eta:b1phi:b1m:b2pt:b2eta:b2phi:b2m:px2:py2:pz2:E2:yvis:ysum:max_dy:min_dy:deltarll:deltaphill:mlb:mpp:ypp:gen_mtt:gen_ytt:rec_mtt:rec_ytt:weight")
         newtree.SetDirectory(fIn)
 
         #branch.SetEntries(tree.GetEntries())
@@ -108,7 +108,7 @@ def KinematicsAlgorithm():
                     tree.metpt,tree.metphi,tree.l1pt,tree.l1eta,tree.l1phi,tree.l1m,tree.l2pt,tree.l2eta,tree.l2phi,tree.l2m,
                     tree.b1pt,tree.b1eta,tree.b1phi,tree.b1m,tree.b2pt,tree.b2eta,tree.b2phi,tree.b2m,
                     tree.px2,tree.py2,tree.pz2,tree.E2,tree.yvis,tree.ysum,tree.max_dy,tree.min_dy,
-                    tree.deltarll,tree.deltaphill,tree.mlb,tree.mpp,tree.ypp,tree.gen_mtt,tree.gen_ytt,lowMtt,lowYtt] 
+                    tree.deltarll,tree.deltaphill,tree.mlb,tree.mpp,tree.ypp,tree.gen_mtt,tree.gen_ytt,lowMtt,lowYtt,tree.weight] 
 
             newtree.Fill(array("f",varsel))
         

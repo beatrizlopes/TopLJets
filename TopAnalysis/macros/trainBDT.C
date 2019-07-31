@@ -25,35 +25,22 @@ int trainBDT()
 
   TMVA::Tools::Instance();
 
-
   TChain *bkgchain = new TChain("Reg");
   bkgchain->AddFile("/afs/cern.ch/work/b/bribeiro/ab05162/MC13TeV_2017_TTJets.root");
-  /*  bkgchain->AddFile("/afs/cern.ch/work/b/bribeiro/ab05162/Chunks/MC13TeV_2017_TTJets_6.root");
-  bkgchain->AddFile("/afs/cern.ch/work/b/bribeiro/ab05162/Chunks/MC13TeV_2017_TTJets_7.root");
-  bkgchain->AddFile("/afs/cern.ch/work/b/bribeiro/ab05162/Chunks/MC13TeV_2017_TTJets_8.root");
-  bkgchain->AddFile("/afs/cern.ch/work/b/bribeiro/ab05162/Chunks/MC13TeV_2017_TTJets_9.root");
-  */
+
   TChain *signalchain = new TChain("Reg");
   signalchain->AddFile("/afs/cern.ch/work/b/bribeiro/ab05162/MC13TeV_2017_FPMC_HW_QED_ttbar_13TeV_120.root");
   signalchain->AddFile("/afs/cern.ch/work/b/bribeiro/ab05162/MC13TeV_2017_FPMC_HW_QED_ttbar_13TeV_130.root");
   signalchain->AddFile("/afs/cern.ch/work/b/bribeiro/ab05162/MC13TeV_2017_FPMC_HW_QED_ttbar_13TeV_140.root");
   signalchain->AddFile("/afs/cern.ch/work/b/bribeiro/ab05162/MC13TeV_2017_FPMC_HW_QED_ttbar_13TeV_150.root");
 
-  //  TFile* inputfile = TFile::Open( "tmva_applied.root" );
-  //  TTree* signaltree = (TTree*) inputfile->Get("RegSignal");
-  // TTree* bkgtree = (TTree*) inputfile->Get("RegBkg");
-
   std::cout << "==> Start TMVAClassification" << std::endl;
-  //std::cout << "\tProcessing files:" << std::endl;
-  //std::cout << "\t  - Signal: " << signalFileName << std::endl;
-  //std::cout << "\t  - Background: " << backgroundFileName << std::endl;
 
   // Create a ROOT output file where TMVA will store ntuples, histograms, etc.
   TString outfileName( "TMVA_classification.root" );
   TFile* outputFile = TFile::Open( outfileName, "RECREATE" );
 
   TMVA::DataLoader *dataloader = new TMVA::DataLoader("TMVAClassification");
-
   TMVA::DataLoader loader("dataset");
 
   // Add the feature variables, names reference branches in inputFile ttree                                                                                                          
@@ -62,16 +49,15 @@ int trainBDT()
   loader.AddSpectator("ev");
   loader.AddSpectator("rho");
   loader.AddSpectator("nvtx");
-  loader.AddVariable("channel");
-  loader.AddVariable("mll");
-    
-  loader.AddVariable("nljets");
+  //loader.AddVariable("channel");
   
-
-  loader.AddVariable("nbjets");
+    
+  //loader.AddVariable("nljets");
+  //  loader.AddVariable("nbjets");
   //  loader.AddVariable("ht");                                                                                                                                                    
+  
   loader.AddVariable("metpt");
-  loader.AddVariable("metphi");
+
   loader.AddVariable("l1pt");
   loader.AddVariable("l1eta");
   loader.AddVariable("l1phi");
@@ -89,28 +75,35 @@ int trainBDT()
   loader.AddVariable("b2phi");
   loader.AddVariable("b2m");
   
-loader.AddVariable("deltarll");
-  loader.AddVariable("deltaphill");
     
-loader.AddVariable("mlb");
   loader.AddVariable("px2");
   loader.AddVariable("py2");
   loader.AddVariable("pz2");
   loader.AddVariable("E2");
-  loader.AddVariable("yvis");
-  loader.AddVariable("ysum");
+
   loader.AddVariable("max_dy");
   loader.AddVariable("min_dy");
- 
   
-  loader.AddVariable("mpp");                                                                                                                                                     
-  loader.AddVariable("ypp");                                                                                                                                                       
-  //loader.AddVariable("gen_mtt");                                                                                                                                                
-  //loader.AddVariable("gen_ytt");                                                                                                                                                 
-  loader.AddVariable("rec_mtt");
-  loader.AddVariable("rec_ytt");
+
+  loader.AddVariable("yvis");
+  loader.AddVariable("deltarll");
+  loader.AddVariable("deltaphill");  
+  loader.AddVariable("mpp");                                                                                                              
+  loader.AddVariable("ypp");                                                                                                               
   loader.AddVariable("reg_mtt");
-  loader.AddVariable("reg_ytt");
+  loader.AddVariable("reg_ytt");  
+  loader.AddVariable("metphi");
+  loader.AddVariable("mll");
+  loader.AddVariable("mlb");                               
+  loader.AddVariable("ysum");
+
+  //loader.AddVariable("gen_mtt");                                                                                                         
+                                       
+  //loader.AddVariable("gen_ytt");                                                                                                         
+                                        
+  //loader.AddVariable("rec_mtt");
+  //loader.AddVariable("rec_ytt");
+  
   
   Double_t signalWeight     = 1.0;
   Double_t backgroundWeight = 1.0;
@@ -122,14 +115,15 @@ loader.AddVariable("mlb");
 
   // Preselection
   //TCut mycuts = "abs(ht) > 100";
-  TCut mycutb = "mpp > 2 && ypp>-1";
+  TCut mycutb = "mpp > 2 && ypp>-1 && mpp<9000 && ypp<9 ";
 
-  loader.PrepareTrainingAndTestTree( "", "", "nTrain_Signal=700:nTrain_Background=5000:nTest_Signal=700:nTest_Background=5000:SplitMode=Random:NormMode=EqualNumEvents" );
+  loader.SetCut(mycutb);
+  loader.PrepareTrainingAndTestTree( "", "", "nTrain_Signal=350:nTrain_Background=2000:nTest_Signal=350:nTest_Background=2000:SplitMode=Random:NormMode=EqualNumEvents" );
   
-  TMVA::Factory *factory = new TMVA::Factory( "TMVAClassification", outputFile, "!V:!Silent:Color:DrawProgressBar:Transformations=I:AnalysisType=Classification" );
+  TMVA::Factory *factory = new TMVA::Factory( "TMVaclassification", outputFile, "!V:!Silent:Color:DrawProgressBar:Transformations=I:AnalysisType=Classification" );
 
   factory->BookMethod(&loader, TMVA::Types::kBDT, "BDT",
-		      "!H:!V:NTrees=400:MaxDepth=3:BoostType=AdaBoost:SeparationType=GiniIndex:nCuts=20:PruneMethod=NoPruning" );
+		      "!H:!V:NTrees=200:MaxDepth=3:BoostType=AdaBoost:SeparationType=GiniIndex:nCuts=20:PruneMethod=NoPruning" );
 
   //  factory->BookMethod(dataloader, TMVA::Types::kMLP, "MLP_ANN",
   // "" );

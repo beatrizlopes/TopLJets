@@ -241,8 +241,8 @@ def main():
         #continue (uncomment the commented line to show signal/MC ratio)
         if opt.normToData: plots[p].normToData()
         if opt.normTo1: plots[p].normTo1()
-        #if not skipPlot: plots[p].show(outDir=outDir,lumi=lumi,noStack=opt.noStack,saveTeX=opt.saveTeX,extraText=None,noRatio=False)
-        if not skipPlot: plots[p].show(outDir=outDir,lumi=lumi,noStack=opt.noStack,saveTeX=opt.saveTeX,extraText=None,noRatio=True)
+        if not skipPlot: plots[p].show(outDir=outDir,lumi=lumi,noStack=opt.noStack,saveTeX=opt.saveTeX,extraText=None,noRatio=False)
+        #if not skipPlot: plots[p].show(outDir=outDir,lumi=lumi,noStack=opt.noStack,saveTeX=opt.saveTeX,extraText=None,noRatio=True)
         plots[p].appendTo('%s/%s'%(outDir,opt.outName))
         plots[p].reset()
 

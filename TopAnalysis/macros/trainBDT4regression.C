@@ -87,8 +87,9 @@ int trainBDT4regression()
   loader.AddSpectator("ypp");
   loader.AddSpectator("gen_mtt");
   loader.AddSpectator("gen_ytt");
-  loader.AddVariable("rec_ytt");
+  loader.AddVariable("rec_ytt")
   loader.AddVariable("rec_mtt");
+  loader.AddSpectator("weight");
 
   if(var=="mass") loader.AddTarget( "target := rec_mtt/gen_mtt" ); // define the target for the regression
   if(var=="y") loader.AddTarget( "target := rec_ytt-gen_ytt" ); // define the target for the regression
