@@ -667,7 +667,25 @@ std::vector<Particle> SelectionTool::getGenPhotons(MiniEvent_t &ev, double minPt
   return photons;
 }
 
+
 //
+std::vector<Particle> SelectionTool::getGenTops(MiniEvent_t &ev){
+  std::vector<Particle> tops;
+
+  //loop over leptons from pseudotop producer                                                                                                                                        
+  for (int i = 0; i < ev.ngtop; i++) {
+    int absid(abs(ev.gtop_id[i]));
+    if(absid!=6) continue;
+
+    TLorentzVector p4;
+    p4.SetPtEtaPhiM(ev.gtop_pt[i],ev.gtop_eta[i],ev.gtop_phi[i],ev.gtop_m[i]);
+    tops.push_back( Particle(p4, 0, 6, 0, 1));
+  }
+
+  return tops;
+}
+//
+
 std::vector<Jet> SelectionTool::getGenJets(MiniEvent_t &ev, double minPt, double maxEta, std::vector<Particle> leptons,std::vector<Particle> photons) {
   std::vector<Jet> jets;
   

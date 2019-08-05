@@ -718,6 +718,7 @@ void VBFVectorBoson::runAnalysis()
 	//        if( !icat.Contains("VPt") ) continue;
 	if(myCat.size() == 0) continue;
 
+	float qgwgt(1.0);
         std::vector<float> tagJetResol;        
         for(size_t ij=0; ij<min((size_t)2,ijets.size()); ij++) {
           int idx=ijets[ij].getJetIndex();

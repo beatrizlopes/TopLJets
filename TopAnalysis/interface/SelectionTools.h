@@ -62,12 +62,14 @@ class SelectionTool {
   //
   //if no pre-selection has been passed it will trigger the standard pre-selection with the methods below
   TString flagGenFinalState(MiniEvent_t &ev, std::vector<Particle> preselleptons={}, std::vector<Particle> preselphotons={});
-  std::vector<Particle> genLeptons_,genPhotons_, relaxedTightPhotons;
+  std::vector<Particle> genLeptons_,genPhotons_, relaxedTightPhotons,genTops_;
   std::vector<Jet> genJets_;
   std::vector<Particle> getGenLeptons(MiniEvent_t &ev, double minPt = 20., double maxEta = 2.5);
   std::vector<Particle> &getGenLeptons()  { return genLeptons_; }
   std::vector<Particle> getGenPhotons(MiniEvent_t &ev, double minPt = 50., double maxEta = 1.442);
   std::vector<Particle> &getGenPhotons()  { return genPhotons_; }
+  std::vector<Particle> getGenTops(MiniEvent_t &ev);
+  std::vector<Particle> &getGenTops()  { return genTops_; }
   std::vector<Jet>      getGenJets(MiniEvent_t &ev, double minPt = 30., double maxEta = 2.4, std::vector<Particle> leptons = {}, std::vector<Particle> photons = {});
   std::vector<Jet>      &getGenJets()     { return genJets_; }
 
