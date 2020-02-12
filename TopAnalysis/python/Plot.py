@@ -49,7 +49,7 @@ class Plot(object):
 
     def __init__(self,name,com='13 TeV'):
         self.name = name
-        self.cmsLabel='#bf{CMS} #it{preliminary}'
+        self.cmsLabel='#bf{CMS} #it{work in progress}'
         self.com=com
         self.wideCanvas = True if 'ratevsrun' in self.name else False
         self.doPoissonErrorBars=True
@@ -86,7 +86,26 @@ class Plot(object):
         for h in self.mc:
             self.mc[h].Scale(sf)
 
+    def normTo1(self):
 
+        total_exp=0.
+        for h in self.mc:
+            total_exp+=self.mc[h].Integral()
+        if total_exp==0: return
+
+        total_signal=0.
+        for h in self.spimpose:
+            total_signal+=self.spimpose[h].Integral()
+        if total_signal==0: return
+
+        #        sf=total_signal/total_exp
+        for h in self.spimpose:        
+            self.spimpose[h].Scale(1/total_signal) 
+
+        for h in self.mc:
+            self.mc[h].Scale(1/total_exp)
+
+    
     def add(self, h, title, color, isData, spImpose, isSyst, doDivideByBinWidth=False):
 
         if 'ratevsrun' in self.name and not isData: return
@@ -198,7 +217,7 @@ class Plot(object):
             except:
                 pass
 
-    def show(self, outDir,lumi,noStack=False,saveTeX=False,extraText=None,noRatio=False,overlay=None):
+    def show(self, outDir,lumi,noStack=False,saveTeX=False,extraText=None,noRatio=True,overlay=None):
         if len(self.mc)<1 and self.dataH is None and len(self.spimpose)<1:
             print '%s has 0 or 1 MC!' % self.name
             return
@@ -242,7 +261,7 @@ class Plot(object):
         iniy=0.9 if self.wideCanvas else 0.85
         dy=0.05
         ndy= max(len(self.mc)+len(self.spimpose),1)
-        inix,dx =0.65,0.4
+        inix,dx =0.57,0.4
         if noRatio: inix=0.6
         if noStack:
             inix,dx=0.6,0.35
@@ -421,9 +440,11 @@ class Plot(object):
         if noRatio:
             frame.GetXaxis().SetTitleSize(0.045)
             frame.GetXaxis().SetLabelSize(0.04)
-        if self.wideCanvas and totalMC is None :
-            frame.GetXaxis().SetLabelSize(0.03)
-            frame.GetXaxis().SetTitleSize(0.035)
+        if totalMC is None :
+            frame.GetXaxis().SetLabelSize(0.04)
+            frame.GetXaxis().SetTitleSize(0.045)
+            noRatio=True
+            
 
         if totalMC is not None   :
             if noStack: stack.Draw('nostack same')
@@ -459,12 +480,12 @@ class Plot(object):
             for x in overlay: 
                 x.Draw('same')
 
-        if (totalMC is not None and totalMC.GetMaximumBin() > totalMC.GetNbinsX()/2.):
-            inix = 0.15
-            leg.SetX1(inix)
-            leg.SetX2(inix+dx)
-            leg.SetY1(leg.GetY1()-0.05)
-            leg.SetY2(leg.GetY2()-0.05)
+#        if (totalMC is not None and totalMC.GetMaximumBin() > totalMC.GetNbinsX()/2.):
+#            inix = 0.15
+#            leg.SetX1(inix)
+#            leg.SetX2(inix+dx)
+#            leg.SetY1(leg.GetY1()-0.05)
+#            leg.SetY2(leg.GetY2()-0.05)
 
         leg.Draw()
 
@@ -497,7 +518,7 @@ class Plot(object):
 
         #holds the ratio
         c.cd()
-        if not noRatio and self.dataH and len(self.mc)>0 :
+        if not noRatio and self.dataH and totalMC :
             p2 = ROOT.TPad('p2','p2',0.0,0.0,1.0,0.2)
             p2.Draw()
             p2.SetBottomMargin(0.4)

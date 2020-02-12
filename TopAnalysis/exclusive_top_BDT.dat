@@ -1,0 +1,42 @@
+imax 2  number of channels
+jmax *  number of backgrounds
+kmax *  number of nuisance parameters (sources of systematical uncertainties)
+------------
+shapes * * shapes.root $PROCESS_$CHANNEL $PROCESS_$CHANNEL_$SYSTEMATIC
+------------
+#
+# here we write the total number of events observed in the SF regions
+#   - SR - signal region
+#   - ttCR - control region for QCD TTbar (low mlb)
+#
+bin         CR    SR
+observation -1   -1
+------------
+#
+# here we write the expected yields
+# for excTT as we are fitting the cross section so we write A x Lumi in the SR and 0 otherwise
+# for qcdTT and DY we fit a scale factor from the dedicated control regions
+#
+bin             CR     CR      CR   CR      SR      SR     SR   SR      
+process         excTT  qcdTT   DY   others   excTT  qcdTT   DY  others      
+process         0      1       2    3      0      1       2     3            
+rate            -1     -1      -1   -1      -1     -1      -1   -1        
+------------
+#
+# here are the uncertainties affecting the predictions above
+# they are written as N(var)/N(nominal) and assumed to be symmetric
+#
+
+lumi      lnN   1.027  1.027   -   -     1.027  1.027   -    -       
+xs_qcdTT  lnN   -      1.051   -    -     -      1.051   -    -                
+xs_others_SR lnN   -      -       -  -      -      -       -   -             
+xs_others_CR lnN   -      -       -  -          -      -       -   -      
+DY_unc    lnN   -      -      1.3     -    -      -      1.3      -         
+method    lnN   -      1.15   1.15   1.15   -      1.15   1.15    1.15      
+msel     lnN   1.0100/0.9900   1.0103/0.9897  -  -  1.0107/0.9893   1.0099/0.9901  - - 
+btaghf     lnN   1.0550/0.9464   1.0665/0.9356  -  -  1.0618/0.9401   1.0685/0.9338  - - 
+pu     lnN   1.0194/0.9740   1.0170/0.9835  -  -  1.0147/0.9959   1.0230/0.9772  - - 
+btaglf     lnN   1.0196/0.9809   1.0018/0.9982  -  -  1.0163/0.9837   1.0010/0.9990  - - 
+#bfrag     lnN  -  0.9998/1.0003  -  -  -   0.998/1.0026  - - 
+esel     lnN   1.0171/0.9829   1.0188/0.9815  -  -  1.0155/0.9845   1.0253/0.9762  - - 
+#l1prefire     lnN   1.0003/0.9997   1.0015/0.9985  -  -  1.0001/0.9999   1.0004/0.9996  - - 

@@ -20,7 +20,7 @@ struct MiniEvent_t
   Float_t g_x1, g_x2, g_qscale;
   Int_t g_pu,g_putrue;
   Int_t g_nw,g_nup;
-  Float_t g_w[500];
+  Float_t g_w[500],g_psw[500];
   Int_t ng,ngtop;
   Int_t g_id[500],g_bid[500],g_tagCtrs[500];
   Bool_t g_isSemiLepBhad[500];

@@ -35,7 +35,7 @@ int ApplyRegression(TString filename)
   TString outfileName(filename);
   TFile* outputFile = TFile::Open( outfileName, "UPDATE" );
   
-  TNtuple* OutTree= new TNtuple("Reg","Reg","run:lumi:ev:nvtx:rho:channel:mll:nljets:nbjets:ht:metpt:metphi:l1pt:l1eta:l1phi:l1m:l2pt:l2eta:l2phi:l2m:b1pt:b1eta:b1phi:b1m:b2pt:b2eta:b2phi:b2m:px2:py2:pz2:E2:yvis:ysum:max_dy:min_dy:deltarll:deltaphill:mlb:mpp:ypp:gen_mtt:gen_ytt:rec_mtt:rec_ytt:reg_mtt:reg_ytt:weight");
+  TNtuple* OutTree= new TNtuple("Reg","Reg","run:lumi:ev:rho:channel:mll:nljets:nbjets:ht:metpt:metphi:l1pt:l1eta:l1phi:l1m:l2pt:l2eta:l2phi:l2m:b1pt:b1eta:b1phi:b1m:b2pt:b2eta:b2phi:b2m:px2:py2:pz2:E2:yvis:ysum:max_dy:min_dy:deltarll:deltaphill:mlb:xi0:xi1:mpp:ypp:gen_mtt:gen_ytt:rec_mtt:rec_ytt:reg_mtt:reg_ytt:xi0tt:xi1tt:weight");
 
   outputFile->cd();                                                                                                                                                                 
   //  signalOutTree->SetDirectory(outputFile);     
@@ -44,11 +44,11 @@ int ApplyRegression(TString filename)
   TMVA::Reader *reader = new TMVA::Reader( "!Color:!Silent" );
   TMVA::Reader *reader1 = new TMVA::Reader( "!Color:!Silent" );
 
-  Float_t classifier_m, classifier_y, reg_mtt, reg_ytt;
+  Float_t classifier_m, classifier_y, reg_mtt, reg_ytt, xi0tt, xi1tt;
 
   std::cout << "==> Start TMVA Reader" << std::endl;
 
-  Float_t run,lumi,ev,nvtx,rho,channel,mll,nljets,nbjets,ht,metpt,metphi,l1pt,l1eta,l1phi,l1m,l2pt,l2eta,l2phi,l2m,b1pt,b1eta,b1phi,b1m,b2pt,b2eta,b2phi,b2m,px2,py2,pz2,E2,yvis,ysum,max_dy,min_dy,deltarll,deltaphill,mlb,mpp,ypp,gen_mtt,gen_ytt,rec_mtt,rec_ytt,correction,weight;
+  Float_t run,lumi,ev,rho,channel,mll,nljets,nbjets,ht,metpt,metphi,l1pt,l1eta,l1phi,l1m,l2pt,l2eta,l2phi,l2m,b1pt,b1eta,b1phi,b1m,b2pt,b2eta,b2phi,b2m,px2,py2,pz2,E2,yvis,ysum,max_dy,min_dy,deltarll,deltaphill,mlb,xi0,xi1,mpp,ypp,gen_mtt,gen_ytt,rec_mtt,rec_ytt,correction,weight;
 
   // load the input trees
   TChain *bkgchain = new TChain("sel2");
@@ -59,7 +59,7 @@ int ApplyRegression(TString filename)
   reader->AddSpectator("lumi",&lumi);
   reader->AddSpectator("ev",&ev);
   reader->AddSpectator("rho",&rho);
-  reader->AddSpectator("nvtx",&nvtx);
+  //  reader->AddSpectator("nvtx",&nvtx);
   reader->AddSpectator("channel",&channel);
   reader->AddVariable("mll",&mll);
   reader->AddVariable("nljets",&nljets);
@@ -97,6 +97,8 @@ int ApplyRegression(TString filename)
 
   reader->AddSpectator("mpp",&mpp);
   reader->AddSpectator("ypp",&ypp);
+  //  reader->AddSpectator("newmpp",&newmpp);
+  // reader->AddSpectator("newypp",&newypp);
   reader->AddSpectator("gen_mtt",&gen_mtt);
   reader->AddSpectator("gen_ytt",&gen_ytt);
   reader->AddVariable("rec_ytt",&rec_ytt);
@@ -107,7 +109,7 @@ int ApplyRegression(TString filename)
   reader1->AddSpectator("lumi",&lumi);
   reader1->AddSpectator("ev",&ev);
   reader1->AddSpectator("rho",&rho);
-  reader1->AddSpectator("nvtx",&nvtx);
+  //  reader1->AddSpectator("nvtx",&nvtx);
   reader1->AddSpectator("channel",&channel);
   reader1->AddVariable("mll",&mll);
   reader1->AddVariable("nljets",&nljets);
@@ -145,6 +147,10 @@ int ApplyRegression(TString filename)
 
   reader1->AddSpectator("mpp",&mpp);
   reader1->AddSpectator("ypp",&ypp);
+  //  reader1->AddSpectator("newmpp",&newmpp);
+  //  reader1->AddSpectator("newypp",&newypp);
+
+
   reader1->AddSpectator("gen_mtt",&gen_mtt);
   reader1->AddSpectator("gen_ytt",&gen_ytt);
   reader1->AddVariable("rec_ytt",&rec_ytt);
@@ -161,7 +167,7 @@ int ApplyRegression(TString filename)
   bkgchain->SetBranchAddress("lumi",&lumi);
   bkgchain->SetBranchAddress("ev",&ev);  
   bkgchain->SetBranchAddress("rho",&rho);
-  bkgchain->SetBranchAddress("nvtx",&nvtx);
+  //  bkgchain->SetBranchAddress("nvtx",&nvtx);
   bkgchain->SetBranchAddress("channel",&channel);
   bkgchain->SetBranchAddress("mll",&mll);
   bkgchain->SetBranchAddress("nljets",&nljets);
@@ -198,8 +204,14 @@ int ApplyRegression(TString filename)
   bkgchain->SetBranchAddress("max_dy",&max_dy);
   bkgchain->SetBranchAddress("min_dy",&min_dy);
 
+  bkgchain->SetBranchAddress("xi0",&xi1);
+  bkgchain->SetBranchAddress("xi1",&xi0);
+
   bkgchain->SetBranchAddress("mpp",&mpp);
   bkgchain->SetBranchAddress("ypp",&ypp);
+  //  bkgchain->SetBranchAddress("newmpp",&newmpp);
+  //  bkgchain->SetBranchAddress("newypp",&newypp);
+
   bkgchain->SetBranchAddress("gen_mtt",&gen_mtt);
   bkgchain->SetBranchAddress("gen_ytt",&gen_ytt);
   bkgchain->SetBranchAddress("rec_ytt",&rec_ytt);
@@ -208,7 +220,7 @@ int ApplyRegression(TString filename)
 
 
   for (Long64_t ievt=0; ievt<nBEvent; ievt++) {
-    if (ievt%10 == 0){
+    if (ievt%1000 == 0){
       std::cout << "--- ... Processing event: " << ievt << std::endl;
     }
 
@@ -220,14 +232,18 @@ int ApplyRegression(TString filename)
     reg_mtt=rec_mtt/classifier_m;
     reg_ytt=rec_ytt-classifier_y;
 
-    float vars[48] = {run,lumi,ev,rho,nvtx,channel,mll,nljets,
+    xi0tt=reg_mtt/(13000*exp(-reg_ytt));
+    xi1tt=reg_mtt/(13000*exp(+reg_ytt));
+    // cout << xi0tt << "      " << xi1tt << endl;
+
+    float vars[52] = {run,lumi,ev,rho,channel,mll,nljets,
 		      nbjets,ht,
 		      metpt,metphi,l1pt,l1eta,l1phi,l1m,l2pt,l2eta,
 		      l2phi,l2m,
 		      b1pt,b1eta,b1phi,b1m,b2pt,b2eta,b2phi,b2m,
 		      px2,py2,pz2,E2,yvis,ysum,max_dy,min_dy,
-		      deltarll,deltaphill,mlb,mpp,ypp,gen_mtt,gen_ytt,
-		      rec_mtt,rec_ytt,reg_mtt,reg_ytt,weight};
+		      deltarll,deltaphill,mlb,xi0,xi1,mpp,ypp,gen_mtt,gen_ytt,
+		      rec_mtt,rec_ytt,reg_mtt,reg_ytt,xi0tt,xi1tt,weight};
 
     OutTree->Fill(vars);
     }

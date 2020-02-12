@@ -20,6 +20,7 @@ void createMiniEventTree(TTree *t,MiniEvent_t &ev,Int_t njecUncs)
   t->Branch("g_nw",      &ev.g_nw,     "g_nw/I");
   t->Branch("g_nup",     &ev.g_nup,    "g_nup/I");
   t->Branch("g_w",        ev.g_w,      "g_w[g_nw]/F");
+  t->Branch("g_psw",      ev.g_psw,    "g_psw[g_npsw]/F");
 
   //gen event (jets and dressed leptons)
   t->Branch("ng",       &ev.ng,       "ng/I");
@@ -214,6 +215,7 @@ void attachToMiniEventTree(TTree *t,MiniEvent_t &ev,bool full)
   t->SetBranchAddress("g_nw",      &ev.g_nw);
   t->SetBranchAddress("g_w",       ev.g_w);
   t->SetBranchAddress("g_nup",     &ev.g_nup);
+  t->SetBranchAddress("g_psw",       ev.g_psw);
 
   //gen event (jets and dressed leptons)
   t->SetBranchAddress("ng",       &ev.ng);

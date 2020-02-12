@@ -17,7 +17,9 @@ def getBaseNames(dirname):
         filename, ext = os.path.splitext(item)
         if not ext == '.root': continue
         try:
-            #if not ('MC13TeV' in filename or 'Data13TeV' in filename) : continue
+            if not ('MC13TeV' in filename or 'Data13TeV' in filename) : continue
+            if not ('MC13TeV' in filename) : continue
+#            if not ('Data13' in filename) : continue
             fIn=ROOT.TFile.Open(dirname+'/'+item)
             goodFile = False
             try:
@@ -70,6 +72,7 @@ for basename, files in counters.iteritems():
 
     filenames = " ".join(files)
     target = os.path.join(outputdir,"%s.root" % basename)
+    #if ('TTJets' in filenames) : continue
 
     # merging:
     print '... processing', basename

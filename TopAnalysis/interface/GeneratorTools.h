@@ -15,6 +15,7 @@
 
 //available theory systs
 typedef std::pair<TString,int> WeightSysts_t;
+std::vector< WeightSysts_t > getPartonShowerWeightSysts(TFile *);
 std::vector< WeightSysts_t > getWeightSysts(TFile *,TString proc="EWKAJJ2017");
 
 //b-fragmentation

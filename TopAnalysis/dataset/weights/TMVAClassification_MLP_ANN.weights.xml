@@ -1,0 +1,356 @@
+<?xml version="1.0"?>
+<MethodSetup Method="MLP::MLP_ANN">
+  <GeneralInfo>
+    <Info name="TMVA Release" value="4.2.1 [262657]"/>
+    <Info name="ROOT Release" value="6.10/09 [395785]"/>
+    <Info name="Creator" value="bribeiro"/>
+    <Info name="Date" value="Mon Aug  5 19:26:15 2019"/>
+    <Info name="Host" value="Linux cmsbuild64.cern.ch 2.6.32-696.30.1.el6.x86_64 #1 SMP Tue May 22 06:09:36 CEST 2018 x86_64 x86_64 x86_64 GNU/Linux"/>
+    <Info name="Dir" value="/afs/cern.ch/user/b/bribeiro/CMSSW_9_4_11/src/TopLJets2015/TopAnalysis"/>
+    <Info name="Training events" value="2350"/>
+    <Info name="TrainingTime" value="4.66705394e+00"/>
+    <Info name="AnalysisType" value="Classification"/>
+  </GeneralInfo>
+  <Options>
+    <Option name="NCycles" modified="Yes">50</Option>
+    <Option name="HiddenLayers" modified="Yes">30,10,3</Option>
+    <Option name="NeuronType" modified="No">sigmoid</Option>
+    <Option name="RandomSeed" modified="No">1</Option>
+    <Option name="EstimatorType" modified="No">CE</Option>
+    <Option name="NeuronInputType" modified="No">sum</Option>
+    <Option name="V" modified="No">False</Option>
+    <Option name="VerbosityLevel" modified="No">Default</Option>
+    <Option name="VarTransform" modified="No">None</Option>
+    <Option name="H" modified="No">False</Option>
+    <Option name="CreateMVAPdfs" modified="No">False</Option>
+    <Option name="IgnoreNegWeightsInTraining" modified="No">False</Option>
+    <Option name="TrainingMethod" modified="No">BP</Option>
+    <Option name="LearningRate" modified="No">2.000000e-02</Option>
+    <Option name="DecayRate" modified="No">1.000000e-02</Option>
+    <Option name="TestRate" modified="No">10</Option>
+    <Option name="EpochMonitoring" modified="No">False</Option>
+    <Option name="Sampling" modified="No">1.000000e+00</Option>
+    <Option name="SamplingEpoch" modified="No">1.000000e+00</Option>
+    <Option name="SamplingImportance" modified="No">1.000000e+00</Option>
+    <Option name="SamplingTraining" modified="No">True</Option>
+    <Option name="SamplingTesting" modified="No">False</Option>
+    <Option name="ResetStep" modified="No">50</Option>
+    <Option name="Tau" modified="No">3.000000e+00</Option>
+    <Option name="BPMode" modified="No">sequential</Option>
+    <Option name="BatchSize" modified="No">-1</Option>
+    <Option name="ConvergenceImprove" modified="No">1.000000e-30</Option>
+    <Option name="ConvergenceTests" modified="No">-1</Option>
+    <Option name="UseRegulator" modified="No">False</Option>
+    <Option name="UpdateLimit" modified="No">10000</Option>
+    <Option name="CalculateErrors" modified="No">False</Option>
+    <Option name="WeightRange" modified="No">1.000000e+00</Option>
+  </Options>
+  <Variables NVar="34">
+    <Variable VarIndex="0" Expression="mll" Label="mll" Title="mll" Unit="" Internal="mll" Type="F" Min="2.02793007e+01" Max="5.97478699e+02"/>
+    <Variable VarIndex="1" Expression="metpt" Label="metpt" Title="metpt" Unit="" Internal="metpt" Type="F" Min="1.68311119e+00" Max="3.32743286e+02"/>
+    <Variable VarIndex="2" Expression="metphi" Label="metphi" Title="metphi" Unit="" Internal="metphi" Type="F" Min="-3.13882303e+00" Max="3.14048409e+00"/>
+    <Variable VarIndex="3" Expression="l1pt" Label="l1pt" Title="l1pt" Unit="" Internal="l1pt" Type="F" Min="3.00322418e+01" Max="4.03231598e+02"/>
+    <Variable VarIndex="4" Expression="l1eta" Label="l1eta" Title="l1eta" Unit="" Internal="l1eta" Type="F" Min="-2.08107328e+00" Max="2.09884596e+00"/>
+    <Variable VarIndex="5" Expression="l1phi" Label="l1phi" Title="l1phi" Unit="" Internal="l1phi" Type="F" Min="-3.14041924e+00" Max="3.13922071e+00"/>
+    <Variable VarIndex="6" Expression="l1m" Label="l1m" Title="l1m" Unit="" Internal="l1m" Type="F" Min="-1.57575101e-01" Max="1.10394567e-01"/>
+    <Variable VarIndex="7" Expression="l2pt" Label="l2pt" Title="l2pt" Unit="" Internal="l2pt" Type="F" Min="2.00140743e+01" Max="3.70726044e+02"/>
+    <Variable VarIndex="8" Expression="l2eta" Label="l2eta" Title="l2eta" Unit="" Internal="l2eta" Type="F" Min="-2.49600029e+00" Max="2.49103880e+00"/>
+    <Variable VarIndex="9" Expression="l2phi" Label="l2phi" Title="l2phi" Unit="" Internal="l2phi" Type="F" Min="-3.13340020e+00" Max="3.14062452e+00"/>
+    <Variable VarIndex="10" Expression="l2m" Label="l2m" Title="l2m" Unit="" Internal="l2m" Type="F" Min="-1.00738361e-01" Max="1.37217700e-01"/>
+    <Variable VarIndex="11" Expression="b1pt" Label="b1pt" Title="b1pt" Unit="" Internal="b1pt" Type="F" Min="3.11951771e+01" Max="4.19236145e+02"/>
+    <Variable VarIndex="12" Expression="b1eta" Label="b1eta" Title="b1eta" Unit="" Internal="b1eta" Type="F" Min="-2.35138226e+00" Max="2.39874864e+00"/>
+    <Variable VarIndex="13" Expression="b1phi" Label="b1phi" Title="b1phi" Unit="" Internal="b1phi" Type="F" Min="-3.13399196e+00" Max="3.13679862e+00"/>
+    <Variable VarIndex="14" Expression="b1m" Label="b1m" Title="b1m" Unit="" Internal="b1m" Type="F" Min="4.25436592e+00" Max="4.62017250e+01"/>
+    <Variable VarIndex="15" Expression="b2pt" Label="b2pt" Title="b2pt" Unit="" Internal="b2pt" Type="F" Min="3.00168381e+01" Max="3.02202484e+02"/>
+    <Variable VarIndex="16" Expression="b2eta" Label="b2eta" Title="b2eta" Unit="" Internal="b2eta" Type="F" Min="-2.39648771e+00" Max="2.37122560e+00"/>
+    <Variable VarIndex="17" Expression="b2phi" Label="b2phi" Title="b2phi" Unit="" Internal="b2phi" Type="F" Min="-3.14009833e+00" Max="3.14145517e+00"/>
+    <Variable VarIndex="18" Expression="b2m" Label="b2m" Title="b2m" Unit="" Internal="b2m" Type="F" Min="3.62259173e+00" Max="3.44613457e+01"/>
+    <Variable VarIndex="19" Expression="deltarll" Label="deltarll" Title="deltarll" Unit="" Internal="deltarll" Type="F" Min="3.48062068e-01" Max="5.02614498e+00"/>
+    <Variable VarIndex="20" Expression="deltaphill" Label="deltaphill" Title="deltaphill" Unit="" Internal="deltaphill" Type="F" Min="-3.14066720e+00" Max="3.14041781e+00"/>
+    <Variable VarIndex="21" Expression="mlb" Label="mlb" Title="mlb" Unit="" Internal="mlb" Type="F" Min="1.28518648e+01" Max="1.42470673e+02"/>
+    <Variable VarIndex="22" Expression="px2" Label="px2" Title="px2" Unit="" Internal="px2" Type="F" Min="5.10143174e-04" Max="5.76231938e+05"/>
+    <Variable VarIndex="23" Expression="py2" Label="py2" Title="py2" Unit="" Internal="py2" Type="F" Min="1.06606440e-05" Max="2.10180375e+05"/>
+    <Variable VarIndex="24" Expression="pz2" Label="pz2" Title="pz2" Unit="" Internal="pz2" Type="F" Min="4.74584568e-03" Max="3.09132200e+06"/>
+    <Variable VarIndex="25" Expression="E2" Label="E2" Title="E2" Unit="" Internal="E2" Type="F" Min="4.72017891e+04" Max="4.19064975e+06"/>
+    <Variable VarIndex="26" Expression="yvis" Label="yvis" Title="yvis" Unit="" Internal="yvis" Type="F" Min="-1.97409499e+00" Max="1.98028159e+00"/>
+    <Variable VarIndex="27" Expression="ysum" Label="ysum" Title="ysum" Unit="" Internal="ysum" Type="F" Min="3.85880142e-01" Max="7.87795734e+00"/>
+    <Variable VarIndex="28" Expression="max_dy" Label="max_dy" Title="max_dy" Unit="" Internal="max_dy" Type="F" Min="-1.53698695e+00" Max="2.08465052e+00"/>
+    <Variable VarIndex="29" Expression="min_dy" Label="min_dy" Title="min_dy" Unit="" Internal="min_dy" Type="F" Min="-2.06907248e+00" Max="1.52355886e+00"/>
+    <Variable VarIndex="30" Expression="mpp" Label="mpp" Title="mpp" Unit="" Internal="mpp" Type="F" Min="3.15632507e+02" Max="2.70463062e+03"/>
+    <Variable VarIndex="31" Expression="ypp" Label="ypp" Title="ypp" Unit="" Internal="ypp" Type="F" Min="-9.96123314e-01" Max="8.44526768e-01"/>
+    <Variable VarIndex="32" Expression="reg_mtt" Label="reg_mtt" Title="reg_mtt" Unit="" Internal="reg_mtt" Type="F" Min="3.61442291e+02" Max="1.70833203e+03"/>
+    <Variable VarIndex="33" Expression="reg_ytt" Label="reg_ytt" Title="reg_ytt" Unit="" Internal="reg_ytt" Type="F" Min="-4.06252813e+00" Max="1.37250066e+00"/>
+  </Variables>
+  <Spectators NSpec="6">
+    <Spectator SpecIndex="0" Expression="run" Label="run" Title="run" Unit="" Internal="run" Type="F" Min="1.00000000e+00" Max="1.00000000e+00"/>
+    <Spectator SpecIndex="1" Expression="lumi" Label="lumi" Title="lumi" Unit="" Internal="lumi" Type="F" Min="8.00000000e+00" Max="2.64575000e+05"/>
+    <Spectator SpecIndex="2" Expression="ev" Label="ev" Title="ev" Unit="" Internal="ev" Type="F" Min="8.00000000e+00" Max="4.65784384e+08"/>
+    <Spectator SpecIndex="3" Expression="rho" Label="rho" Title="rho" Unit="" Internal="rho" Type="F" Min="0.00000000e+00" Max="6.17198105e+01"/>
+    <Spectator SpecIndex="4" Expression="nvtx" Label="nvtx" Title="nvtx" Unit="" Internal="nvtx" Type="F" Min="1.00000000e+00" Max="9.30000000e+01"/>
+    <Spectator SpecIndex="5" Expression="weight" Label="weight" Title="weight" Unit="" Internal="weight" Type="F" Min="-4.00125835e-08" Max="9.81974363e-01"/>
+  </Spectators>
+  <Classes NClass="2">
+    <Class Name="Signal" Index="0"/>
+    <Class Name="Background" Index="1"/>
+  </Classes>
+  <Transformations NTransformations="0"/>
+  <MVAPdfs/>
+  <Weights>
+    <Layout NLayers="5">
+      <Layer Index="0" NNeurons="35">
+        <Neuron NSynapses="30">
+          nan -nan -nan -nan -nan nan -nan nan nan -nan nan -nan -nan nan -nan nan nan nan nan nan nan -nan -nan -nan nan nan nan -nan -nan nan 
+        </Neuron>
+        <Neuron NSynapses="30">
+          nan -nan -nan -nan -nan nan -nan nan nan -nan nan -nan -nan nan -nan nan nan nan nan nan nan -nan -nan -nan nan nan nan -nan -nan nan 
+        </Neuron>
+        <Neuron NSynapses="30">
+          nan -nan -nan -nan -nan nan -nan nan nan -nan nan -nan -nan nan -nan nan nan nan nan nan nan -nan -nan -nan nan nan nan -nan -nan nan 
+        </Neuron>
+        <Neuron NSynapses="30">
+          nan -nan -nan -nan -nan nan -nan nan nan -nan nan -nan -nan nan -nan nan nan nan nan nan nan -nan -nan -nan nan nan nan -nan -nan nan 
+        </Neuron>
+        <Neuron NSynapses="30">
+          nan -nan -nan -nan -nan nan -nan nan nan -nan nan -nan -nan nan -nan nan nan nan nan nan nan -nan -nan -nan nan nan nan -nan -nan nan 
+        </Neuron>
+        <Neuron NSynapses="30">
+          nan -nan -nan -nan -nan nan -nan nan nan -nan nan -nan -nan nan -nan nan nan nan nan nan nan -nan -nan -nan nan nan nan -nan -nan nan 
+        </Neuron>
+        <Neuron NSynapses="30">
+          nan -nan -nan -nan -nan nan -nan nan nan -nan nan -nan -nan nan -nan nan nan nan nan nan nan -nan -nan -nan nan nan nan -nan -nan nan 
+        </Neuron>
+        <Neuron NSynapses="30">
+          nan -nan -nan -nan -nan nan -nan nan nan -nan nan -nan -nan nan -nan nan nan nan nan nan nan -nan -nan -nan nan nan nan -nan -nan nan 
+        </Neuron>
+        <Neuron NSynapses="30">
+          nan -nan -nan -nan -nan nan -nan nan nan -nan nan -nan -nan nan -nan nan nan nan nan nan nan -nan -nan -nan nan nan nan -nan -nan nan 
+        </Neuron>
+        <Neuron NSynapses="30">
+          nan -nan -nan -nan -nan nan -nan nan nan -nan nan -nan -nan nan -nan nan nan nan nan nan nan -nan -nan -nan nan nan nan -nan -nan nan 
+        </Neuron>
+        <Neuron NSynapses="30">
+          nan -nan -nan -nan -nan nan -nan nan nan -nan nan -nan -nan nan -nan nan nan nan nan nan nan -nan -nan -nan nan nan nan -nan -nan nan 
+        </Neuron>
+        <Neuron NSynapses="30">
+          nan -nan -nan -nan -nan nan -nan nan nan -nan nan -nan -nan nan -nan nan nan nan nan nan nan -nan -nan -nan nan nan nan -nan -nan nan 
+        </Neuron>
+        <Neuron NSynapses="30">
+          nan -nan -nan -nan -nan nan -nan nan nan -nan nan -nan -nan nan -nan nan nan nan nan nan nan -nan -nan -nan nan nan nan -nan -nan nan 
+        </Neuron>
+        <Neuron NSynapses="30">
+          nan -nan -nan -nan -nan nan -nan nan nan -nan nan -nan -nan nan -nan nan nan nan nan nan nan -nan -nan -nan nan nan nan -nan -nan nan 
+        </Neuron>
+        <Neuron NSynapses="30">
+          nan -nan -nan -nan -nan nan -nan nan nan -nan nan -nan -nan nan -nan nan nan nan nan nan nan -nan -nan -nan nan nan nan -nan -nan nan 
+        </Neuron>
+        <Neuron NSynapses="30">
+          nan -nan -nan -nan -nan nan -nan nan nan -nan nan -nan -nan nan -nan nan nan nan nan nan nan -nan -nan -nan nan nan nan -nan -nan nan 
+        </Neuron>
+        <Neuron NSynapses="30">
+          nan -nan -nan -nan -nan nan -nan nan nan -nan nan -nan -nan nan -nan nan nan nan nan nan nan -nan -nan -nan nan nan nan -nan -nan nan 
+        </Neuron>
+        <Neuron NSynapses="30">
+          nan -nan -nan -nan -nan nan -nan nan nan -nan nan -nan -nan nan -nan nan nan nan nan nan nan -nan -nan -nan nan nan nan -nan -nan nan 
+        </Neuron>
+        <Neuron NSynapses="30">
+          nan -nan -nan -nan -nan nan -nan nan nan -nan nan -nan -nan nan -nan nan nan nan nan nan nan -nan -nan -nan nan nan nan -nan -nan nan 
+        </Neuron>
+        <Neuron NSynapses="30">
+          nan -nan -nan -nan -nan nan -nan nan nan -nan nan -nan -nan nan -nan nan nan nan nan nan nan -nan -nan -nan nan nan nan -nan -nan nan 
+        </Neuron>
+        <Neuron NSynapses="30">
+          nan -nan -nan -nan -nan nan -nan nan nan -nan nan -nan -nan nan -nan nan nan nan nan nan nan -nan -nan -nan nan nan nan -nan -nan nan 
+        </Neuron>
+        <Neuron NSynapses="30">
+          nan -nan -nan -nan -nan nan -nan nan nan -nan nan -nan -nan nan -nan nan nan nan nan nan nan -nan -nan -nan nan nan nan -nan -nan nan 
+        </Neuron>
+        <Neuron NSynapses="30">
+          nan -nan -nan -nan -nan nan -nan nan nan -nan nan -nan -nan nan -nan nan nan nan nan nan nan -nan -nan -nan nan nan nan -nan -nan nan 
+        </Neuron>
+        <Neuron NSynapses="30">
+          nan -nan -nan -nan -nan nan -nan nan nan -nan nan -nan -nan nan -nan nan nan nan nan nan nan -nan -nan -nan nan nan nan -nan -nan nan 
+        </Neuron>
+        <Neuron NSynapses="30">
+          nan -nan -nan -nan -nan nan -nan nan nan -nan nan -nan -nan nan -nan nan nan nan nan nan nan -nan -nan -nan nan nan nan -nan -nan nan 
+        </Neuron>
+        <Neuron NSynapses="30">
+          nan -nan -nan -nan -nan nan -nan nan nan -nan nan -nan -nan nan -nan nan nan nan nan nan nan -nan -nan -nan nan nan nan -nan -nan nan 
+        </Neuron>
+        <Neuron NSynapses="30">
+          nan -nan -nan -nan -nan nan -nan nan nan -nan nan -nan -nan nan -nan nan nan nan nan nan nan -nan -nan -nan nan nan nan -nan -nan nan 
+        </Neuron>
+        <Neuron NSynapses="30">
+          nan -nan -nan -nan -nan nan -nan nan nan -nan nan -nan -nan nan -nan nan nan nan nan nan nan -nan -nan -nan nan nan nan -nan -nan nan 
+        </Neuron>
+        <Neuron NSynapses="30">
+          nan -nan -nan -nan -nan nan -nan nan nan -nan nan -nan -nan nan -nan nan nan nan nan nan nan -nan -nan -nan nan nan nan -nan -nan nan 
+        </Neuron>
+        <Neuron NSynapses="30">
+          nan -nan -nan -nan -nan nan -nan nan nan -nan nan -nan -nan nan -nan nan nan nan nan nan nan -nan -nan -nan nan nan nan -nan -nan nan 
+        </Neuron>
+        <Neuron NSynapses="30">
+          nan -nan -nan -nan -nan nan -nan nan nan -nan nan -nan -nan nan -nan nan nan nan nan nan nan -nan -nan -nan nan nan nan -nan -nan nan 
+        </Neuron>
+        <Neuron NSynapses="30">
+          nan -nan -nan -nan -nan nan -nan nan nan -nan nan -nan -nan nan -nan nan nan nan nan nan nan -nan -nan -nan nan nan nan -nan -nan nan 
+        </Neuron>
+        <Neuron NSynapses="30">
+          nan -nan -nan -nan -nan nan -nan nan nan -nan nan -nan -nan nan -nan nan nan nan nan nan nan -nan -nan -nan nan nan nan -nan -nan nan 
+        </Neuron>
+        <Neuron NSynapses="30">
+          nan -nan -nan -nan -nan nan -nan nan nan -nan nan -nan -nan nan -nan nan nan nan nan nan nan -nan -nan -nan nan nan nan -nan -nan nan 
+        </Neuron>
+        <Neuron NSynapses="30">
+          nan -nan -nan -nan -nan nan -nan nan nan -nan nan -nan -nan nan -nan nan nan nan nan nan nan -nan -nan -nan nan nan nan -nan -nan nan 
+        </Neuron>
+      </Layer>
+      <Layer Index="1" NNeurons="31">
+        <Neuron NSynapses="10">
+          nan nan nan nan nan nan nan nan nan nan 
+        </Neuron>
+        <Neuron NSynapses="10">
+          -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan 
+        </Neuron>
+        <Neuron NSynapses="10">
+          -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan 
+        </Neuron>
+        <Neuron NSynapses="10">
+          -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan 
+        </Neuron>
+        <Neuron NSynapses="10">
+          -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan 
+        </Neuron>
+        <Neuron NSynapses="10">
+          nan nan nan nan nan nan nan nan nan nan 
+        </Neuron>
+        <Neuron NSynapses="10">
+          -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan 
+        </Neuron>
+        <Neuron NSynapses="10">
+          nan nan nan nan nan nan nan nan nan nan 
+        </Neuron>
+        <Neuron NSynapses="10">
+          nan nan nan nan nan nan nan nan nan nan 
+        </Neuron>
+        <Neuron NSynapses="10">
+          -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan 
+        </Neuron>
+        <Neuron NSynapses="10">
+          nan nan nan nan nan nan nan nan nan nan 
+        </Neuron>
+        <Neuron NSynapses="10">
+          -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan 
+        </Neuron>
+        <Neuron NSynapses="10">
+          -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan 
+        </Neuron>
+        <Neuron NSynapses="10">
+          nan nan nan nan nan nan nan nan nan nan 
+        </Neuron>
+        <Neuron NSynapses="10">
+          -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan 
+        </Neuron>
+        <Neuron NSynapses="10">
+          nan nan nan nan nan nan nan nan nan nan 
+        </Neuron>
+        <Neuron NSynapses="10">
+          nan nan nan nan nan nan nan nan nan nan 
+        </Neuron>
+        <Neuron NSynapses="10">
+          nan nan nan nan nan nan nan nan nan nan 
+        </Neuron>
+        <Neuron NSynapses="10">
+          nan nan nan nan nan nan nan nan nan nan 
+        </Neuron>
+        <Neuron NSynapses="10">
+          nan nan nan nan nan nan nan nan nan nan 
+        </Neuron>
+        <Neuron NSynapses="10">
+          nan nan nan nan nan nan nan nan nan nan 
+        </Neuron>
+        <Neuron NSynapses="10">
+          -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan 
+        </Neuron>
+        <Neuron NSynapses="10">
+          -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan 
+        </Neuron>
+        <Neuron NSynapses="10">
+          -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan 
+        </Neuron>
+        <Neuron NSynapses="10">
+          nan nan nan nan nan nan nan nan nan nan 
+        </Neuron>
+        <Neuron NSynapses="10">
+          nan nan nan nan nan nan nan nan nan nan 
+        </Neuron>
+        <Neuron NSynapses="10">
+          nan nan nan nan nan nan nan nan nan nan 
+        </Neuron>
+        <Neuron NSynapses="10">
+          -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan 
+        </Neuron>
+        <Neuron NSynapses="10">
+          -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan 
+        </Neuron>
+        <Neuron NSynapses="10">
+          nan nan nan nan nan nan nan nan nan nan 
+        </Neuron>
+        <Neuron NSynapses="10">
+          -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan 
+        </Neuron>
+      </Layer>
+      <Layer Index="2" NNeurons="11">
+        <Neuron NSynapses="3">
+          -nan -nan -nan 
+        </Neuron>
+        <Neuron NSynapses="3">
+          -nan -nan -nan 
+        </Neuron>
+        <Neuron NSynapses="3">
+          -nan -nan -nan 
+        </Neuron>
+        <Neuron NSynapses="3">
+          -nan -nan -nan 
+        </Neuron>
+        <Neuron NSynapses="3">
+          -nan -nan -nan 
+        </Neuron>
+        <Neuron NSynapses="3">
+          -nan -nan -nan 
+        </Neuron>
+        <Neuron NSynapses="3">
+          -nan -nan -nan 
+        </Neuron>
+        <Neuron NSynapses="3">
+          -nan -nan -nan 
+        </Neuron>
+        <Neuron NSynapses="3">
+          -nan -nan -nan 
+        </Neuron>
+        <Neuron NSynapses="3">
+          -nan -nan -nan 
+        </Neuron>
+        <Neuron NSynapses="3">
+          nan nan nan 
+        </Neuron>
+      </Layer>
+      <Layer Index="3" NNeurons="4">
+        <Neuron NSynapses="1">
+          nan 
+        </Neuron>
+        <Neuron NSynapses="1">
+          nan 
+        </Neuron>
+        <Neuron NSynapses="1">
+          nan 
+        </Neuron>
+        <Neuron NSynapses="1">
+          -nan 
+        </Neuron>
+      </Layer>
+      <Layer Index="4" NNeurons="1">
+        <Neuron NSynapses="0"/>
+      </Layer>
+    </Layout>
+  </Weights>
+</MethodSetup>

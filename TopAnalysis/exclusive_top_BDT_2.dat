@@ -1,0 +1,84 @@
+imax 2  number of channels
+jmax *  number of backgrounds
+kmax *  number of nuisance parameters (sources of systematical uncertainties)
+------------
+shapes * * shapes.root $PROCESS_$CHANNEL $PROCESS_$CHANNEL_$SYSTEMATIC
+------------
+#
+# here we write the total number of events observed in the SF regions
+#   - SR - signal region
+#   - ttCR - control region for QCD TTbar (low mlb)
+#
+bin         CR    SR
+observation -1   -1
+------------
+#
+# here we write the expected yields
+# for excTT as we are fitting the cross section so we write A x Lumi in the SR and 0 otherwise
+# for qcdTT and DY we fit a scale factor from the dedicated control regions
+#
+bin             CR     CR      CR   CR      SR      SR     SR   SR      
+process         excTT  qcdTT   DY   others   excTT  qcdTT   DY  others      
+process         0      1       2    3      0      1       2     3            
+rate            -1     -1      -1   -1      -1     -1      -1   -1        
+------------
+#
+# here are the uncertainties affecting the predictions above
+# they are written as N(var)/N(nominal) and assumed to be symmetric
+#
+
+lumi      lnN   1.027  1.027   -   -     1.027  1.027   -    -       
+xs_qcdTT  lnN   -      1.051   -    -     -      1.051   -    -                
+xs_others_SR lnN   -      -       -  -      -      -       -   -             
+xs_others_CR lnN   -      -       -  -          -      -       -   -      
+DY_unc    lnN   -      -      1.3     -    -      -      1.3      -         
+lep_eff   lnN   1.03   1.03   1.03    -       1.03   1.03   1.03   -       
+method    lnN   -      1.15   1.15   -   -      1.15   1.15    -       
+JERSTmFE     lnN   0.9488/0.9556   0.9880/1.0000  -  -  1.2240/1.1846   1.1002/1.0210  - - 
+JER     lnN   0.9934/0.9218   0.9830/1.0086  -  -  1.1398/1.2028   1.0144/1.1254  - - 
+msel     lnN   1.0667/1.0446   1.0102/0.9898  -  -  1.0776/1.0559   1.0101/0.9899  - - 
+FlavorPureQuarkJEC     lnN    -    1.0101/1.0232  -  -   -    1.0727/1.0778  - - 
+mes3     lnN    -    0.9848/0.9904  -  -   -    0.9787/1.0297  - - 
+FlavorPureGluonJEC     lnN    -    1.0005/0.9976  -  -   -    1.0556/0.9344  - - 
+btaghf     lnN   0.9766/0.8727   1.0606/0.9308  -  -  1.3019/1.1317   1.1475/0.9956  - - 
+AbsoluteScaleJEC     lnN    -    0.9774/1.0087  -  -   -    1.0991/1.0991  - - 
+TimePtEtaJEC     lnN    -    0.9908/1.0002  -  -   -    1.0642/1.0687  - - 
+PileUpDataMCJEC     lnN    -    0.9780/0.9854  -  -   -    0.9450/1.0374  - - 
+JERPLI     lnN   0.8935/0.8882   1.0163/0.9877  -  -  1.2297/1.1794   1.1417/1.0369  - - 
+JERPU     lnN   0.8748/0.9148   1.0071/0.9840  -  -  1.1753/1.1992   1.1690/1.1292  - - 
+RelativePtBBJEC     lnN    -    0.9870/0.9981  -  -   -    1.0524/0.8898  - - 
+RelativeJEREC1JEC     lnN    -    1.0079/0.9975  -  -   -    1.0338/1.1876  - - 
+JERJEC     lnN   0.8510/0.9151   0.9869/0.9934  -  -  1.2253/1.0270   1.0882/1.0137  - - 
+ees2     lnN    -    1.0166/0.9897  -  -   -    1.1220/1.1213  - - 
+RelativePtEC1JEC     lnN    -    0.9812/0.9956  -  -   -    1.0112/1.0124  - - 
+AbsoluteMPFBiasJEC     lnN    -    0.9923/0.9881  -  -   -    1.0343/1.1571  - - 
+SinglePionECALJEC     lnN    -    0.9873/0.9797  -  -   -    0.9822/0.9319  - - 
+RelativeStatECJEC     lnN    -    0.9708/0.9976  -  -   -    1.0582/1.0014  - - 
+SinglePionHCALJEC     lnN    -    0.9745/0.9934  -  -   -    0.9984/1.0124  - - 
+ees3     lnN    -    0.9684/1.0044  -  -   -    1.0879/1.1199  - - 
+JERptCut     lnN   0.9939/0.9934   1.0294/0.9907  -  -  1.1127/1.1625   1.1625/1.1754  - - 
+ees7     lnN    -    0.9747/0.9707  -  -   -    1.0248/1.1241  - - 
+mes2     lnN    -    0.9848/1.0087  -  -   -    1.0567/0.9855  - - 
+PileUpPtEC1JEC     lnN   0.9256/0.9456   0.9704/0.9826  -  -  1.2322/1.1835   1.0882/1.1058  - - 
+RelativeStatFSRJEC     lnN    -    1.0060/0.9792  -  -   -    1.0827/1.0750  - - 
+PileUpPtBBJEC     lnN    -    0.9993/0.9770  -  -   -    1.1548/1.1118  - - 
+RelativeFSRJEC     lnN    -    1.0034/0.9922  -  -   -    1.1499/1.1396  - - 
+mes1     lnN   0.9140/0.9300   0.9953/1.0011  -  -  1.2171/1.1673   1.1277/1.1710  - - 
+JERstat     lnN   0.9450/0.9820   1.0073/0.9850  -  -  1.1622/1.1134   1.0383/0.9643  - - 
+FlavorPureCharmJEC     lnN    -    0.9904/1.0214  -  -   -    1.1403/1.0882  - - 
+pu     lnN   1.0590/1.0518   1.0168/0.9809  -  -  1.0732/1.0854   1.0302/0.9765  - - 
+FragmentationJEC     lnN    -    0.9953/1.0039  -  -   -    1.0252/1.0597  - - 
+bfrag     lnN   0.8776/0.8776   0.9985/0.9994  -  -  1.1544/1.1544   1.0699/1.0538  - - 
+ees4     lnN    -    0.9855/0.9937  -  -   -    0.9870/1.0937  - - 
+toppt     lnN   -   0.9740/1.0705  -  -  -   0.9093/1.2168  - - 
+FlavorPureBottomJEC     lnN    -    0.9851/0.9928  -  -   -    1.1270/1.0578  - - 
+mes4     lnN    -    0.9947/0.9905  -  -   -    1.0702/1.1266  - - 
+ees6     lnN    -    0.9855/0.9937  -  -   -    0.9870/1.0937  - - 
+esel     lnN   1.0854/1.0297   1.0182/0.9821  -  -  1.0816/1.0519   1.0143/0.9857  - - 
+PileUpPtRefJEC     lnN    -    0.9910/1.0266  -  -   -   0.9746/1.0663  - - 
+RelativeBalJEC     lnN   0.9456/0.9239   0.9990/0.9883  -  -  1.1835/1.2153   1.0583/1.0468  - - 
+JERtrunc     lnN   0.9554/0.8854   0.9986/0.9931  -  -  1.0331/1.2399   1.0781/1.1457  - - 
+l1prefire     lnN   1.0560/1.0553   1.0014/0.9986  -  -  1.0668/1.0668   1.0008/0.9992  - - 
+JERpTdep     lnN   0.9448/0.9505   1.0201/0.9980  -  -  1.2033/1.2361   1.0874/1.0770  - - 
+btaglf     lnN   0.9394/0.9090   0.9966/0.9929  -  -  1.2311/1.1998   1.0716/1.0687  - - 
+

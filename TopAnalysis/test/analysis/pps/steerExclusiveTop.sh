@@ -18,87 +18,102 @@ queue=tomorrow
 #githash=3129835
 #githash=6816e40
 githash=ab05162
+githash_new=955fa95_ul
+eosdir_new=/store/cmst3/group/top/RunIIReReco/2017/${githash_new}
 eosdir=/store/cmst3/group/top/RunIIReReco/${githash}
-outdir=/store/cmst3/user/psilva/ExclusiveAna/${githash}
-outdir1=$CMSSW_BASE/src/TopLJets2015/TopAnalysis/test/analysis/pps/${githash}
+#outdir=/store/cmst3/user/psilva/ExclusiveAna/${githash}
+#outdir1=$CMSSW_BASE/src/TopLJets2015/TopAnalysis/test/analysis/pps/${githash}
 outdir2=/afs/cern.ch/work/b/bribeiro/${githash}
+outdir3=/eos/user/b/bribeiro/${githash}
+outdir4=/eos/user/b/bribeiro/${githash_new}
 signal_json=$CMSSW_BASE/src/TopLJets2015/TopAnalysis/test/analysis/pps/signal_samples.json
 plot_signal_json=$CMSSW_BASE/src/TopLJets2015/TopAnalysis/test/analysis/pps/plot_signal_samples.json
 samples_json=$CMSSW_BASE/src/TopLJets2015/TopAnalysis/test/analysis/pps/samples.json
+ttjets_samples_json=$CMSSW_BASE/src/TopLJets2015/TopAnalysis/test/analysis/pps/ttjets_samples.json
+data_samples_json=$CMSSW_BASE/src/TopLJets2015/TopAnalysis/test/analysis/pps/data_samples.json
+mc_samples_json=$CMSSW_BASE/src/TopLJets2015/TopAnalysis/test/analysis/pps/mc_samples.json
+#missing_samples_json=$CMSSW_BASE/src/TopLJets2015/TopAnalysis/test/analysis/pps/missing_samples.json
 bkg_samples_json=$CMSSW_BASE/src/TopLJets2015/TopAnalysis/test/analysis/pps/bkg_samples.json
 jetht_samples_json=$CMSSW_BASE/src/TopLJets2015/TopAnalysis/test/analysis/pps/jetht_samples.json
 top_samples_json=$CMSSW_BASE/src/TopLJets2015/TopAnalysis/test/analysis/pps/top_samples.json
+dy_samples_json=$CMSSW_BASE/src/TopLJets2015/TopAnalysis/test/analysis/pps/dy_samples.json
 RPout_json=$CMSSW_BASE/src/TopLJets2015/TopAnalysis/test/analysis/pps/golden_noRP.json
 wwwdir=~/www/ExclusiveAna
 #inputfileTag=MC13TeV_2017_GGH2000toZZ2L2Nu
 #inputfileTag=MC13TeV_2017_GGToEE_lpair
 #inputfileTag=Data13TeV_2017F_MuonEG
-#inputfileTag=MC13TeV_2017_GJets_HT400to600
-inputfileTag=Data13TeV_2017B_SingleMuon
-#inputfileTag=MC13TeV_2017_TTJets
+
+#inputfileTag=Data13TeV_2017B_SingleMuon
+inputfileTag=Data13TeV_2017F_SingleMuon
+inputfileTag=MC13TeV_2017_DY50toInf_fxfx
+inputfileTag=MC13TeV_2017_TTJets
 inputfileTagSIGNAL=MC13TeV_2017_FPMC_HW_QED_ttbar_13TeV_150
 inputfileTESTSELSIGNAL=${eosdir}/${inputfileTagSIGNAL}/Chunk_0_ext0.root
-inputfileTESTSEL=${eosdir}/${inputfileTag}/Chunk_0_ext0.root
+inputfileTESTSEL=${eosdir}/${inputfileTag}/Chunk_1_ext0.root
+#inputfileTESTSEL=${eosdir_new}/${inputfileTag}/Chunk_0_ext0.root
 #	python $CMSSW_BASE/src/TopLJets2015/TopAnalysis/scripts/runLocalAnalysis.py ${baseOpt} --only ${samples_json};
 #	python scripts/KinAlg4tree.py ${outdir2}/Chunks/*.root;
 
 lumi=41833
-ppsLumi=37500
-lumiUnc=0.025
-
+ppsLumi=39500
+lumi_methodUnc=0.175
+#methodUnc=0.15
 
 RED='\e[31m'
 NC='\e[0m'
 case $WHAT in
 
+
+
     TESTSEL )
-        
+  
 	#add SIGNAL to the names to test on signal samples
+#            -i ${inputfileTESTSELSIGNAL} --tag ${inputfileTagSIGNAL} \
         python $CMSSW_BASE/src/TopLJets2015/TopAnalysis/scripts/runLocalAnalysis.py \
             -i ${inputfileTESTSEL} --tag ${inputfileTag} \
             -o testsel.root --genWeights genweights_${githash}.root \
-            --njobs 1 -q local  \
+            --njobs 1 -q local \
             --era era2017 -m ExclusiveTop::RunExclusiveTop --ch 0 --runSysts;
         ;;
 
     DEBUG )
         
         python $CMSSW_BASE/src/TopLJets2015/TopAnalysis/scripts/runLocalAnalysis.py \
-            -i ${inputfileTESTSEL} --tag ${inputfileTag} \
+            -i ${inputfileTESTSELSIGNAL} --tag ${inputfileTagSIGNAL} \
             -o testsel.root --genWeights genweights_${githash}.root \
             --njobs 1 -q local  --debug \
-            --era era2017 -m Ex
-
-
-clusiveTop::RunExclusiveTop --ch 0 --runSysts;
+            --era era2017 -m ExclusiveTop::RunExclusiveTop --ch 0 --runSysts;
         ;;
 
     SEL )
         baseOpt="-i ${eosdir} --genWeights genweights_${githash}.root"
-        baseOpt="${baseOpt} -o ${outdir2} -q ${queue} --era era2017 -m ExclusiveTop::RunExclusiveTop --ch 0 --runSysts"
-        baseOpt="${baseOpt} --exactonly"        
-	python $CMSSW_BASE/src/TopLJets2015/TopAnalysis/scripts/runLocalAnalysis.py ${baseOpt} --only ${samples_json};	
-#	python $CMSSW_BASE/src/TopLJets2015/TopAnalysis/scripts/runLocalAnalysis.py ${baseOpt} --only ${signal_json};	
+	baseOpt="${baseOpt} -o ${outdir3} -q ${queue} --era era2017 -m ExclusiveTop::RunExclusiveTop --ch 0 --runSysts"
+	baseOpt="${baseOpt} --exactonly"        
+	python $CMSSW_BASE/src/TopLJets2015/TopAnalysis/scripts/runLocalAnalysis.py ${baseOpt} --only ${mc_samples_json};   
+	python $CMSSW_BASE/src/TopLJets2015/TopAnalysis/scripts/runLocalAnalysis.py ${baseOpt} --only ${signal_json};
+#	baseOpt_new="-i ${eosdir_new} --genWeights genweights_${githash_new}.root"
+#	baseOpt_new="${baseOpt_new} -o ${outdir4} -q ${queue} --era era2017 -m ExclusiveTop::RunExclusiveTop --ch 0 --runSysts"
+#	baseOpt_new="${baseOpt_new} --exactonly"        
+#	python $CMSSW_BASE/src/TopLJets2015/TopAnalysis/scripts/runLocalAnalysis.py ${baseOpt_new}  --only ${data_samples_json};	
+
 	;;
 
     REG )
-#	for file in /afs/cern.ch/work/b/bribeiro/ab05162/*.root
-#	do
-#	    python scripts/KinAlg4tree.py ${file}
-	    
-#	done
-#	echo "reconstruction done -----------------------------------------------"
+#	cp /eos/user/b/bribeiro/${githash}/Chunks/MC*.root /eos/user/b/bribeiro/${githash_new}/Chunks/
+
+#	python scripts/KinAlg4tree.py /eos/user/b/bribeiro/955fa95_ul/*.root
+#	echo "ttbar reconstruction done -----------------------------------------------"
 	
-#	for file in /afs/cern.ch/work/b/bribeiro/ab05162/*.root
+#	for file in /eos/user/b/bribeiro/955fa95_ul/*TT*.root
 #	do
 #	    root -l -q macros/ApplyRegression.C'("'${file}'")'
-	    
+        
 #	done
-#	echo "regression applied -----------------------------------------------"
+#	echo "regression applied -------------------------------------------------------"
 	
-	for file in /afs/cern.ch/work/b/bribeiro/ab05162/*.root
+	for file in /eos/user/b/bribeiro/955fa95_ul/*TT*.root
 	do
-	    root -l -q macros/ApplyMVA.C'("'${file}'")'
+	    root -l -q macros/ApplyMVA_allsysts.C'("'${file}'")'
 	done
 	
 	echo "BDT output added -----------------------------------------------"
@@ -111,37 +126,38 @@ clusiveTop::RunExclusiveTop --ch 0 --runSysts;
 	;;
 
     MERGESEL )
-	mergeOutputs.py ${outdir2};
+	mergeOutputs.py ${outdir4};
 	#add "True" as an argument if you don't want to merge the trees
 	;;
 
     PLOTSEL )
         kFactors="--procSF MC13TeV_2017_QCDEM_15to20:1.26,MC13TeV_2017_QCDEM_20to30:1.26,MC13TeV_2017_QCDEM_30to50:1.26,MC13TeV_2017_QCDEM_50to80:1.26,MC13TeV_2017_QCDEM_80to120:1.26,MC13TeV_2017_QCDEM_120to170:1.26,MC13TeV_2017_QCDEM_170to300:1.26,MC13TeV_2017_QCDEM_300toInf:1.26,MC13TeV_2017_GJets_HT40to100:1.26,MC13TeV_2017_GJets_HT100to200:1.26,MC13TeV_2017_GJets_HT200to400:1.26,MC13TeV_2017_GJets_HT600toInf:1.26"
 
-	commonOpts="-i ${outdir2} --puNormSF puwgtctr -l ${lumi} --mcUnc ${lumiUnc} ${kFactors}"
-	python scripts/plotter.py ${commonOpts} -j ${samples_json} --signalJson ${signal_json}  -O plots/sel --saveLog;
+	commonOpts="-i ${outdir4} --puNormSF puwgtctr -l ${ppsLumi} --mcUnc ${lumi_methodUnc} ${kFactors}"
+	python scripts/plotter.py ${commonOpts} -j ${samples_json} --signalJson ${signal_json}  -O plots/sel/ul/ --saveLog	--only BDT_output,mRP,mll,scalarhtj --saveTeX;
         #--only mll,mtll,pt,eta,met,jets,nvtx,ratevsrun --saveLog; 
         #python scripts/plotter.py ${commonOpts} -j ${samples_json}    --rawYields --silent --only gen -O plots/sel -o bkg_plotter.root ; 
 	#python scripts/plotter.py ${commonOpts} -j ${top_samples_json} --rawYields --silent --only gen -O plots/sel;
         #python test/analysis/pps/computeDileptonSelEfficiency.py 
-        mv *.{png,pdf} plots/sel/
+        mv *.{png,pdf} plots/sel
         mv effsummary* plots/
 	;;
 
     PLOTNORM )
         kFactors="--procSF MC13TeV_2017_QCDEM_15to20:1.26,MC13TeV_2017_QCDEM_20to30:1.26,MC13TeV_2017_QCDEM_30to50:1.26,MC13TeV_2017_QCDEM_50to80:1.26,MC13TeV_2017_QCDEM_80to120:1.26,MC13TeV_2017_QCDEM_120to170:1.26,MC13TeV_2017_QCDEM_170to300:1.26,MC13TeV_2017_QCDEM_300toInf:1.26,MC13TeV_2017_GJets_HT40to100:1.26,MC13TeV_2017_GJets_HT100to200:1.26,MC13TeV_2017_GJets_HT200to400:1.26,MC13TeV_2017_GJets_HT600toInf:1.26"
 
-	commonOpts="-i ${outdir2} --puNormSF puwgtctr -l ${lumi} --mcUnc ${lumiUnc} ${kFactors} --normTo1"
-	python scripts/plotter.py ${commonOpts} -j ${bkg_samples_json} --signalJson ${signal_json}  -O plots/sel/testnorm --saveLog;
+	commonOpts="-i ${outdir2} --puNormSF puwgtctr -l ${ppsLumi} --mcUnc ${lumiUnc} ${kFactors} --normTo1"
+	python scripts/plotter.py ${commonOpts} -j ${bkg_samples_json} --signalJson ${signal_json}  -O plots/sel/norm --saveLog;
         #--only mll,mtll,pt,eta,met,jets,nvtx,ratevsrun --saveLog; 
         #python scripts/plotter.py ${commonOpts} -j ${samples_json}    --rawYields --silent --only gen -O plots/sel -o bkg_plotter.root ; 
 	#python scripts/plotter.py ${commonOpts} -j ${top_samples_json} --rawYields --silent --only gen -O plots/sel;
         #python test/analysis/pps/computeDileptonSelEfficiency.py 
-        mv *.{png,pdf} plots/sel/testnorm/
+        mv *.{png,pdf} plots/sel/norm/
         mv effsummary* plots/
 	;;
 
     WWWSEL )
+	
 	mkdir -p ${wwwdir}/presel
 	cp plots/sel/*.{png,pdf} ${wwwdir}/presel
 	#cp plots/top_sel/*.{png,pdf} ${wwwdir}/presel

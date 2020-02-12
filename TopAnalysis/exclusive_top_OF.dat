@@ -1,0 +1,36 @@
+imax 2  number of channels
+jmax *  number of backgrounds
+kmax *  number of nuisance parameters (sources of systematical uncertainties)
+------------
+#shapes * * shapes.root $PROCESS_$CHANNEL_OF $PROCESS_$SYSTEMATIC_$CHANNEL_OF
+------------
+#
+# here we write the total number of events observed in the OF regions
+#   - SR - signal region
+#   - ttCR - control region for QCD TTbar (low mlb)
+#
+bin         SR     ttCR
+observation 1130   550805
+------------
+#
+# here we write the expected yields
+# for excTT as we are fitting the cross section so we write A x Lumi in the SR and 0 otherwise
+# for qcdTT and DY we fit a scale factor from the dedicated control regions
+#
+bin             SR     SR      SR    SR         ttCR    ttCR    ttCR    ttCR  
+process         excTT  qcdTT   DY    others     excTT   qcdTT   DY      others
+process         0      1       2     3          0       1       2       3     
+rate            81     1460    97    34         0       519492  17395   12180
+------------
+#
+# here are the uncertainties affecting the predictions above
+# it's a bit hand-waving but enough for a fast start
+# they are written as N(var)/N(nominal) and assumed to be symmetric
+#
+lumi      lnN   1.027  1.027   -     1.027      1.027   1.027   -    1.027
+xs_qcdTT  lnN   -      1.051   -     -          -       1.051   -    -       
+xs_others_SR lnN   -      -       -     1.3        -      -        -    -       
+xs_others_CR lnN   -      -       -   -        -      -        -    1.3       
+DY_unc    lnN   -      -      1.3    -          -      -        1.3  -     
+pp_fakes  lnN   -      1.05   1.05   1.05       -      1.05     1.05 1.05    
+lep_eff   lnN   1.03   1.03   1.03   1.03       1.03   1.03     1.03 1.03   

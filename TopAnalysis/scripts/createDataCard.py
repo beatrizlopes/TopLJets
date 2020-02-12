@@ -6,7 +6,6 @@ import commands
 import getpass
 import pickle
 
-<<<<<<< HEAD
 """
 test if variation is significant enough i.e. if sum_{bins} |var-nom| > tolerance
 """
@@ -100,10 +99,7 @@ def saveToShapesFile(outFile,shapeColl,directory='',rebin=0):
         shapeColl[key].Write(key,ROOT.TObject.kOverwrite)
     fOut.Close()
 
-=======
 from TopLJets2015.TopAnalysis.dataCardTools import *
-from TopLJets2015.TopAnalysis.xsecSystSpecs import *
->>>>>>> 9058e3898a0b728430a2f63a9c409bf903ecdb62
 
 """
 steer the script

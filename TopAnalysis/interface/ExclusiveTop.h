@@ -5,6 +5,8 @@
 #include "TopLJets2015/TopAnalysis/interface/ObjectTools.h"
 #include "TopLJets2015/TopAnalysis/interface/SelectionTools.h"
 
+std::vector<int> ComputeLBcombination(std::vector<Particle> leptons, std::vector<Jet> bJets);
+
 void RunExclusiveTop(TString filename,
                      TString outname,
                      Int_t channelSelection, 

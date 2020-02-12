@@ -14,11 +14,11 @@ def main():
     #configuration
     usage = 'usage: %prog [options]'
     parser = optparse.OptionParser(usage)
-    parser.add_option('-i', '--inDir',       dest='inDir',       help='input directory with files',   default='/store/cmst3/user/psilva/LJets2015/5736a2c',        type='string')
+    parser.add_option('-i', '--inDir',       dest='inDir',       help='input directory with files',   default='/store/cmst3/group/top/RunIIReReco/ab05162/',        type='string')
     parser.add_option(      '--HiForest',    dest='HiForest',    help='flag if these are HiForest',   default=False, action='store_true')
     parser.add_option(      '--update',      dest='update',      help='update current weight cache',   default=False, action='store_true')
     #parser.add_option(      '--mount',       dest='mount',       help='mount eos locally',   default=False, action='store_true')
-    parser.add_option('-o', '--output',      dest='cache',       help='output file',                  default='data/era2016/genweights.root',                      type='string')
+    parser.add_option('-o', '--output',      dest='cache',       help='output file',                  default='data/era2017/genweights_ab05162.root',                      type='string')
     (opt, args) = parser.parse_args()
 
     baseEOS='/eos/cms/'

@@ -1,8 +1,8 @@
 {
-"MC13TeV_2017_FPMC_HW_QED_ttbar_13TeV_120" : [0.000029, 0, "", "pp#rightarrowppttbar x 1000", 633, true, false, 1],
-"MC13TeV_2017_FPMC_HW_QED_ttbar_13TeV_130" : [0.000029, 0, "", "pp#rightarrowppttbar x 1000", 633, true, false, 1],
-"MC13TeV_2017_FPMC_HW_QED_ttbar_13TeV_140" : [0.000029, 0, "", "pp#rightarrowppttbar x 1000", 633, true, false, 1],
-"MC13TeV_2017_FPMC_HW_QED_ttbar_13TeV_150" : [0.000029, 0, "", "pp#rightarrowppttbar x 1000", 633, true, false, 1]
+"MC13TeV_2017_FPMC_HW_QED_ttbar_13TeV_120" : [1, 0, "", "pp#rightarrowppttbar x 1000", 633, true, false, 1],
+"MC13TeV_2017_FPMC_HW_QED_ttbar_13TeV_130" : [1, 0, "", "pp#rightarrowppttbar x 1000", 633, true, false, 1],
+"MC13TeV_2017_FPMC_HW_QED_ttbar_13TeV_140" : [1, 0, "", "pp#rightarrowppttbar x 1000", 633, true, false, 1],
+"MC13TeV_2017_FPMC_HW_QED_ttbar_13TeV_150" : [1, 0, "", "pp#rightarrowppttbar x 1000", 633, true, false, 1]
 }
 
 

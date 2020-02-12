@@ -1,0 +1,26 @@
+Combination of mm=exclusive_top_mm.dat  ee=exclusive_top_ee.dat  em=exclusive_top_em.dat
+imax 6 number of bins
+jmax 3 number of processes minus 1
+kmax 6 number of nuisance parameters
+----------------------------------------------------------------------------------------------------------------------------------
+shapes *        ee_SR    shapes.root $PROCESS_SR_ee $PROCESS_$SYSTEMATIC_SR_ee
+shapes *        ee_ttCR  shapes.root $PROCESS_ttCR_ee $PROCESS_$SYSTEMATIC_ttCR_ee
+shapes *        em_SR    shapes.root $PROCESS_SR_em $PROCESS_$SYSTEMATIC_SR_em
+shapes *        em_ttCR  shapes.root $PROCESS_ttCR_em $PROCESS_$SYSTEMATIC_ttCR_em
+shapes *        mm_SR    shapes.root $PROCESS_SR_mm $PROCESS_$SYSTEMATIC_SR_mm
+shapes *        mm_ttCR  shapes.root $PROCESS_ttCR_mm $PROCESS_$SYSTEMATIC_ttCR_mm
+----------------------------------------------------------------------------------------------------------------------------------
+bin          mm_SR    mm_ttCR  ee_SR    ee_ttCR  em_SR    em_ttCR
+observation  -1       -1       -1       -1       -1       -1     
+----------------------------------------------------------------------------------------------------------------------------------
+bin                             mm_SR    mm_SR    mm_SR    mm_SR    mm_ttCR  mm_ttCR  mm_ttCR  mm_ttCR  ee_SR    ee_SR    ee_SR    ee_SR    ee_ttCR  ee_ttCR  ee_ttCR  ee_ttCR  em_SR    em_SR    em_SR    em_SR    em_ttCR  em_ttCR  em_ttCR  em_ttCR
+process                         excTT    qcdTT    others   DY       excTT    qcdTT    others   DY       excTT    qcdTT    others   DY       excTT    qcdTT    others   DY       excTT    qcdTT    others   DY       excTT    qcdTT    others   DY     
+process                         0        1        2        3        0        1        2        3        0        1        2        3        0        1        2        3        0        1        2        3        0        1        2        3      
+rate                            -1       -1       -1       -1       -1       -1       -1       -1       -1       -1       -1       -1       -1       -1       -1       -1       -1       -1       -1       -1       -1       -1       -1       -1     
+----------------------------------------------------------------------------------------------------------------------------------
+DY_unc                  lnN     -        -        -        1.3      -        -        -        1.3      -        -        -        1.3      -        -        -        1.3      -        -        -        1.3      -        -        -        1.3    
+lep_eff                 lnN     1.03     1.03     1.03     1.03     1.03     1.03     1.03     1.03     1.03     1.03     1.03     1.03     1.03     1.03     1.03     1.03     1.03     1.03     1.03     1.03     1.03     1.03     1.03     1.03   
+lumi                    lnN     1.027    1.027    1.027    -        1.027    1.027    1.027    -        1.027    1.027    1.027    -        1.027    1.027    1.027    -        1.027    1.027    1.027    -        1.027    1.027    1.027    -      
+xs_others_CR            lnN     -        -        -        -        -        -        1.3      -        -        -        -        -        -        -        1.3      -        -        -        -        -        -        -        1.3      -      
+xs_others_SR            lnN     -        -        1.3      -        -        -        -        -        -        -        1.3      -        -        -        -        -        -        -        1.3      -        -        -        -        -      
+xs_qcdTT                lnN     -        1.051    -        -        -        1.051    -        -        -        1.051    -        -        -        1.051    -        -        -        1.051    -        -        -        1.051    -        -      

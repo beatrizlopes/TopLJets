@@ -13,14 +13,13 @@ def getYields(fIn,hName,procs,ran=None):
             try:
                 bin1,bin2=1,h.GetNbinsX()
                 print i
-
                 if ran:
                     bin1=h.GetXaxis().FindBin(ran[0])
                     bin2=h.GetXaxis().FindBin(ran[1])
                 n=h.Integral(bin1,bin2)
                 if p!='signal': procYields[p]+=n
                 if p!='data_obs': totalExp+=n
-                if p=='signal': procYields[p]+=n/1000
+                if p=='signal': procYields[p]+=n
             except:
                 print "histogram", hName, " does not exist for process ", i            
                 bin1,bin2=1,1
@@ -36,7 +35,7 @@ fIn=ROOT.TFile.Open(plotter)
 acc_2lep_RP=0.0101
 pps_lumi=18671.647
 lumi=41526.280
-htRange=(0,10)
+drllRange=(2,5)
 f=open("yields.txt","w")
 
 procs={'data_obs':[''],
@@ -50,130 +49,114 @@ ev_mm = getYields(fIn,'mm_mll',procs)
 ev_em = getYields(fIn,'em_mll',procs)
 ev_ee = getYields(fIn,'ee_mll',procs)
 
-ev_mm_1b = getYields(fIn,'mm_1b_mll',procs)
-ev_em_1b = getYields(fIn,'em_1b_mll',procs)
-ev_ee_1b = getYields(fIn,'ee_1b_mll',procs)
+ev_mm_notZ = getYields(fIn,'mm_notZ_mll',procs)
+ev_em_notZ = getYields(fIn,'em_mll',procs)
+ev_ee_notZ = getYields(fIn,'ee_notZ_mll',procs)
 
-ev_mm_notZ = getYields(fIn,'mm_1b_notZ_mll',procs)
-ev_em_notZ = getYields(fIn,'em_1b_mll',procs)
-ev_ee_notZ = getYields(fIn,'ee_1b_notZ_mll',procs)
+ev_mm_1b = getYields(fIn,'mm_1b_notZ_mll',procs)
+ev_em_1b = getYields(fIn,'em_1b_mll',procs)
+ev_ee_1b = getYields(fIn,'ee_1b_notZ_mll',procs)
 
 ev_mm_lowMlb = getYields(fIn,'mm_1b_notZ_lowMlb_mll',procs)
 ev_em_lowMlb = getYields(fIn,'em_1b_lowMlb_mll',procs)
 ev_ee_lowMlb = getYields(fIn,'ee_1b_notZ_lowMlb_mll',procs)
 
-ev_mm_notZ_RPcut = getYields(fIn,'mm_1b_notZ_lowMlb_RPcut_mRP',procs)
-ev_em_notZ_RPcut = getYields(fIn,'em_1b_lowMlb_RPcut_mRP',procs)
-ev_ee_notZ_RPcut = getYields(fIn,'ee_1b_notZ_lowMlb_RPcut_mRP',procs)
+ev_mm_0ht = getYields(fIn,'mm_1b_notZ_lowMlb_0ht_mll',procs)
+ev_em_0ht = getYields(fIn,'em_1b_lowMlb_0ht_mll',procs)
+ev_ee_0ht = getYields(fIn,'ee_1b_notZ_lowMlb_0ht_mll',procs)
+
+ev_mm_newrpcut = getYields(fIn,'mm_1b_notZ_lowMlb_0ht_newRPcut_newmRP',procs)
+ev_em_newrpcut = getYields(fIn,'em_1b_lowMlb_0ht_newRPcut_newmRP',procs)
+ev_ee_newrpcut = getYields(fIn,'ee_1b_notZ_lowMlb_0ht_newRPcut_newmRP',procs)
+
+#ev_mm_drll = getYields(fIn,'mm_notZ_lowMlb_drll',procs,ran=drllRange)
+#ev_em_drll = getYields(fIn,'em_lowMlb_drll',procs,ran=drllRange)
+#ev_ee_drll = getYields(fIn,'ee_notZ_lowMlb_drll',procs,ran=drllRange)
 
 #printout
-f.write( '%15s\t %15s\t %15s\t %15s\t'%('','mm','em','ee'))
-f.write('\n')
-f.write('-'*130)
 
+filename = "yieldtable";
+yieldFile=open(filename+".tex","w")
 
-for proc in ['qcdTT','DY','others','total','signal','data_obs']:
+#Begin document
 
-    if proc=='total': f.write('-'*130)
-    f.write("\n")
-    f.write( '%15s\t'%proc)
-    f.write(formatNumber(ev_ee[proc]))
-    f.write( formatNumber(ev_em[proc]))
-    f.write( formatNumber(ev_mm[proc]))
-    f.write( '\n')
-    if proc=='total':
-        f.write('-'*130)
-        f.write('\n')
+yieldFile.write("\\documentclass{article}\n")
+yieldFile.write("\\usepackage[utf8]{inputenc}\n")
+yieldFile.write("\\usepackage{geometry}\n")
+yieldFile.write("\\usepackage{lscape}\n")
+yieldFile.write("\\geometry{a4paper, total={170mm,257mm}, left=20mm, top=20mm,}\n")
+yieldFile.write("\\title{CMS SUMMER 2016}\n")
+yieldFile.write("\\author{Beatriz Lopes &  Bruno Valeixo Bento}\n")
+yieldFile.write("\\date{July 2016}\n")
+yieldFile.write("\\begin{document}\n")
+yieldFile.write("\\begin{landscape}\n")
+yieldFile.write("\\maketitle\n")
 
-f.write('-'*130)
-f.write('\n')
-f.write('-'*130)
+# Create table
+yieldFile.write("\\begin{table}[!h]\n")
+yieldFile.write("\\centering\n")
+yieldFile.write("\\begin{tabular}{l||l|l|l||l|l|l||l|l|l|}\n")
+yieldFile.write(" & ")
 
-f.write('%15s\t %15s\t %15s\t %15s\t'%('','mm_1b','em_1b','ee_1b'))
-f.write('\n')
-f.write('-'*130)
-f.write('\n')
+for i in ["Pre-selection","notZ","1b"]:
+    yieldFile.write("\\multicolumn{3}{c||}{\\cellcolor[HTML]{EFEFEF} "+i+"}");
+    if i!="1b":  yieldFile.write(" & ");
 
-for proc in ['qcdTT','DY','others','total','signal','data_obs']:
-
-    if proc=='total': f.write('-'*130)
-    f.write("\n")    
-    f.write( '%15s\t'%proc)
-    f.write( formatNumber(ev_ee_1b[proc]))
-    f.write( formatNumber(ev_em_1b[proc]))
-    f.write( formatNumber(ev_mm_1b[proc]))
-    f.write( '\n')
-    if proc=='total':
-        f.write('-'*130)
-        f.write('\n')
-
-f.write('-'*130)
-f.write('\n')
-f.write('-'*130)
-
-f.write('\n')
-f.write( '%15s\t %15s\t %15s\t %15s\t'%('','mm_1b_notZ','em_1b_notZ','ee_1b_notZ'))
-f.write('-'*130)
-f.write('\n')
+yieldFile.write("\\\\ \\cline{2-10} \n")
+yieldFile.write("& $ee$ & $e\mu$ & $\mu\mu$ & $ee$ & $e\mu$ & $\mu\mu$ & $ee$ & $e\mu$ & $\mu\mu$ \\\\ \\hline \n")
 
 for proc in ['qcdTT','DY','others','total','signal','data_obs']:
+    yieldFile.write("\\cellcolor[HTML]{EFEFEF} " +proc+" & ")
+    yieldFile.write(formatNumber(ev_ee[proc])+" & ")
+    yieldFile.write(formatNumber(ev_em[proc])+" & ")
+    yieldFile.write(formatNumber(ev_mm[proc]))
+    yieldFile.write(" & ")
+    yieldFile.write(formatNumber(ev_ee_notZ[proc])+" & ")
+    yieldFile.write(formatNumber(ev_em_notZ[proc])+" & ")
+    yieldFile.write(formatNumber(ev_mm_notZ[proc]))
+    yieldFile.write(" & ")
+    yieldFile.write(formatNumber(ev_ee_1b[proc])+" & ")
+    yieldFile.write(formatNumber(ev_em_1b[proc])+" & ")
+    yieldFile.write(formatNumber(ev_mm_1b[proc]))
+    yieldFile.write("\\\\ \\hline \n")
 
-    if proc=='total': f.write('-'*130)
-    f.write("\n")
-    f.write( '%15s\t'%proc)
-    f.write(formatNumber(ev_ee_notZ[proc]))
-    f.write(formatNumber(ev_em_notZ[proc]))
-    f.write(formatNumber(ev_mm_notZ[proc]))
-    f.write( '\n')
-    if proc=='total':
-        f.write('-'*130)
-        f.write('\n')
+# End table 1
+yieldFile.write("\\end{tabular}\n")
+yieldFile.write("\\end{table}\n")
 
-f.write('-'*130)
-f.write('\n')
-f.write('-'*130)
+yieldFile.write("\\begin{table}[!h]\n")
+yieldFile.write("\\centering\n")
+yieldFile.write("\\begin{tabular}{l||l|l|l||l|l|l||l|l|l|}\n")
+yieldFile.write(" & ")
 
-f.write('\n')
-f.write( '%15s\t %15s\t %15s\t %15s\t'%('','mm_1b_notZ_lowMlb','em_1b_notZ_lowMlb','ee_1b_notZ_lowMlb'))
-f.write('-'*130)
+for i in ["low Mlb","$H_T=0$","mRP cut"]:
+    yieldFile.write("\\multicolumn{3}{l||}{"+i+"}");
+    if i!="mRP cut":  yieldFile.write(" & ");
 
+yieldFile.write("\\\\ \\cline{2-10} \n")
+yieldFile.write("& $ee$ & $e\mu$ & $\mu\mu$ & $ee$ & $e\mu$ & $\mu\mu$ & $ee$ & $e\mu$ & $\mu\mu$ \\\\ \\hline \n")
 
-for proc in ['qcdTT','DY','others','total','signal','data_obs']:
-
-    if proc=='total': f.write('-'*130)
-    f.write("\n")
-    f.write('%15s\t'%proc)
-    f.write(formatNumber(ev_ee_lowMlb[proc]))
-    f.write(formatNumber(ev_em_lowMlb[proc]))
-    f.write(formatNumber(ev_mm_lowMlb[proc]))
-    f.write('\n')
-    if proc=='total': 
-        f.write('-'*130)
-        f.write('\n')
-
-
-f.write('-'*130)
-f.write('\n')
-f.write('-'*130)
-
-f.write('\n')
-f.write( '%15s\t %15s\t %15s\t %15s\t'%('','mm_1b_lowMlb_notZ_RPcut','em_1b_lowMlb_notZ_RPcut','ee_1b_lowMlb_notZ_RPcut'))
-f.write('-'*130)
-
+yieldFile.write(" & ")
 
 for proc in ['qcdTT','DY','others','total','signal','data_obs']:
+    yieldFile.write("\\cellcolor[HTML]{EFEFEF}"+proc+" & ")    
+    yieldFile.write(formatNumber(ev_ee_lowMlb[proc])+" & ")
+    yieldFile.write(formatNumber(ev_em_lowMlb[proc])+" & ")
+    yieldFile.write(formatNumber(ev_mm_lowMlb[proc]))
+    yieldFile.write(" & ")
+    yieldFile.write(formatNumber(ev_ee_0ht[proc])+" & ")
+    yieldFile.write(formatNumber(ev_em_0ht[proc])+" & ")
+    yieldFile.write(formatNumber(ev_mm_0ht[proc]))
+    yieldFile.write(" & ")
+    yieldFile.write(formatNumber(ev_ee_newrpcut[proc])+" & ")
+    yieldFile.write(formatNumber(ev_em_newrpcut[proc])+" & ")
+    yieldFile.write(formatNumber(ev_mm_newrpcut[proc]))
+    yieldFile.write("\\\\ \\hline \n")
 
-    if proc=='total': f.write('-'*130)
-    f.write("\n")
-    f.write('%15s\t'%proc)
-    f.write(formatNumber(ev_ee_notZ_RPcut[proc]))
-    f.write(formatNumber(ev_em_notZ_RPcut[proc]))
-    f.write(formatNumber(ev_mm_notZ_RPcut[proc]))
-    f.write('\n')
-    if proc=='total': 
-        f.write('-'*130)
-        f.write('\n')
-
+yieldFile.write("\\end{tabular}\n")
+yieldFile.write("\\end{table}\n")
+yieldFile.write("\\end{landscape}\n")
+yieldFile.write("\\end{document}\n")
 
 
 f.close()

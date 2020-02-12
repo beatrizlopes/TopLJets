@@ -46,7 +46,7 @@ int trainBDT4regression()
   loader.AddSpectator("lumi");
   loader.AddSpectator("ev");
   loader.AddSpectator("rho");
-  loader.AddSpectator("nvtx");
+  //  loader.AddSpectator("nvtx");
   loader.AddSpectator("channel");
   loader.AddVariable("mll");
   loader.AddVariable("nljets");
@@ -85,6 +85,8 @@ int trainBDT4regression()
   
   loader.AddSpectator("mpp");
   loader.AddSpectator("ypp");
+  //  loader.AddSpectator("newmpp");
+  //  loader.AddSpectator("newypp");
   loader.AddSpectator("gen_mtt");
   loader.AddSpectator("gen_ytt");
   loader.AddVariable("rec_ytt");
@@ -96,26 +98,26 @@ int trainBDT4regression()
 
 
   TChain *chain = new TChain("sel2");
-  chain->AddFile("/afs/cern.ch/work/b/bribeiro/ab05162/Chunks/MC13TeV_2017_TTJets_5.root");
-  chain->AddFile("/afs/cern.ch/work/b/bribeiro/ab05162/Chunks/MC13TeV_2017_TTJets_6.root");
-  chain->AddFile("/afs/cern.ch/work/b/bribeiro/ab05162/Chunks/MC13TeV_2017_TTJets_7.root");
-  chain->AddFile("/afs/cern.ch/work/b/bribeiro/ab05162/Chunks/MC13TeV_2017_TTJets_8.root");
-  chain->AddFile("/afs/cern.ch/work/b/bribeiro/ab05162/Chunks/MC13TeV_2017_TTJets_9.root");
-  chain->AddFile("/afs/cern.ch/work/b/bribeiro/ab05162/Chunks/MC13TeV_2017_FPMC_HW_QED_ttbar_13TeV_120_0.root");
-  chain->AddFile("/afs/cern.ch/work/b/bribeiro/ab05162/Chunks/MC13TeV_2017_FPMC_HW_QED_ttbar_13TeV_130_0.root");
-  chain->AddFile("/afs/cern.ch/work/b/bribeiro/ab05162/Chunks/MC13TeV_2017_FPMC_HW_QED_ttbar_13TeV_140_0.root");
-  chain->AddFile("/afs/cern.ch/work/b/bribeiro/ab05162/Chunks/MC13TeV_2017_FPMC_HW_QED_ttbar_13TeV_150_0.root");
+  chain->AddFile("/eos/user/b/bribeiro/955fa95_ul/Chunks/MC13TeV_2017_TTJets_5.root");
+  chain->AddFile("/eos/user/b/bribeiro/955fa95_ul/Chunks/MC13TeV_2017_TTJets_6.root");
+  chain->AddFile("/eos/user/b/bribeiro/955fa95_ul/Chunks/MC13TeV_2017_TTJets_7.root");
+  chain->AddFile("/eos/user/b/bribeiro/955fa95_ul/Chunks/MC13TeV_2017_TTJets_8.root");
+  chain->AddFile("/eos/user/b/bribeiro/955fa95_ul/Chunks/MC13TeV_2017_TTJets_9.root");
+  chain->AddFile("/eos/user/b/bribeiro/955fa95_ul/Chunks/MC13TeV_2017_FPMC_HW_QED_ttbar_13TeV_120_0.root");
+  chain->AddFile("/eos/user/b/bribeiro/955fa95_ul/Chunks/MC13TeV_2017_FPMC_HW_QED_ttbar_13TeV_130_0.root");
+  chain->AddFile("/eos/user/b/bribeiro/955fa95_ul/Chunks/MC13TeV_2017_FPMC_HW_QED_ttbar_13TeV_140_0.root");
+  chain->AddFile("/eos/user/b/bribeiro/955fa95_ul/Chunks/MC13TeV_2017_FPMC_HW_QED_ttbar_13TeV_150_0.root");
 
   TChain *signalchain = new TChain("sel2");
-  signalchain->AddFile("/afs/cern.ch/work/b/bribeiro/ab05162/Chunks/MC13TeV_2017_FPMC_HW_QED_ttbar_13TeV_120_0.root");
-  signalchain->AddFile("/afs/cern.ch/work/b/bribeiro/ab05162/Chunks/MC13TeV_2017_FPMC_HW_QED_ttbar_13TeV_130_0.root");
-  signalchain->AddFile("/afs/cern.ch/work/b/bribeiro/ab05162/Chunks/MC13TeV_2017_FPMC_HW_QED_ttbar_13TeV_140_0.root");
-  signalchain->AddFile("/afs/cern.ch/work/b/bribeiro/ab05162/Chunks/MC13TeV_2017_FPMC_HW_QED_ttbar_13TeV_150_0.root");
+  signalchain->AddFile("/eos/user/b/bribeiro/955fa95_ul/Chunks/MC13TeV_2017_FPMC_HW_QED_ttbar_13TeV_120_0.root");
+  signalchain->AddFile("/eos/user/b/bribeiro/955fa95_ul/Chunks/MC13TeV_2017_FPMC_HW_QED_ttbar_13TeV_130_0.root");
+  signalchain->AddFile("/eos/user/b/bribeiro/955fa95_ul/Chunks/MC13TeV_2017_FPMC_HW_QED_ttbar_13TeV_140_0.root");
+  signalchain->AddFile("/eos/user/b/bribeiro/955fa95_ul/Chunks/MC13TeV_2017_FPMC_HW_QED_ttbar_13TeV_150_0.root");
 
   //TCut mycuts = "abs(ht)<1000";
   TCut mycuts = "";
   //TCut mycuts2 = "ypp>-1";
-  TCut mycuts2 = "ypp>-1";
+  TCut mycuts2 = "ypp>-1 && ypp<9";
 
   loader.AddRegressionTree(chain, 1.0);   // link the TTree to the loader, weight for each event  = 1
 
@@ -160,7 +162,7 @@ int trainBDT4regression()
 
   auto h7 = new TH1D("new1","mtt(regressed)-mtt(gen)",50,-0.8,0.8);
   resultsTree->Draw("(rec_mtt/BDTG_LS_mass-gen_mtt)/gen_mtt >> new1"); 
- 
+  
   
   // else if(var=="y")
   /* 
