@@ -1,0 +1,235 @@
+Working directory is /pool/condor/dir_14137
+('....analysing', '/pool/condor/dir_14137/MC13TeV_2017_TTJets_21.root')
+analysing syst nom
+ [ 0/100 ] done [ 3/100 ] done [ 7/100 ] done [ 10/100 ] done [ 14/100 ] done [ 17/100 ] done [ 21/100 ] done [ 24/100 ] done [ 28/100 ] done [ 31/100 ] done [ 35/100 ] done [ 39/100 ] done [ 42/100 ] done [ 46/100 ] done [ 49/100 ] done [ 53/100 ] done [ 56/100 ] done [ 60/100 ] done [ 63/100 ] done [ 67/100 ] done [ 70/100 ] done [ 74/100 ] done [ 78/100 ] done [ 81/100 ] done [ 85/100 ] done [ 88/100 ] done [ 92/100 ] done [ 95/100 ] done [ 99/100 ] done
+Processing /afs/cern.ch/user/b/bribeiro/CMSSW_9_4_11/src/TopLJets2015/TopAnalysis/macros/ApplyRegression_systs.C("/pool/condor/dir_14137/MC13TeV_2017_TTJets_21.root")...
+there are 104variations to analyse.
+==> Start TMVA Reader
+                         : Booking "BDT method" of type "BDT" from /afs/cern.ch/user/b/bribeiro/CMSSW_9_4_11/src/TopLJets2015/TopAnalysis/dataset/weights/TMVARegression_BDTG_LS_mass.weights.xml.
+<HEADER> DataSetInfo              : [Default] : Added class "Regression"
+                         : Booked classifier "BDTG_LS_mass" of type: "BDT"
+                         : Booking "BDT method" of type "BDT" from /afs/cern.ch/user/b/bribeiro/CMSSW_9_4_11/src/TopLJets2015/TopAnalysis/dataset/weights/TMVARegression_BDTG_LS_y.weights.xml.
+<HEADER> DataSetInfo              : [Default] : Added class "Regression"
+                         : Booked classifier "BDTG_LS_y" of type: "BDT"
+nom
+--- ... Processing event: 0
+thsysts
+puup
+pudn
+eetrigup
+eetrigdn
+emtrigup
+emtrigdn
+mmtrigup
+mmtrigdn
+eselup
+eseldn
+mselup
+mseldn
+l1prefireup
+l1prefiredn
+ees1up
+ees1dn
+ees2up
+ees2dn
+ees3up
+ees3dn
+ees4up
+ees4dn
+ees5up
+ees5dn
+ees6up
+ees6dn
+mes1up
+mes1dn
+mes2up
+mes2dn
+mes3up
+mes3dn
+mes4up
+mes4dn
+btaglfup
+btaglfdn
+btaghfup
+btaghfdn
+JERup
+JERdn
+topptup
+topptdn
+AbsoluteStatJECup
+AbsoluteScaleJECup
+AbsoluteMPFBiasJECup
+FragmentationJECup
+SinglePionECALJECup
+SinglePionHCALJECup
+FlavorPureGluonJECup
+FlavorPureQuarkJECup
+FlavorPureCharmJECup
+FlavorPureBottomJECup
+TimePtEtaJECup
+RelativeJEREC1JECup
+RelativeJEREC2JECup
+RelativeJERHFJECup
+RelativePtBBJECup
+RelativePtEC1JECup
+RelativePtEC2JECup
+RelativePtHFJECup
+RelativeBalJECup
+RelativeFSRJECup
+RelativeStatFSRJECup
+RelativeStatECJECup
+RelativeStatHFJECup
+PileUpDataMCJECup
+PileUpPtRefJECup
+PileUpPtBBJECup
+PileUpPtEC1JECup
+PileUpPtEC2JECup
+PileUpPtHFJECup
+AbsoluteStatJECdn
+AbsoluteScaleJECdn
+AbsoluteMPFBiasJECdn
+FragmentationJECdn
+SinglePionECALJECdn
+SinglePionHCALJECdn
+FlavorPureGluonJECdn
+FlavorPureQuarkJECdn
+FlavorPureCharmJECdn
+FlavorPureBottomJECdn
+TimePtEtaJECdn
+RelativeJEREC1JECdn
+RelativeJEREC2JECdn
+RelativeJERHFJECdn
+RelativePtBBJECdn
+RelativePtEC1JECdn
+RelativePtEC2JECdn
+RelativePtHFJECdn
+RelativeBalJECdn
+RelativeFSRJECdn
+RelativeStatFSRJECdn
+RelativeStatECJECdn
+RelativeStatHFJECdn
+PileUpDataMCJECdn
+PileUpPtRefJECdn
+PileUpPtBBJECdn
+PileUpPtEC1JECdn
+PileUpPtEC2JECdn
+PileUpPtHFJECdn
+bfragup
+bfragdn
+(int) 0
+
+Processing /afs/cern.ch/user/b/bribeiro/CMSSW_9_4_11/src/TopLJets2015/TopAnalysis/macros/ApplyMVA_allsysts.C("/pool/condor/dir_14137/MC13TeV_2017_TTJets_21.root")...
+Processing file/pool/condor/dir_14137/MC13TeV_2017_TTJets_21.root
+==> Start TMVA Reader
+                         : Booking "BDT method" of type "BDT" from /afs/cern.ch/user/b/bribeiro/CMSSW_9_4_11/src/TopLJets2015/TopAnalysis/dataset/weights/TMVAClassification_BDT.weights.xml.
+<HEADER> DataSetInfo              : [Default] : Added class "Signal"
+<HEADER> DataSetInfo              : [Default] : Added class "Background"
+                         : Booked classifier "BDT" of type: "BDT"
+starting syst puup
+starting syst pudn
+starting syst eetrigup
+starting syst eetrigdn
+starting syst emtrigup
+starting syst emtrigdn
+starting syst mmtrigup
+starting syst mmtrigdn
+starting syst eselup
+starting syst eseldn
+starting syst mselup
+starting syst mseldn
+starting syst l1prefireup
+starting syst l1prefiredn
+starting syst ees3up
+starting syst ees3dn
+starting syst ees4up
+starting syst ees4dn
+starting syst ees6up
+starting syst ees6dn
+starting syst mes1up
+starting syst mes1dn
+starting syst mes2up
+starting syst mes2dn
+starting syst mes3up
+starting syst mes3dn
+starting syst mes4up
+starting syst mes4dn
+starting syst btaglfup
+starting syst btaglfdn
+starting syst btaghfup
+starting syst btaghfdn
+starting syst JERup
+starting syst JERdn
+starting syst topptup
+starting syst topptdn
+starting syst AbsoluteStatJECup
+starting syst AbsoluteScaleJECup
+starting syst AbsoluteMPFBiasJECup
+starting syst FragmentationJECup
+starting syst SinglePionECALJECup
+starting syst SinglePionHCALJECup
+starting syst FlavorPureGluonJECup
+starting syst FlavorPureQuarkJECup
+starting syst FlavorPureCharmJECup
+starting syst FlavorPureBottomJECup
+starting syst TimePtEtaJECup
+starting syst RelativeJEREC1JECup
+starting syst RelativeJEREC2JECup
+starting syst RelativeJERHFJECup
+starting syst RelativePtBBJECup
+starting syst RelativePtEC1JECup
+starting syst RelativePtEC2JECup
+starting syst RelativePtHFJECup
+starting syst RelativeBalJECup
+starting syst RelativeFSRJECup
+starting syst RelativeStatFSRJECup
+starting syst RelativeStatECJECup
+starting syst RelativeStatHFJECup
+starting syst PileUpDataMCJECup
+starting syst PileUpPtRefJECup
+starting syst PileUpPtBBJECup
+starting syst PileUpPtEC1JECup
+starting syst PileUpPtEC2JECup
+starting syst PileUpPtHFJECup
+starting syst AbsoluteStatJECdn
+starting syst AbsoluteScaleJECdn
+starting syst AbsoluteMPFBiasJECdn
+starting syst FragmentationJECdn
+starting syst SinglePionECALJECdn
+starting syst SinglePionHCALJECdn
+starting syst FlavorPureGluonJECdn
+starting syst FlavorPureQuarkJECdn
+starting syst FlavorPureCharmJECdn
+starting syst FlavorPureBottomJECdn
+starting syst TimePtEtaJECdn
+starting syst RelativeJEREC1JECdn
+starting syst RelativeJEREC2JECdn
+starting syst RelativeJERHFJECdn
+starting syst RelativePtBBJECdn
+starting syst RelativePtEC1JECdn
+starting syst RelativePtEC2JECdn
+starting syst RelativePtHFJECdn
+starting syst RelativeBalJECdn
+starting syst RelativeFSRJECdn
+starting syst RelativeStatFSRJECdn
+starting syst RelativeStatECJECdn
+starting syst RelativeStatHFJECdn
+starting syst PileUpDataMCJECdn
+starting syst PileUpPtRefJECdn
+starting syst PileUpPtBBJECdn
+starting syst PileUpPtEC1JECdn
+starting syst PileUpPtEC2JECdn
+starting syst PileUpPtHFJECdn
+starting syst bfragup
+starting syst bfragdn
+(int) 0
+
+Processing /afs/cern.ch/user/b/bribeiro/CMSSW_9_4_11/src/TopLJets2015/TopAnalysis/macros/ApplyMVA_thsysts.C("/pool/condor/dir_14137/MC13TeV_2017_TTJets_21.root")...
+Processing file/pool/condor/dir_14137/MC13TeV_2017_TTJets_21.root
+==> Start TMVA Reader
+                         : Booking "BDT method" of type "BDT" from /afs/cern.ch/user/b/bribeiro/CMSSW_9_4_11/src/TopLJets2015/TopAnalysis/dataset/weights/TMVAClassification_BDT.weights.xml.
+<HEADER> DataSetInfo              : [Default] : Added class "Signal"
+<HEADER> DataSetInfo              : [Default] : Added class "Background"
+                         : Booked classifier "BDT" of type: "BDT"
+(int) 0
+'/pool/condor/dir_14137/MC13TeV_2017_TTJets_21.root' -> '/eos/user/b/bribeiro/f439f08_ul/Chunks/MC13TeV_2017_TTJets_21.root'
+removed '/pool/condor/dir_14137/MC13TeV_2017_TTJets_21.root'

@@ -1,0 +1,2 @@
+/cvmfs/cms.cern.ch/slc7_amd64_gcc630/external/py2-pippkgs_depscipy/3.0-fmblme6/lib/python2.7/site-packages/scipy/optimize/minpack.py:427: RuntimeWarning: Number of calls to function has reached maxfev = 600.
+  warnings.warn(errors[info][0], RuntimeWarning)

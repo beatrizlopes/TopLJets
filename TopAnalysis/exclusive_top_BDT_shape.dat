@@ -1,0 +1,81 @@
+imax 1  number of channels
+jmax *  number of backgrounds
+kmax *  number of nuisance parameters (sources of systematical uncertainties)
+------------
+shapes * * shapes.root $PROCESS $PROCESS_$SYSTEMATIC
+------------
+#
+# here we write the total number of events observed in the SF regions
+#   - SR - signal region
+#   - ttCR - control region for QCD TTbar (low mlb)
+#
+bin         bin1
+observation -1
+------------
+#
+# here we write the expected yields
+# for excTT as we are fitting the cross section so we write A x Lumi in the SR and 0 otherwise
+# for qcdTT and DY we fit a scale factor from the dedicated control regions
+#
+bin             bin1   bin1    bin1  
+process         excTT  qcdTT   DY    
+process         0      1       2    
+rate            -1     -1      -1  
+------------
+bin1 autoMCStats 0.0
+#
+# here are the uncertainties affecting the predictions above
+# they are written as N(var)/N(nominal) and assumed to be symmetric
+#
+lumi      lnN   1.027  1.027    1.027   
+xs_qcdTT  lnN   -      1.051   -        
+DY_unc    lnN   -      -        1.3     
+JER    shape  1 1 1
+muRmuF    shape  - 1 -
+msel    shape  1 1 1
+FlavorPureQuarkJEC    shape  1 1 1
+muR    shape  - 1 -
+mes3    shape  1 1 1
+FlavorPureGluonJEC    shape  1 1 1
+btaghf    shape  1 1 1
+AbsoluteScaleJEC    shape  1 1 1
+RelativePtEC2JEC    shape  1 1 1
+TimePtEtaJEC    shape  1 1 1
+muF    shape  - 1 -
+PileUpDataMCJEC    shape  1 1 1
+RelativePtBBJEC    shape  1 1 1
+RelativeJEREC1JEC    shape  1 1 1
+pu    shape  1 1 1
+RelativePtEC1JEC    shape  1 1 1
+AbsoluteMPFBiasJEC    shape  1 1 1
+SinglePionECALJEC    shape  1 1 1
+RelativeStatECJEC    shape  1 1 1
+SinglePionHCALJEC    shape  1 1 1
+ees3    shape  1 1 1
+PileUpPtEC2JEC    shape  1 1 1
+mes2    shape  1 1 1
+PileUpPtEC1JEC    shape  1 1 1
+RelativeStatFSRJEC    shape  1 1 1
+PileUpPtBBJEC    shape  1 1 1
+RelativeFSRJEC    shape  1 1 1
+mes1    shape  1 1 1
+btaglf    shape  1 1 1
+FlavorPureCharmJEC    shape  1 1 1
+PileUpPtHFJEC    shape  1 1 1
+FragmentationJEC    shape  1 1 1
+bfrag    shape  1 1 1
+ees4    shape  1 1 1
+toppt    shape  - 1 -
+RelativeStatHFJEC    shape  1 1 1
+FlavorPureBottomJEC    shape  1 1 1
+mes4    shape  1 1 1
+ees6    shape  1 1 1
+AbsoluteStatJEC    shape  1 1 1
+RelativePtHFJEC    shape  1 1 1
+RelativeJEREC2JEC    shape  1 1 1
+esel    shape  1 1 1
+PileUpPtRefJEC    shape  1 1 1
+RelativeBalJEC    shape  1 1 1
+l1prefire    shape  1 1 1
+RelativeJERHFJEC    shape  1 1 1
+

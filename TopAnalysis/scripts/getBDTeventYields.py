@@ -68,9 +68,10 @@ fIn=ROOT.TFile.Open(plotter)
 #acc_2lep_RP=0.0101
 pps_lumi=37500
 lumi=41526.280
-bdtlow=(-1,0.2)
-bdthigh=(0.2,1)
-bdt=0.3
+bdt=0.4
+bdtlow=(-1,bdt)
+bdthigh=(bdt,1)
+
 
 procs={'data_obs':[''],
        'qcdTT':['Top'],
@@ -87,34 +88,29 @@ CR_err = getErrors(fIn,'2b_BDT_output',procs,bdtlow)
 SR_err = getErrors(fIn,'2b_BDT_output',procs,bdthigh)
 
 
-systNames= {"pu",
-#            "eetrig",
-#            "emtrig",
-#            "mmtrig",
+systNames= {"muR","muF","muRmuF",
+            #"PDF000","PDF001","PDF002","PDF003","PDF004","PDF005","PDF006",
+            #"PDF007","PDF008","PDF009","PDF010","PDF011","PDF012","PDF013","PDF014","PDF015","PDF016","PDF017","PDF018","PDF019","PDF020",
+            #"PDF021","PD022","PDF023","PDF024","PDF025","PDF026","PDF027","PDF028","PDF029","PDF030","PDF031","PDF032","PDF033","PDF034","PDF035","PDF036",
+            #"PDF037","PDF038","PDF039","PDF040","PDF041","PDF042","PDF043","PDF044","PDF045","PDF046","PDF047","PDF048","PDF049","PDF050","PDF051","PDF052","PDF053","PDF054","PDF055","PDF056","PDF057","PDF058","PDF059","PDF060","PDF061","PDF062","PDF063","PDF064","PDF065","PDF066","PDF067","PDF068","PDF069","PDF070","PDF071","PDF072","PDF073","PDF074","PDF075","PDF076","PDF077","PDF078","PDF079","PDF080","PDF081","PDF082","PDF083","PDF084","PDF085",
+            #"PDF086","PDF087","PDF088","PDF089","PDF090","PDF091","PDF092","PDF093","PDF094","PDF095","PDF096","PDF097","PDF098","PDF099","PDF100","PDF101",
+            #"PDF102",
+            "pu",
+            #            "eetrig",
+            #            "emtrig",
+            #            "mmtrig",
             "esel",  
             "msel",  
             "l1prefire", 
-            "ees1", "ees2",  "ees3", "ees4", "ees5", "ees6", 
-            "ees7",
+            #"ees1", "ees2",  
+            "ees3", "ees4", 
+            #"ees5", 
+            "ees6", 
             "mes1", "mes2", "mes3", "mes4",
             #"btagjes",        "btagjesdn",                                                                                   
             "btaglf",
             "btaghf",
-            #"btaghfstats1",   "btaghfstats1dn",                                                                              
-            #"btaghfstats2",   "btaghfstats2dn",                                                                              
-            #"btaglfstats1",   "btaglfstats1dn",                                                                              
-            #"btaglfstats2",   "btaglfstats2dn",                                                                              
-            #"btagcferr1",     "btagcferr1dn",                                                                                
-            #"btagcferr2",     "btagcferr2dn",                                                                                
             "JER",
-#            "JERstat",
- #           "JERJEC",
-  #          "JERPU", 
-   #         "JERPLI",
-    #        "JERptCut",
-     #       "JERtrunc",
-      #      "JERpTdep",
-       #     "JERSTmFE",
             "toppt",   
             "AbsoluteStatJEC","AbsoluteScaleJEC","AbsoluteMPFBiasJEC",
             "FragmentationJEC","SinglePionECALJEC","SinglePionHCALJEC",
@@ -130,47 +126,8 @@ systNames= {"pu",
 
 for i in systNames :
 
-    CRup_s = getYields(fIn,'2b_BDT_output_{0}up'.format(i),procs,bdtlow)
-    SRup_s = getYields(fIn,'2b_BDT_output_{0}up'.format(i),procs,bdthigh)
-    CRdn_s = getYields(fIn,'2b_BDT_output_{0}dn'.format(i),procs,bdtlow)
-    SRdn_s = getYields(fIn,'2b_BDT_output_{0}dn'.format(i),procs,bdthigh)
+    print i,"   shape  1 1 1"
 
-    p='qcdTT'
-    varup_CR_top=CRup_s[p]/CR[p]
-    varup_SR_top=SRup_s[p]/SR[p]
-    vardn_CR_top=CRdn_s[p]/CR[p]
-    vardn_SR_top=SRdn_s[p]/SR[p]
-
-    p='excTT'
-    varup_CR_sig=CRup_s[p]/CR[p]
-    varup_SR_sig=SRup_s[p]/SR[p]
-    vardn_CR_sig=CRdn_s[p]/CR[p]
-    vardn_SR_sig=SRdn_s[p]/SR[p]
-
-    if varup_CR_top!=vardn_CR_top:
-        if ("ees" not in i and "mes" not in i and "JEC" not in i and "toppt" not in i and "bfrag" not in i):
-            print  i ,"    lnN  ", formatNumber(varup_CR_sig),"/",formatNumber(vardn_CR_sig)," ", formatNumber(varup_CR_top),"/",formatNumber(vardn_CR_top)," -  - ",formatNumber(varup_SR_sig),"/",formatNumber(vardn_SR_sig)," ", formatNumber(varup_SR_top),"/",formatNumber(vardn_SR_top)," - - "
-        else : 
-            print  i ,"    lnN  - ", formatNumber(varup_CR_top),"/",formatNumber(vardn_CR_top)," -  -  -  ", formatNumber(varup_SR_top),"/",formatNumber(vardn_SR_top)," - - "
-
-#    if ("ees" not in i and "mes" not in i and "JEC" not in i and "toppt" not in i and "bfrag" not in i):
- #       print  i ,"    lnN  ", formatNumber(varup_CR_sig),"/",formatNumber(vardn_CR_sig)," - - - ",formatNumber(varup_SR_sig),"/",formatNumber(vardn_SR_sig)," -  - - "
-
-
-
-
-
-#    if varup_CR_top!=vardn_CR_top:
-#        if ("ees" not in i and "mes" not in i and "JEC" not in i and "toppt" not in i and "bfrag" not in i):
-#            print  i ,"    lnN  ", formatNumber(varup_CR_sig),"/",formatNumber(vardn_CR_sig)," ", formatNumber(varup_CR_top),"/",formatNumber(vardn_CR_top)," -  - -  -   - - "
-#        else : 
-#            print  i ,"    lnN  - ", formatNumber(varup_CR_top),"/",formatNumber(vardn_CR_top)," -  -  -  - - - "
-
-
-
-
-#    if varup_CR_top!=vardn_CR_top:
- #       print  i ,"    lnN  - ", formatNumber(varup_CR_top),"/",formatNumber(vardn_CR_top)," -  -  - -  - - "
 
 #printout
 print 'cutting on bdt value:',bdt
@@ -196,20 +153,40 @@ for proc in ['qcdTT','DY','others','total','excTT','data_obs']:
         
 
 #dump shape histos for combine
-def getHisto(hname,val):
-    h=ROOT.TH1F(hname,hname,1,0,1)
-    h.SetBinContent(1,val)
+def getHisto(proc,p,syst,var=''):
+    if "PDF" not in syst :
+        h=fIn.Get("2b_BDT_output{0}/2b_BDT_output{0}{1}".format('' if syst=='nom' else '_'+syst+('up' if var=='Up' else 'dn'), '' if proc=='' else '_'+proc))
+    else :
+        h=fIn.Get("2b_BDT_output{0}/2b_BDT_output{0}{1}".format('_'+syst, '' if proc=='' else '_'+proc))
+        
+    hnom=fIn.Get("2b_BDT_output/2b_BDT_output{0}".format('' if proc=='' else '_'+proc))
+    if not h :
+        h=ROOT.TH1F("dummy","dummy",1,0,1)
+        return h
+    #    h.SetBinContent(1,val)
+    print 'got histogram ',h.GetName()
+    h.SetName('{0}{1}'.format(p,'' if syst=='nom' else '_'+syst+var))
+    if ('mu' in syst or 'PDF' in syst or 'bfrag' in syst) and hnom.Integral()!=0 :  h.Scale(h.Integral()/hnom.Integral())
+    h.Rebin(6)
     return h
     
 fOut=ROOT.TFile.Open('shapes.root','RECREATE')
 
 fOut.cd()
 
-for proc in ['excTT','qcdTT','DY','others','total','data_obs']:
-    getHisto(proc+'_SR',SR[proc]).Write()
-    getHisto(proc+'_CR',CR[proc]).Write()
-
-        #        getHisto('excTT_'+cat,excTTyields).Write()
+for p in procs:
+    if len(procs[p])==0 : getHisto('',p,'nom').Write()
+    for i in procs[p] :
+        getHisto(i,p,'nom').Write()
+        if p!='data_obs' :
+            for syst in systNames:
+                if not (syst=='toppt' and p=='excTT'):
+                    if not "PDF" in syst :
+                        getHisto(i,p,syst,'Up').Write()
+                        getHisto(i,p,syst,'Down').Write()
+                    else :
+                        getHisto(i,p,syst,'').Write()
+                    #        getHisto('excTT_'+cat,excTTyields).Write()
 
 fOut.Close()
 

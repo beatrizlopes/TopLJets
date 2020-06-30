@@ -2,7 +2,6 @@
 
 #include "TopLJets2015/TopAnalysis/interface/CommonTools.h"
 #include "TopLJets2015/TopAnalysis/interface/ExclusiveTop.h"
-#include "TopLJets2015/TopAnalysis/interface/ttgamma.h"
 //#include "TopLJets2015/TopAnalysis/interface/TOP-17-010.h"
 #include "TopLJets2015/TopAnalysis/interface/VBFVectorBoson.h"
 #include "TopLJets2015/TopAnalysis/interface/PhotonTrigEff.h"
@@ -99,10 +98,7 @@ int main(int argc, char* argv[])
 
   //check method to run
   if(method=="ExclusiveTop::RunExclusiveTop") {
-    RunExclusiveTop(in,out,channel,charge,normH,puH,era,debug);
-  }
-  else if(method=="ttgamma::RunTTGamma") {
-    RunTTGamma(in,out,channel,charge,normH,puH,era,debug);
+    RunExclusiveTop(in,out,channel,charge,normH,puH,era,debug,runSysts);
   }
   else if(method=="PhotonTrigEff::RunPhotonTrigEff") {
     RunPhotonTrigEff(in,out,normH,puH,era,debug);

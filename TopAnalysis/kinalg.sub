@@ -1,0 +1,3371 @@
+executable              = submission/$(cfgFile).sh 
+log                     = kinalg.log 
+output                  = outfile.txt 
+error                   = errors.txt 
+should_transfer_files   = Yes 
+when_to_transfer_output = ON_EXIT 
++JobFlavour = "longlunch" 
+cfgFile=Data13TeV_2017B_DoubleEG_0 
+queue 1 
+cfgFile=Data13TeV_2017B_DoubleEG_1 
+queue 1 
+cfgFile=Data13TeV_2017B_DoubleEG_10 
+queue 1 
+cfgFile=Data13TeV_2017B_DoubleEG_11 
+queue 1 
+cfgFile=Data13TeV_2017B_DoubleEG_2 
+queue 1 
+cfgFile=Data13TeV_2017B_DoubleEG_3 
+queue 1 
+cfgFile=Data13TeV_2017B_DoubleEG_4 
+queue 1 
+cfgFile=Data13TeV_2017B_DoubleEG_5 
+queue 1 
+cfgFile=Data13TeV_2017B_DoubleEG_6 
+queue 1 
+cfgFile=Data13TeV_2017B_DoubleEG_7 
+queue 1 
+cfgFile=Data13TeV_2017B_DoubleEG_8 
+queue 1 
+cfgFile=Data13TeV_2017B_DoubleEG_9 
+queue 1 
+cfgFile=Data13TeV_2017B_DoubleMuon_0 
+queue 1 
+cfgFile=Data13TeV_2017B_DoubleMuon_1 
+queue 1 
+cfgFile=Data13TeV_2017B_DoubleMuon_2 
+queue 1 
+cfgFile=Data13TeV_2017B_DoubleMuon_3 
+queue 1 
+cfgFile=Data13TeV_2017B_DoubleMuon_4 
+queue 1 
+cfgFile=Data13TeV_2017B_DoubleMuon_5 
+queue 1 
+cfgFile=Data13TeV_2017B_DoubleMuon_6 
+queue 1 
+cfgFile=Data13TeV_2017B_DoubleMuon_7 
+queue 1 
+cfgFile=Data13TeV_2017B_MuonEG_0 
+queue 1 
+cfgFile=Data13TeV_2017B_MuonEG_1 
+queue 1 
+cfgFile=Data13TeV_2017B_MuonEG_2 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleElectron_0 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleElectron_1 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleElectron_10 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleElectron_11 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleElectron_12 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleElectron_13 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleElectron_14 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleElectron_15 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleElectron_16 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleElectron_17 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleElectron_18 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleElectron_19 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleElectron_2 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleElectron_20 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleElectron_21 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleElectron_22 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleElectron_23 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleElectron_24 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleElectron_25 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleElectron_26 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleElectron_27 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleElectron_28 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleElectron_29 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleElectron_3 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleElectron_30 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleElectron_31 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleElectron_4 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleElectron_5 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleElectron_6 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleElectron_7 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleElectron_8 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleElectron_9 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleMuon_0 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleMuon_1 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleMuon_10 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleMuon_11 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleMuon_12 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleMuon_13 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleMuon_14 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleMuon_15 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleMuon_16 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleMuon_17 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleMuon_18 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleMuon_19 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleMuon_2 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleMuon_20 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleMuon_21 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleMuon_22 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleMuon_23 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleMuon_24 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleMuon_25 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleMuon_26 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleMuon_27 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleMuon_28 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleMuon_29 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleMuon_3 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleMuon_30 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleMuon_31 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleMuon_32 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleMuon_33 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleMuon_34 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleMuon_35 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleMuon_36 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleMuon_37 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleMuon_38 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleMuon_39 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleMuon_4 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleMuon_40 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleMuon_41 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleMuon_42 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleMuon_43 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleMuon_44 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleMuon_45 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleMuon_46 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleMuon_47 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleMuon_48 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleMuon_5 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleMuon_6 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleMuon_7 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleMuon_8 
+queue 1 
+cfgFile=Data13TeV_2017B_SingleMuon_9 
+queue 1 
+cfgFile=Data13TeV_2017B_SinglePhoton_0 
+queue 1 
+cfgFile=Data13TeV_2017B_SinglePhoton_1 
+queue 1 
+cfgFile=Data13TeV_2017B_SinglePhoton_2 
+queue 1 
+cfgFile=Data13TeV_2017B_SinglePhoton_3 
+queue 1 
+cfgFile=Data13TeV_2017B_SinglePhoton_4 
+queue 1 
+cfgFile=Data13TeV_2017B_SinglePhoton_5 
+queue 1 
+cfgFile=Data13TeV_2017B_SinglePhoton_6 
+queue 1 
+cfgFile=Data13TeV_2017C_DoubleEG_0 
+queue 1 
+cfgFile=Data13TeV_2017C_DoubleEG_1 
+queue 1 
+cfgFile=Data13TeV_2017C_DoubleEG_10 
+queue 1 
+cfgFile=Data13TeV_2017C_DoubleEG_11 
+queue 1 
+cfgFile=Data13TeV_2017C_DoubleEG_12 
+queue 1 
+cfgFile=Data13TeV_2017C_DoubleEG_13 
+queue 1 
+cfgFile=Data13TeV_2017C_DoubleEG_14 
+queue 1 
+cfgFile=Data13TeV_2017C_DoubleEG_2 
+queue 1 
+cfgFile=Data13TeV_2017C_DoubleEG_3 
+queue 1 
+cfgFile=Data13TeV_2017C_DoubleEG_4 
+queue 1 
+cfgFile=Data13TeV_2017C_DoubleEG_5 
+queue 1 
+cfgFile=Data13TeV_2017C_DoubleEG_6 
+queue 1 
+cfgFile=Data13TeV_2017C_DoubleEG_7 
+queue 1 
+cfgFile=Data13TeV_2017C_DoubleEG_8 
+queue 1 
+cfgFile=Data13TeV_2017C_DoubleEG_9 
+queue 1 
+cfgFile=Data13TeV_2017C_DoubleMuon_0 
+queue 1 
+cfgFile=Data13TeV_2017C_DoubleMuon_1 
+queue 1 
+cfgFile=Data13TeV_2017C_DoubleMuon_10 
+queue 1 
+cfgFile=Data13TeV_2017C_DoubleMuon_11 
+queue 1 
+cfgFile=Data13TeV_2017C_DoubleMuon_12 
+queue 1 
+cfgFile=Data13TeV_2017C_DoubleMuon_13 
+queue 1 
+cfgFile=Data13TeV_2017C_DoubleMuon_14 
+queue 1 
+cfgFile=Data13TeV_2017C_DoubleMuon_15 
+queue 1 
+cfgFile=Data13TeV_2017C_DoubleMuon_16 
+queue 1 
+cfgFile=Data13TeV_2017C_DoubleMuon_2 
+queue 1 
+cfgFile=Data13TeV_2017C_DoubleMuon_3 
+queue 1 
+cfgFile=Data13TeV_2017C_DoubleMuon_4 
+queue 1 
+cfgFile=Data13TeV_2017C_DoubleMuon_5 
+queue 1 
+cfgFile=Data13TeV_2017C_DoubleMuon_6 
+queue 1 
+cfgFile=Data13TeV_2017C_DoubleMuon_7 
+queue 1 
+cfgFile=Data13TeV_2017C_DoubleMuon_8 
+queue 1 
+cfgFile=Data13TeV_2017C_DoubleMuon_9 
+queue 1 
+cfgFile=Data13TeV_2017C_MuonEG_0 
+queue 1 
+cfgFile=Data13TeV_2017C_MuonEG_1 
+queue 1 
+cfgFile=Data13TeV_2017C_MuonEG_2 
+queue 1 
+cfgFile=Data13TeV_2017C_MuonEG_3 
+queue 1 
+cfgFile=Data13TeV_2017C_MuonEG_4 
+queue 1 
+cfgFile=Data13TeV_2017C_MuonEG_5 
+queue 1 
+cfgFile=Data13TeV_2017C_MuonEG_6 
+queue 1 
+cfgFile=Data13TeV_2017C_MuonEG_7 
+queue 1 
+cfgFile=Data13TeV_2017C_MuonEG_8 
+queue 1 
+cfgFile=Data13TeV_2017C_MuonEG_9 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_0 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_1 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_10 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_11 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_12 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_13 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_14 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_15 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_16 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_17 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_18 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_19 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_2 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_20 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_21 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_22 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_23 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_24 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_25 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_26 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_27 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_28 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_29 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_3 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_30 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_31 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_32 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_33 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_34 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_35 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_36 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_37 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_38 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_39 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_4 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_40 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_41 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_42 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_43 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_44 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_45 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_46 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_47 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_48 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_49 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_5 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_50 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_51 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_52 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_53 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_54 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_55 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_56 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_57 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_58 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_59 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_6 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_60 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_61 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_62 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_63 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_64 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_65 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_66 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_67 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_68 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_7 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_8 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleElectron_9 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_0 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_1 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_10 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_100 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_101 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_102 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_11 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_12 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_13 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_14 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_15 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_16 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_17 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_18 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_19 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_2 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_20 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_21 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_22 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_23 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_24 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_25 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_26 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_27 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_28 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_29 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_3 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_30 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_31 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_32 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_33 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_34 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_35 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_36 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_37 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_38 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_39 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_4 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_40 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_41 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_42 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_43 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_44 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_45 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_46 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_47 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_48 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_49 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_5 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_50 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_51 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_52 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_53 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_54 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_55 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_56 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_57 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_58 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_59 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_6 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_60 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_61 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_62 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_63 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_64 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_65 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_66 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_67 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_68 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_69 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_7 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_70 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_71 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_72 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_73 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_74 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_75 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_76 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_77 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_78 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_79 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_8 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_80 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_81 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_82 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_83 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_84 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_85 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_86 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_87 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_88 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_89 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_9 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_90 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_91 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_92 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_93 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_94 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_95 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_96 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_97 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_98 
+queue 1 
+cfgFile=Data13TeV_2017C_SingleMuon_99 
+queue 1 
+cfgFile=Data13TeV_2017C_SinglePhoton_0 
+queue 1 
+cfgFile=Data13TeV_2017C_SinglePhoton_1 
+queue 1 
+cfgFile=Data13TeV_2017C_SinglePhoton_10 
+queue 1 
+cfgFile=Data13TeV_2017C_SinglePhoton_11 
+queue 1 
+cfgFile=Data13TeV_2017C_SinglePhoton_2 
+queue 1 
+cfgFile=Data13TeV_2017C_SinglePhoton_3 
+queue 1 
+cfgFile=Data13TeV_2017C_SinglePhoton_4 
+queue 1 
+cfgFile=Data13TeV_2017C_SinglePhoton_5 
+queue 1 
+cfgFile=Data13TeV_2017C_SinglePhoton_6 
+queue 1 
+cfgFile=Data13TeV_2017C_SinglePhoton_7 
+queue 1 
+cfgFile=Data13TeV_2017C_SinglePhoton_8 
+queue 1 
+cfgFile=Data13TeV_2017C_SinglePhoton_9 
+queue 1 
+cfgFile=Data13TeV_2017D_DoubleEG_0 
+queue 1 
+cfgFile=Data13TeV_2017D_DoubleEG_1 
+queue 1 
+cfgFile=Data13TeV_2017D_DoubleEG_2 
+queue 1 
+cfgFile=Data13TeV_2017D_DoubleEG_3 
+queue 1 
+cfgFile=Data13TeV_2017D_DoubleEG_4 
+queue 1 
+cfgFile=Data13TeV_2017D_DoubleEG_5 
+queue 1 
+cfgFile=Data13TeV_2017D_DoubleMuon_0 
+queue 1 
+cfgFile=Data13TeV_2017D_DoubleMuon_1 
+queue 1 
+cfgFile=Data13TeV_2017D_DoubleMuon_2 
+queue 1 
+cfgFile=Data13TeV_2017D_DoubleMuon_3 
+queue 1 
+cfgFile=Data13TeV_2017D_DoubleMuon_4 
+queue 1 
+cfgFile=Data13TeV_2017D_DoubleMuon_5 
+queue 1 
+cfgFile=Data13TeV_2017D_DoubleMuon_6 
+queue 1 
+cfgFile=Data13TeV_2017D_DoubleMuon_7 
+queue 1 
+cfgFile=Data13TeV_2017D_MuonEG_0 
+queue 1 
+cfgFile=Data13TeV_2017D_MuonEG_1 
+queue 1 
+cfgFile=Data13TeV_2017D_MuonEG_2 
+queue 1 
+cfgFile=Data13TeV_2017D_MuonEG_3 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleElectron_0 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleElectron_1 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleElectron_10 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleElectron_11 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleElectron_12 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleElectron_13 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleElectron_14 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleElectron_15 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleElectron_16 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleElectron_17 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleElectron_18 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleElectron_19 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleElectron_2 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleElectron_20 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleElectron_21 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleElectron_22 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleElectron_23 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleElectron_24 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleElectron_25 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleElectron_26 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleElectron_27 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleElectron_3 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleElectron_4 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleElectron_5 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleElectron_6 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleElectron_7 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleElectron_8 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleElectron_9 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleMuon_0 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleMuon_1 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleMuon_10 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleMuon_11 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleMuon_12 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleMuon_13 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleMuon_14 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleMuon_15 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleMuon_16 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleMuon_17 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleMuon_18 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleMuon_19 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleMuon_2 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleMuon_20 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleMuon_21 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleMuon_22 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleMuon_23 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleMuon_24 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleMuon_25 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleMuon_26 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleMuon_27 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleMuon_28 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleMuon_29 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleMuon_3 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleMuon_30 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleMuon_31 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleMuon_32 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleMuon_33 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleMuon_34 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleMuon_35 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleMuon_36 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleMuon_37 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleMuon_38 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleMuon_39 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleMuon_4 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleMuon_40 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleMuon_41 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleMuon_42 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleMuon_43 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleMuon_44 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleMuon_45 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleMuon_5 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleMuon_6 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleMuon_7 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleMuon_8 
+queue 1 
+cfgFile=Data13TeV_2017D_SingleMuon_9 
+queue 1 
+cfgFile=Data13TeV_2017D_SinglePhoton_0 
+queue 1 
+cfgFile=Data13TeV_2017D_SinglePhoton_1 
+queue 1 
+cfgFile=Data13TeV_2017D_SinglePhoton_2 
+queue 1 
+cfgFile=Data13TeV_2017D_SinglePhoton_3 
+queue 1 
+cfgFile=Data13TeV_2017D_SinglePhoton_4 
+queue 1 
+cfgFile=Data13TeV_2017E_DoubleEG_0 
+queue 1 
+cfgFile=Data13TeV_2017E_DoubleEG_1 
+queue 1 
+cfgFile=Data13TeV_2017E_DoubleEG_10 
+queue 1 
+cfgFile=Data13TeV_2017E_DoubleEG_11 
+queue 1 
+cfgFile=Data13TeV_2017E_DoubleEG_2 
+queue 1 
+cfgFile=Data13TeV_2017E_DoubleEG_3 
+queue 1 
+cfgFile=Data13TeV_2017E_DoubleEG_4 
+queue 1 
+cfgFile=Data13TeV_2017E_DoubleEG_5 
+queue 1 
+cfgFile=Data13TeV_2017E_DoubleEG_6 
+queue 1 
+cfgFile=Data13TeV_2017E_DoubleEG_7 
+queue 1 
+cfgFile=Data13TeV_2017E_DoubleEG_8 
+queue 1 
+cfgFile=Data13TeV_2017E_DoubleEG_9 
+queue 1 
+cfgFile=Data13TeV_2017E_DoubleMuon_0 
+queue 1 
+cfgFile=Data13TeV_2017E_DoubleMuon_1 
+queue 1 
+cfgFile=Data13TeV_2017E_DoubleMuon_10 
+queue 1 
+cfgFile=Data13TeV_2017E_DoubleMuon_11 
+queue 1 
+cfgFile=Data13TeV_2017E_DoubleMuon_12 
+queue 1 
+cfgFile=Data13TeV_2017E_DoubleMuon_13 
+queue 1 
+cfgFile=Data13TeV_2017E_DoubleMuon_14 
+queue 1 
+cfgFile=Data13TeV_2017E_DoubleMuon_15 
+queue 1 
+cfgFile=Data13TeV_2017E_DoubleMuon_16 
+queue 1 
+cfgFile=Data13TeV_2017E_DoubleMuon_17 
+queue 1 
+cfgFile=Data13TeV_2017E_DoubleMuon_18 
+queue 1 
+cfgFile=Data13TeV_2017E_DoubleMuon_2 
+queue 1 
+cfgFile=Data13TeV_2017E_DoubleMuon_3 
+queue 1 
+cfgFile=Data13TeV_2017E_DoubleMuon_4 
+queue 1 
+cfgFile=Data13TeV_2017E_DoubleMuon_5 
+queue 1 
+cfgFile=Data13TeV_2017E_DoubleMuon_6 
+queue 1 
+cfgFile=Data13TeV_2017E_DoubleMuon_7 
+queue 1 
+cfgFile=Data13TeV_2017E_DoubleMuon_8 
+queue 1 
+cfgFile=Data13TeV_2017E_DoubleMuon_9 
+queue 1 
+cfgFile=Data13TeV_2017E_MuonEG_0 
+queue 1 
+cfgFile=Data13TeV_2017E_MuonEG_1 
+queue 1 
+cfgFile=Data13TeV_2017E_MuonEG_2 
+queue 1 
+cfgFile=Data13TeV_2017E_MuonEG_3 
+queue 1 
+cfgFile=Data13TeV_2017E_MuonEG_4 
+queue 1 
+cfgFile=Data13TeV_2017E_MuonEG_5 
+queue 1 
+cfgFile=Data13TeV_2017E_MuonEG_6 
+queue 1 
+cfgFile=Data13TeV_2017E_MuonEG_7 
+queue 1 
+cfgFile=Data13TeV_2017E_MuonEG_8 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleElectron_0 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleElectron_1 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleElectron_10 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleElectron_11 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleElectron_12 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleElectron_13 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleElectron_14 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleElectron_15 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleElectron_16 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleElectron_17 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleElectron_18 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleElectron_19 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleElectron_2 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleElectron_20 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleElectron_21 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleElectron_22 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleElectron_23 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleElectron_24 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleElectron_25 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleElectron_26 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleElectron_27 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleElectron_28 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleElectron_29 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleElectron_3 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleElectron_30 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleElectron_31 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleElectron_32 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleElectron_33 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleElectron_34 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleElectron_35 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleElectron_36 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleElectron_37 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleElectron_38 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleElectron_39 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleElectron_4 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleElectron_40 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleElectron_41 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleElectron_42 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleElectron_43 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleElectron_44 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleElectron_45 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleElectron_46 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleElectron_47 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleElectron_48 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleElectron_49 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleElectron_5 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleElectron_50 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleElectron_51 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleElectron_52 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleElectron_53 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleElectron_54 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleElectron_55 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleElectron_56 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleElectron_57 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleElectron_58 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleElectron_59 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleElectron_6 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleElectron_60 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleElectron_61 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleElectron_62 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleElectron_63 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleElectron_64 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleElectron_7 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleElectron_8 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleElectron_9 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_0 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_1 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_10 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_100 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_101 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_102 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_103 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_104 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_105 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_106 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_107 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_108 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_109 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_11 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_110 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_111 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_112 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_12 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_13 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_14 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_15 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_16 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_17 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_18 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_19 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_2 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_20 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_21 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_22 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_23 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_24 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_25 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_26 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_27 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_28 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_29 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_3 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_30 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_31 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_32 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_33 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_34 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_35 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_36 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_37 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_38 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_39 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_4 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_40 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_41 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_42 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_43 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_44 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_45 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_46 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_47 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_48 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_49 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_5 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_50 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_51 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_52 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_53 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_54 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_55 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_56 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_57 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_58 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_59 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_6 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_60 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_61 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_62 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_63 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_64 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_65 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_66 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_67 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_68 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_69 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_7 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_70 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_72 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_73 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_74 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_75 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_76 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_77 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_78 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_79 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_8 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_80 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_81 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_82 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_83 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_84 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_85 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_86 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_87 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_88 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_89 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_9 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_90 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_91 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_92 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_93 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_94 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_95 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_96 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_97 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_98 
+queue 1 
+cfgFile=Data13TeV_2017E_SingleMuon_99 
+queue 1 
+cfgFile=Data13TeV_2017E_SinglePhoton_0 
+queue 1 
+cfgFile=Data13TeV_2017E_SinglePhoton_1 
+queue 1 
+cfgFile=Data13TeV_2017E_SinglePhoton_2 
+queue 1 
+cfgFile=Data13TeV_2017E_SinglePhoton_3 
+queue 1 
+cfgFile=Data13TeV_2017E_SinglePhoton_4 
+queue 1 
+cfgFile=Data13TeV_2017E_SinglePhoton_5 
+queue 1 
+cfgFile=Data13TeV_2017E_SinglePhoton_6 
+queue 1 
+cfgFile=Data13TeV_2017E_SinglePhoton_7 
+queue 1 
+cfgFile=Data13TeV_2017E_SinglePhoton_8 
+queue 1 
+cfgFile=Data13TeV_2017F_DoubleEG_0 
+queue 1 
+cfgFile=Data13TeV_2017F_DoubleEG_1 
+queue 1 
+cfgFile=Data13TeV_2017F_DoubleEG_10 
+queue 1 
+cfgFile=Data13TeV_2017F_DoubleEG_11 
+queue 1 
+cfgFile=Data13TeV_2017F_DoubleEG_12 
+queue 1 
+cfgFile=Data13TeV_2017F_DoubleEG_13 
+queue 1 
+cfgFile=Data13TeV_2017F_DoubleEG_14 
+queue 1 
+cfgFile=Data13TeV_2017F_DoubleEG_15 
+queue 1 
+cfgFile=Data13TeV_2017F_DoubleEG_16 
+queue 1 
+cfgFile=Data13TeV_2017F_DoubleEG_2 
+queue 1 
+cfgFile=Data13TeV_2017F_DoubleEG_3 
+queue 1 
+cfgFile=Data13TeV_2017F_DoubleEG_4 
+queue 1 
+cfgFile=Data13TeV_2017F_DoubleEG_5 
+queue 1 
+cfgFile=Data13TeV_2017F_DoubleEG_6 
+queue 1 
+cfgFile=Data13TeV_2017F_DoubleEG_7 
+queue 1 
+cfgFile=Data13TeV_2017F_DoubleEG_8 
+queue 1 
+cfgFile=Data13TeV_2017F_DoubleEG_9 
+queue 1 
+cfgFile=Data13TeV_2017F_DoubleMuon_0 
+queue 1 
+cfgFile=Data13TeV_2017F_DoubleMuon_1 
+queue 1 
+cfgFile=Data13TeV_2017F_DoubleMuon_10 
+queue 1 
+cfgFile=Data13TeV_2017F_DoubleMuon_11 
+queue 1 
+cfgFile=Data13TeV_2017F_DoubleMuon_12 
+queue 1 
+cfgFile=Data13TeV_2017F_DoubleMuon_13 
+queue 1 
+cfgFile=Data13TeV_2017F_DoubleMuon_14 
+queue 1 
+cfgFile=Data13TeV_2017F_DoubleMuon_15 
+queue 1 
+cfgFile=Data13TeV_2017F_DoubleMuon_16 
+queue 1 
+cfgFile=Data13TeV_2017F_DoubleMuon_17 
+queue 1 
+cfgFile=Data13TeV_2017F_DoubleMuon_18 
+queue 1 
+cfgFile=Data13TeV_2017F_DoubleMuon_19 
+queue 1 
+cfgFile=Data13TeV_2017F_DoubleMuon_2 
+queue 1 
+cfgFile=Data13TeV_2017F_DoubleMuon_20 
+queue 1 
+cfgFile=Data13TeV_2017F_DoubleMuon_21 
+queue 1 
+cfgFile=Data13TeV_2017F_DoubleMuon_22 
+queue 1 
+cfgFile=Data13TeV_2017F_DoubleMuon_23 
+queue 1 
+cfgFile=Data13TeV_2017F_DoubleMuon_24 
+queue 1 
+cfgFile=Data13TeV_2017F_DoubleMuon_25 
+queue 1 
+cfgFile=Data13TeV_2017F_DoubleMuon_26 
+queue 1 
+cfgFile=Data13TeV_2017F_DoubleMuon_27 
+queue 1 
+cfgFile=Data13TeV_2017F_DoubleMuon_3 
+queue 1 
+cfgFile=Data13TeV_2017F_DoubleMuon_4 
+queue 1 
+cfgFile=Data13TeV_2017F_DoubleMuon_5 
+queue 1 
+cfgFile=Data13TeV_2017F_DoubleMuon_6 
+queue 1 
+cfgFile=Data13TeV_2017F_DoubleMuon_7 
+queue 1 
+cfgFile=Data13TeV_2017F_DoubleMuon_8 
+queue 1 
+cfgFile=Data13TeV_2017F_DoubleMuon_9 
+queue 1 
+cfgFile=Data13TeV_2017F_MuonEG_0 
+queue 1 
+cfgFile=Data13TeV_2017F_MuonEG_1 
+queue 1 
+cfgFile=Data13TeV_2017F_MuonEG_10 
+queue 1 
+cfgFile=Data13TeV_2017F_MuonEG_11 
+queue 1 
+cfgFile=Data13TeV_2017F_MuonEG_12 
+queue 1 
+cfgFile=Data13TeV_2017F_MuonEG_13 
+queue 1 
+cfgFile=Data13TeV_2017F_MuonEG_2 
+queue 1 
+cfgFile=Data13TeV_2017F_MuonEG_3 
+queue 1 
+cfgFile=Data13TeV_2017F_MuonEG_4 
+queue 1 
+cfgFile=Data13TeV_2017F_MuonEG_5 
+queue 1 
+cfgFile=Data13TeV_2017F_MuonEG_6 
+queue 1 
+cfgFile=Data13TeV_2017F_MuonEG_7 
+queue 1 
+cfgFile=Data13TeV_2017F_MuonEG_8 
+queue 1 
+cfgFile=Data13TeV_2017F_MuonEG_9 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_0 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_1 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_10 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_11 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_12 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_13 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_14 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_15 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_16 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_17 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_18 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_19 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_2 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_20 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_21 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_22 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_23 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_24 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_25 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_26 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_27 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_28 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_29 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_3 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_30 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_31 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_32 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_33 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_34 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_35 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_36 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_37 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_38 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_39 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_4 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_40 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_41 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_42 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_43 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_44 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_45 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_46 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_47 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_48 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_49 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_5 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_50 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_51 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_52 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_53 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_54 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_55 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_56 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_57 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_58 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_59 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_6 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_60 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_61 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_62 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_63 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_64 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_65 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_66 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_67 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_68 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_69 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_7 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_70 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_71 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_72 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_73 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_74 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_75 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_76 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_77 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_78 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_79 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_8 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_80 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_81 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_82 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_83 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_84 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_85 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_86 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_87 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleElectron_9 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_0 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_1 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_10 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_100 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_101 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_102 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_103 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_104 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_105 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_106 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_107 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_108 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_109 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_11 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_110 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_111 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_112 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_113 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_114 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_115 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_116 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_117 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_118 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_119 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_12 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_120 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_121 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_122 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_123 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_124 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_125 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_126 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_127 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_128 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_129 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_13 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_130 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_131 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_132 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_133 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_134 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_135 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_136 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_137 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_138 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_139 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_14 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_140 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_141 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_142 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_143 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_144 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_145 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_146 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_147 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_148 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_149 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_15 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_150 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_151 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_152 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_153 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_154 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_155 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_156 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_157 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_158 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_159 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_16 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_160 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_161 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_162 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_163 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_164 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_165 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_166 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_167 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_168 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_169 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_17 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_170 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_171 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_172 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_173 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_174 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_175 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_176 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_177 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_178 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_179 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_18 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_180 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_19 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_2 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_20 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_21 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_22 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_23 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_24 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_25 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_26 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_27 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_28 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_29 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_3 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_30 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_31 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_32 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_33 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_34 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_35 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_36 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_37 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_38 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_39 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_4 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_40 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_41 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_42 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_43 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_44 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_45 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_46 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_47 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_48 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_49 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_5 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_50 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_51 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_52 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_53 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_54 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_55 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_56 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_57 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_58 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_59 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_6 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_60 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_61 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_62 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_63 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_64 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_65 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_66 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_67 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_68 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_69 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_7 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_70 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_71 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_72 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_73 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_74 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_75 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_76 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_77 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_78 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_79 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_8 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_80 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_81 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_82 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_83 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_84 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_85 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_86 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_87 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_88 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_89 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_9 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_90 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_91 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_92 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_93 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_94 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_95 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_96 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_97 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_98 
+queue 1 
+cfgFile=Data13TeV_2017F_SingleMuon_99 
+queue 1 
+cfgFile=Data13TeV_2017F_SinglePhoton_0 
+queue 1 
+cfgFile=Data13TeV_2017F_SinglePhoton_1 
+queue 1 
+cfgFile=Data13TeV_2017F_SinglePhoton_10 
+queue 1 
+cfgFile=Data13TeV_2017F_SinglePhoton_11 
+queue 1 
+cfgFile=Data13TeV_2017F_SinglePhoton_12 
+queue 1 
+cfgFile=Data13TeV_2017F_SinglePhoton_13 
+queue 1 
+cfgFile=Data13TeV_2017F_SinglePhoton_14 
+queue 1 
+cfgFile=Data13TeV_2017F_SinglePhoton_15 
+queue 1 
+cfgFile=Data13TeV_2017F_SinglePhoton_2 
+queue 1 
+cfgFile=Data13TeV_2017F_SinglePhoton_3 
+queue 1 
+cfgFile=Data13TeV_2017F_SinglePhoton_4 
+queue 1 
+cfgFile=Data13TeV_2017F_SinglePhoton_5 
+queue 1 
+cfgFile=Data13TeV_2017F_SinglePhoton_6 
+queue 1 
+cfgFile=Data13TeV_2017F_SinglePhoton_7 
+queue 1 
+cfgFile=Data13TeV_2017F_SinglePhoton_8 
+queue 1 
+cfgFile=Data13TeV_2017F_SinglePhoton_9 
+queue 1 
+cfgFile=MC13TeV_2017_DY10to50_mlm_0 
+queue 1 
+cfgFile=MC13TeV_2017_DY10to50_mlm_1 
+queue 1 
+cfgFile=MC13TeV_2017_DY10to50_mlm_2 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_0 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_1 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_10 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_100 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_101 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_102 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_103 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_104 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_105 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_106 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_107 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_108 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_109 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_11 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_110 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_111 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_112 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_113 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_114 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_115 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_116 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_117 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_118 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_119 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_12 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_120 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_121 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_122 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_123 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_124 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_125 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_126 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_127 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_128 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_129 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_13 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_130 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_131 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_132 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_133 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_134 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_135 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_136 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_137 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_138 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_139 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_14 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_140 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_141 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_142 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_143 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_144 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_145 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_146 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_147 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_148 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_149 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_15 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_150 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_151 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_152 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_153 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_154 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_155 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_156 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_157 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_158 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_159 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_16 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_160 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_161 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_162 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_163 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_164 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_165 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_166 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_167 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_168 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_169 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_17 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_170 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_171 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_172 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_173 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_174 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_175 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_176 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_177 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_178 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_179 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_18 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_180 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_181 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_182 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_183 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_184 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_185 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_186 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_187 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_188 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_189 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_19 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_190 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_191 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_192 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_193 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_194 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_195 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_196 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_197 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_198 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_199 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_2 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_20 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_200 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_201 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_202 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_203 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_204 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_205 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_206 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_207 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_208 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_209 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_21 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_210 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_211 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_212 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_213 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_214 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_215 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_216 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_217 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_218 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_219 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_22 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_220 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_221 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_222 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_223 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_224 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_225 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_226 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_227 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_228 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_229 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_23 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_230 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_231 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_232 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_233 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_234 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_235 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_236 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_237 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_238 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_239 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_24 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_240 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_241 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_242 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_243 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_244 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_245 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_246 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_247 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_248 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_249 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_25 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_250 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_251 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_252 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_253 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_254 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_255 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_256 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_257 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_258 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_259 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_26 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_260 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_261 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_262 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_263 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_264 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_265 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_266 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_267 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_268 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_269 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_27 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_270 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_271 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_28 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_29 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_3 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_30 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_31 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_32 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_33 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_34 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_35 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_36 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_37 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_38 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_39 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_4 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_40 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_41 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_42 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_43 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_44 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_45 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_46 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_47 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_48 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_49 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_5 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_50 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_51 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_52 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_53 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_54 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_55 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_56 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_57 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_58 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_59 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_6 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_61 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_62 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_63 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_64 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_65 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_66 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_67 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_68 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_69 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_7 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_70 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_71 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_72 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_73 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_74 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_75 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_77 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_78 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_79 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_8 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_80 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_81 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_82 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_83 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_84 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_85 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_86 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_87 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_88 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_89 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_9 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_90 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_91 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_92 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_93 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_94 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_95 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_96 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_97 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_98 
+queue 1 
+cfgFile=MC13TeV_2017_DY50toInf_fxfx_99 
+queue 1 
+cfgFile=MC13TeV_2017_FPMC_HW_QED_ttbar_13TeV_120_0 
+queue 1 
+cfgFile=MC13TeV_2017_FPMC_HW_QED_ttbar_13TeV_130_0 
+queue 1 
+cfgFile=MC13TeV_2017_FPMC_HW_QED_ttbar_13TeV_140_0 
+queue 1 
+cfgFile=MC13TeV_2017_FPMC_HW_QED_ttbar_13TeV_150_0 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT100to200_0 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT100to200_1 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT100to200_10 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT100to200_11 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT100to200_12 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT100to200_13 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT100to200_14 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT100to200_15 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT100to200_16 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT100to200_17 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT100to200_18 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT100to200_19 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT100to200_2 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT100to200_20 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT100to200_21 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT100to200_22 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT100to200_23 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT100to200_24 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT100to200_25 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT100to200_26 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT100to200_27 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT100to200_3 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT100to200_4 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT100to200_5 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT100to200_6 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT100to200_7 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT100to200_8 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT100to200_9 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT200to400_0 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT200to400_1 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT200to400_10 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT200to400_11 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT200to400_12 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT200to400_13 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT200to400_14 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT200to400_15 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT200to400_16 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT200to400_17 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT200to400_18 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT200to400_19 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT200to400_2 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT200to400_20 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT200to400_21 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT200to400_22 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT200to400_23 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT200to400_24 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT200to400_25 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT200to400_26 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT200to400_27 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT200to400_28 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT200to400_29 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT200to400_3 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT200to400_30 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT200to400_31 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT200to400_32 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT200to400_33 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT200to400_34 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT200to400_35 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT200to400_36 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT200to400_37 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT200to400_38 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT200to400_39 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT200to400_4 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT200to400_40 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT200to400_41 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT200to400_42 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT200to400_43 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT200to400_44 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT200to400_45 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT200to400_46 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT200to400_47 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT200to400_48 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT200to400_49 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT200to400_5 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT200to400_50 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT200to400_51 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT200to400_52 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT200to400_53 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT200to400_54 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT200to400_55 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT200to400_56 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT200to400_57 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT200to400_58 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT200to400_6 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT200to400_7 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT200to400_8 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT200to400_9 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT400to600_0 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT400to600_1 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT400to600_10 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT400to600_11 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT400to600_13 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT400to600_14 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT400to600_15 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT400to600_2 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT400to600_3 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT400to600_4 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT400to600_5 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT400to600_6 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT400to600_7 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT400to600_8 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT400to600_9 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT40to100_0 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT40to100_1 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT40to100_10 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT40to100_11 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT40to100_12 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT40to100_13 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT40to100_14 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT40to100_15 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT40to100_16 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT40to100_17 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT40to100_18 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT40to100_2 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT40to100_20 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT40to100_21 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT40to100_22 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT40to100_23 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT40to100_24 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT40to100_25 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT40to100_26 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT40to100_27 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT40to100_28 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT40to100_29 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT40to100_3 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT40to100_4 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT40to100_5 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT40to100_6 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT40to100_7 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT40to100_8 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT40to100_9 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT600toInf_0 
+queue 1 
+cfgFile=MC13TeV_2017_GJets_HT600toInf_1 
+queue 1 
+cfgFile=MC13TeV_2017_QCDEM_120to170_0 
+queue 1 
+cfgFile=MC13TeV_2017_QCDEM_120to170_1 
+queue 1 
+cfgFile=MC13TeV_2017_QCDEM_120to170_2 
+queue 1 
+cfgFile=MC13TeV_2017_QCDEM_120to170_3 
+queue 1 
+cfgFile=MC13TeV_2017_QCDEM_15to20_0 
+queue 1 
+cfgFile=MC13TeV_2017_QCDEM_20to30_0 
+queue 1 
+cfgFile=MC13TeV_2017_QCDEM_300toInf_0 
+queue 1 
+cfgFile=MC13TeV_2017_QCDEM_300toInf_1 
+queue 1 
+cfgFile=MC13TeV_2017_QCDEM_30to50_0 
+queue 1 
+cfgFile=MC13TeV_2017_QCDEM_50to80_1 
+queue 1 
+cfgFile=MC13TeV_2017_QCDEM_80to120_0 
+queue 1 
+cfgFile=MC13TeV_2017_QCDEM_80to120_1 
+queue 1 
+cfgFile=MC13TeV_2017_QCDEM_80to120_2 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_0 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_1 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_10 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_100 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_101 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_102 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_103 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_104 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_105 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_106 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_107 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_108 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_109 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_11 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_110 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_111 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_112 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_113 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_114 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_115 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_116 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_117 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_118 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_119 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_12 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_120 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_121 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_122 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_123 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_124 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_125 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_126 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_127 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_128 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_129 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_13 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_130 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_131 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_132 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_133 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_134 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_135 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_136 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_137 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_138 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_139 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_14 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_140 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_141 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_142 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_143 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_144 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_145 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_146 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_147 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_148 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_149 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_15 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_150 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_151 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_152 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_153 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_154 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_155 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_156 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_157 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_158 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_159 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_16 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_160 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_161 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_162 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_163 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_164 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_165 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_166 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_167 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_168 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_169 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_17 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_170 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_171 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_172 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_173 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_174 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_175 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_176 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_177 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_178 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_179 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_18 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_180 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_181 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_182 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_183 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_184 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_185 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_186 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_187 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_188 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_189 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_19 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_190 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_191 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_192 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_193 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_194 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_195 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_196 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_197 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_198 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_199 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_2 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_20 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_200 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_201 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_21 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_22 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_23 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_24 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_25 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_26 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_27 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_28 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_29 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_3 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_30 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_31 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_32 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_33 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_34 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_35 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_36 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_37 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_38 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_39 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_4 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_40 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_41 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_42 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_43 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_44 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_45 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_46 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_47 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_48 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_49 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_5 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_50 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_51 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_52 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_53 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_54 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_55 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_56 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_57 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_58 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_59 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_6 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_60 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_61 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_62 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_63 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_64 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_65 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_66 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_67 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_68 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_69 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_7 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_70 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_71 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_72 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_73 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_74 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_75 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_76 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_77 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_78 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_79 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_8 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_80 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_81 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_82 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_83 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_84 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_85 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_86 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_87 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_88 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_89 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_9 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_90 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_91 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_92 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_93 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_94 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_95 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_96 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_97 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_98 
+queue 1 
+cfgFile=MC13TeV_2017_TTJets_99 
+queue 1 
+cfgFile=MC13TeV_2017_WJets_mlm_0 
+queue 1 
+cfgFile=MC13TeV_2017_WJets_mlm_1 
+queue 1 
+cfgFile=MC13TeV_2017_WJets_mlm_10 
+queue 1 
+cfgFile=MC13TeV_2017_WJets_mlm_11 
+queue 1 
+cfgFile=MC13TeV_2017_WJets_mlm_12 
+queue 1 
+cfgFile=MC13TeV_2017_WJets_mlm_13 
+queue 1 
+cfgFile=MC13TeV_2017_WJets_mlm_14 
+queue 1 
+cfgFile=MC13TeV_2017_WJets_mlm_15 
+queue 1 
+cfgFile=MC13TeV_2017_WJets_mlm_16 
+queue 1 
+cfgFile=MC13TeV_2017_WJets_mlm_17 
+queue 1 
+cfgFile=MC13TeV_2017_WJets_mlm_18 
+queue 1 
+cfgFile=MC13TeV_2017_WJets_mlm_19 
+queue 1 
+cfgFile=MC13TeV_2017_WJets_mlm_2 
+queue 1 
+cfgFile=MC13TeV_2017_WJets_mlm_20 
+queue 1 
+cfgFile=MC13TeV_2017_WJets_mlm_21 
+queue 1 
+cfgFile=MC13TeV_2017_WJets_mlm_22 
+queue 1 
+cfgFile=MC13TeV_2017_WJets_mlm_23 
+queue 1 
+cfgFile=MC13TeV_2017_WJets_mlm_24 
+queue 1 
+cfgFile=MC13TeV_2017_WJets_mlm_25 
+queue 1 
+cfgFile=MC13TeV_2017_WJets_mlm_27 
+queue 1 
+cfgFile=MC13TeV_2017_WJets_mlm_28 
+queue 1 
+cfgFile=MC13TeV_2017_WJets_mlm_29 
+queue 1 
+cfgFile=MC13TeV_2017_WJets_mlm_30 
+queue 1 
+cfgFile=MC13TeV_2017_WJets_mlm_31 
+queue 1 
+cfgFile=MC13TeV_2017_WJets_mlm_32 
+queue 1 
+cfgFile=MC13TeV_2017_WJets_mlm_34 
+queue 1 
+cfgFile=MC13TeV_2017_WJets_mlm_35 
+queue 1 
+cfgFile=MC13TeV_2017_WJets_mlm_36 
+queue 1 
+cfgFile=MC13TeV_2017_WJets_mlm_37 
+queue 1 
+cfgFile=MC13TeV_2017_WJets_mlm_38 
+queue 1 
+cfgFile=MC13TeV_2017_WJets_mlm_39 
+queue 1 
+cfgFile=MC13TeV_2017_WJets_mlm_4 
+queue 1 
+cfgFile=MC13TeV_2017_WJets_mlm_40 
+queue 1 
+cfgFile=MC13TeV_2017_WJets_mlm_41 
+queue 1 
+cfgFile=MC13TeV_2017_WJets_mlm_42 
+queue 1 
+cfgFile=MC13TeV_2017_WJets_mlm_43 
+queue 1 
+cfgFile=MC13TeV_2017_WJets_mlm_44 
+queue 1 
+cfgFile=MC13TeV_2017_WJets_mlm_45 
+queue 1 
+cfgFile=MC13TeV_2017_WJets_mlm_46 
+queue 1 
+cfgFile=MC13TeV_2017_WJets_mlm_47 
+queue 1 
+cfgFile=MC13TeV_2017_WJets_mlm_48 
+queue 1 
+cfgFile=MC13TeV_2017_WJets_mlm_49 
+queue 1 
+cfgFile=MC13TeV_2017_WJets_mlm_5 
+queue 1 
+cfgFile=MC13TeV_2017_WJets_mlm_6 
+queue 1 
+cfgFile=MC13TeV_2017_WJets_mlm_7 
+queue 1 
+cfgFile=MC13TeV_2017_WJets_mlm_8 
+queue 1 
+cfgFile=MC13TeV_2017_WJets_mlm_9 
+queue 1 
+cfgFile=MC13TeV_2017_WW_0 
+queue 1 
+cfgFile=MC13TeV_2017_WW_1 
+queue 1 
+cfgFile=MC13TeV_2017_WW_2 
+queue 1 
+cfgFile=MC13TeV_2017_WZ_0 
+queue 1 
+cfgFile=MC13TeV_2017_WZ_1 
+queue 1 
+cfgFile=MC13TeV_2017_ZZ_0 
+queue 1 

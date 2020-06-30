@@ -89,31 +89,38 @@ int trainBDT4regression()
   //  loader.AddSpectator("newypp");
   loader.AddSpectator("gen_mtt");
   loader.AddSpectator("gen_ytt");
-  loader.AddVariable("rec_ytt");
-  loader.AddVariable("rec_mtt");
+  loader.AddVariable("kinreco_mtt");
+  loader.AddVariable("kinreco_ytt");
   loader.AddSpectator("weight");
 
-  if(var=="mass") loader.AddTarget( "target := rec_mtt/gen_mtt" ); // define the target for the regression
-  if(var=="y") loader.AddTarget( "target := rec_ytt-gen_ytt" ); // define the target for the regression
+  if(var=="mass") loader.AddTarget( "target := kinreco_mtt/gen_mtt" ); // define the target for the regression
+  if(var=="y") loader.AddTarget( "target := kinreco_ytt-gen_ytt" ); // define the target for the regression
 
 
-  TChain *chain = new TChain("sel2");
-  chain->AddFile("/eos/user/b/bribeiro/955fa95_ul/Chunks/MC13TeV_2017_TTJets_5.root");
-  chain->AddFile("/eos/user/b/bribeiro/955fa95_ul/Chunks/MC13TeV_2017_TTJets_6.root");
-  chain->AddFile("/eos/user/b/bribeiro/955fa95_ul/Chunks/MC13TeV_2017_TTJets_7.root");
-  chain->AddFile("/eos/user/b/bribeiro/955fa95_ul/Chunks/MC13TeV_2017_TTJets_8.root");
-  chain->AddFile("/eos/user/b/bribeiro/955fa95_ul/Chunks/MC13TeV_2017_TTJets_9.root");
-  chain->AddFile("/eos/user/b/bribeiro/955fa95_ul/Chunks/MC13TeV_2017_FPMC_HW_QED_ttbar_13TeV_120_0.root");
-  chain->AddFile("/eos/user/b/bribeiro/955fa95_ul/Chunks/MC13TeV_2017_FPMC_HW_QED_ttbar_13TeV_130_0.root");
-  chain->AddFile("/eos/user/b/bribeiro/955fa95_ul/Chunks/MC13TeV_2017_FPMC_HW_QED_ttbar_13TeV_140_0.root");
-  chain->AddFile("/eos/user/b/bribeiro/955fa95_ul/Chunks/MC13TeV_2017_FPMC_HW_QED_ttbar_13TeV_150_0.root");
+  TChain *chain = new TChain("sel");
+  chain->AddFile("/eos/user/b/bribeiro/ab05162/Chunks/MC13TeV_2017_TTJets_5.root");
+  chain->AddFile("/eos/user/b/bribeiro/ab05162/Chunks/MC13TeV_2017_TTJets_6.root");
+  chain->AddFile("/eos/user/b/bribeiro/ab05162/Chunks/MC13TeV_2017_TTJets_7.root");
+  chain->AddFile("/eos/user/b/bribeiro/ab05162/Chunks/MC13TeV_2017_TTJets_8.root");
+  chain->AddFile("/eos/user/b/bribeiro/ab05162/Chunks/MC13TeV_2017_TTJets_9.root");
+  chain->AddFile("/eos/user/b/bribeiro/ab05162/Chunks/MC13TeV_2017_TTJets_10.root");
+  chain->AddFile("/eos/user/b/bribeiro/ab05162/Chunks/MC13TeV_2017_TTJets_11.root");
+  chain->AddFile("/eos/user/b/bribeiro/ab05162/Chunks/MC13TeV_2017_TTJets_12.root");
+  chain->AddFile("/eos/user/b/bribeiro/ab05162/Chunks/MC13TeV_2017_TTJets_13.root");
+  chain->AddFile("/eos/user/b/bribeiro/ab05162/Chunks/MC13TeV_2017_TTJets_14.root");
 
+
+//  chain->AddFile("/eos/user/b/bribeiro/955fa95_ul/Chunks/MC13TeV_2017_FPMC_HW_QED_ttbar_13TeV_120_0.root");
+//  chain->AddFile("/eos/user/b/bribeiro/955fa95_ul/Chunks/MC13TeV_2017_FPMC_HW_QED_ttbar_13TeV_130_0.root");
+//  chain->AddFile("/eos/user/b/bribeiro/955fa95_ul/Chunks/MC13TeV_2017_FPMC_HW_QED_ttbar_13TeV_140_0.root");
+//  chain->AddFile("/eos/user/b/bribeiro/955fa95_ul/Chunks/MC13TeV_2017_FPMC_HW_QED_ttbar_13TeV_150_0.root");
+/*
   TChain *signalchain = new TChain("sel2");
   signalchain->AddFile("/eos/user/b/bribeiro/955fa95_ul/Chunks/MC13TeV_2017_FPMC_HW_QED_ttbar_13TeV_120_0.root");
   signalchain->AddFile("/eos/user/b/bribeiro/955fa95_ul/Chunks/MC13TeV_2017_FPMC_HW_QED_ttbar_13TeV_130_0.root");
   signalchain->AddFile("/eos/user/b/bribeiro/955fa95_ul/Chunks/MC13TeV_2017_FPMC_HW_QED_ttbar_13TeV_140_0.root");
   signalchain->AddFile("/eos/user/b/bribeiro/955fa95_ul/Chunks/MC13TeV_2017_FPMC_HW_QED_ttbar_13TeV_150_0.root");
-
+*/
   //TCut mycuts = "abs(ht)<1000";
   TCut mycuts = "";
   //TCut mycuts2 = "ypp>-1";
@@ -121,7 +128,7 @@ int trainBDT4regression()
 
   loader.AddRegressionTree(chain, 1.0);   // link the TTree to the loader, weight for each event  = 1
 
-  loader.PrepareTrainingAndTestTree(mycuts,"nTrain_Regression=14170:nTest_Regression=1500:SplitMode=Block:NormMode=NumEvents:!V" );
+  loader.PrepareTrainingAndTestTree(mycuts,"nTrain_Regression=10000:nTest_Regression=10000:SplitMode=Block:NormMode=NumEvents:!V" );
   
   // Boosted Decision Trees 
   factory.BookMethod(&loader,TMVA::Types::kBDT, "BDTG_HU_mass",
@@ -142,7 +149,7 @@ int trainBDT4regression()
   auto resultsFile = TFile::Open("TMVA_RegressionOutput.root");
   auto resultsTree = (TTree*) resultsFile->Get("dataset/TestTree"); 
   // BDTG-AD is the predicted value, target is the true value
-
+/*
   auto h1 = new TH1D("h1","BDTG",50,0,3);
   //  resultsTree->Draw("BDTG_HU-target >> h1"); 
   auto h2 = (TH1*) h1->Clone("h2");
@@ -153,15 +160,23 @@ int trainBDT4regression()
   //  if(var=="mass")
   
   auto h4 = new TH2D("old_method","mtt(reco)_vs_mpp(RPs)",50,0,1000,50,0,1000); 
-  signalchain->Draw("rec_mtt:mpp >> old_method",mycuts2);
+  resultsTree->Draw("kinreco_mtt:mpp >> old_method",mycuts2);
   auto h5 = new TH2D("new_method","mtt(regressed)_vs_mpp(RPs)",50,0,1000,50,0,1000);
-  resultsTree->Draw("(rec_mtt*1/BDTG_LS_mass):mpp >> new_method",mycuts2);  
+  resultsTree->Draw("(kinreco_mtt*1/BDTG_LS_mass):mpp >> new_method",mycuts2);  
+*/
+  auto h1 = new TH1D("genmtt","genmtt",100,0,1300);
+  auto h2 = new TH1D("recomtt","recomtt",100,0,1300);
+  auto h3 = new TH1D("regressedmtt","regressedmtt",100,0,1300);
+  resultsTree->Draw("gen_mtt >> genmtt"); 
+  resultsTree->Draw("kinreco_mtt >> recomtt"); 
+  resultsTree->Draw("kinreco_mtt/BDTG_LS_mass >> regressedmtt"); 
+
 
   auto h6 = new TH1D("old1","mtt(reco)-mtt(gen)",50,-0.8,0.8);
-  signalchain->Draw("(rec_mtt-gen_mtt)/gen_mtt >> old1"); 
+  resultsTree->Draw("(kinreco_mtt-gen_mtt)/gen_mtt >> old1"); 
 
   auto h7 = new TH1D("new1","mtt(regressed)-mtt(gen)",50,-0.8,0.8);
-  resultsTree->Draw("(rec_mtt/BDTG_LS_mass-gen_mtt)/gen_mtt >> new1"); 
+  resultsTree->Draw("(kinreco_mtt/BDTG_LS_mass-gen_mtt)/gen_mtt >> new1"); 
   
   
   // else if(var=="y")
@@ -180,18 +195,22 @@ int trainBDT4regression()
   */
   
   TCanvas* c1 = new TCanvas();
-  c1->Divide(2,2);
+  c1->Divide(2,1);
   c1->cd(1);
+  h1->SetLineColor(kBlack); h1->Draw(); //gen
+  h2->SetLineColor(kBlue); h2->Draw("same"); //reco
+  h3->SetLineColor(kRed); h3->Draw("same"); //reg
+
   //h1->SetLineColor(kBlue); h1->Draw(); h1->Fit("gaus");
-  h2->SetLineColor(kRed); h2->Draw("SAME"); h2->Fit("gaus");
+  //h2->SetLineColor(kRed); h2->Draw("SAME"); h2->Fit("gaus");
   //h3->SetLineColor(kGreen); h3->Draw("SAME"); h3->Fit("gaus");
   //h4->SetLineColor(kBlack); h4->Draw("SAME"); h4->Fit("gaus");
 
   
-  c1->cd(2);
-  h4->Draw("COLZ");
-  c1->cd(3);
-  h5->Draw("COLZ");
+  //c1->cd(2);
+  //h4->Draw("COLZ");
+  //c1->cd(3);
+  //h5->Draw("COLZ");
   
 
   /* c1->cd(4);
@@ -202,7 +221,7 @@ int trainBDT4regression()
   h4->GetFunction("gaus")->SetLineColor(kBlue);
   */
 
-  c1->cd(4);                                                                                                                                                                     
+  c1->cd(2);                                                                                                                                                                     
   h7->SetLineColor(kRed); h7->Draw(); h7->Fit("gaus");
   h6->SetLineColor(kBlue);
   h6->Scale((h6->Integral())/(h7->Integral()));

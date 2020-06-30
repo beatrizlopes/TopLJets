@@ -18,7 +18,10 @@ queue=tomorrow
 #githash=3129835
 #githash=6816e40
 githash=ab05162
-githash_new=955fa95_ul
+githash_new=f439f08_ul
+eosdir_signal=/store/cmst3/group/top/exclusive_top/excl_ttbar_QED/NanoAOD/
+fullpath_signal_test=/store/cmst3/group/top/exclusive_top/excl_ttbarll_QED_UL/ExclusiveTTbar_leplep_UL17_MiniAOD_CP5-PSweights_test2_xa120_postTS2.root
+eosdir_dilep_signal=/store/cmst3/group/top/exclusive_top/
 eosdir_new=/store/cmst3/group/top/RunIIReReco/2017/${githash_new}
 eosdir=/store/cmst3/group/top/RunIIReReco/${githash}
 #outdir=/store/cmst3/user/psilva/ExclusiveAna/${githash}
@@ -44,11 +47,12 @@ wwwdir=~/www/ExclusiveAna
 #inputfileTag=Data13TeV_2017F_MuonEG
 
 #inputfileTag=Data13TeV_2017B_SingleMuon
-inputfileTag=Data13TeV_2017F_SingleMuon
 inputfileTag=MC13TeV_2017_DY50toInf_fxfx
 inputfileTag=MC13TeV_2017_TTJets
-inputfileTagSIGNAL=MC13TeV_2017_FPMC_HW_QED_ttbar_13TeV_150
-inputfileTESTSELSIGNAL=${eosdir}/${inputfileTagSIGNAL}/Chunk_0_ext0.root
+inputfileTag=Data13TeV_2017F_SingleMuon
+inputfileTagSIGNAL=excl_ttbar_WpLep_QED
+inputfileTagSIGNAL=excl_ttbarll_QED_UL
+inputfileTESTSELSIGNAL=${eosdir_dilep_signal}/excl_ttbarll_xa120_2017_postTS2.root
 inputfileTESTSEL=${eosdir}/${inputfileTag}/Chunk_1_ext0.root
 #inputfileTESTSEL=${eosdir_new}/${inputfileTag}/Chunk_0_ext0.root
 #	python $CMSSW_BASE/src/TopLJets2015/TopAnalysis/scripts/runLocalAnalysis.py ${baseOpt} --only ${samples_json};
@@ -69,9 +73,10 @@ case $WHAT in
   
 	#add SIGNAL to the names to test on signal samples
 #            -i ${inputfileTESTSELSIGNAL} --tag ${inputfileTagSIGNAL} \
+#-i ${fullpath_signal_test}  \
         python $CMSSW_BASE/src/TopLJets2015/TopAnalysis/scripts/runLocalAnalysis.py \
             -i ${inputfileTESTSEL} --tag ${inputfileTag} \
-            -o testsel.root --genWeights genweights_${githash}.root \
+            -o new_test.root --genWeights genweights_${githash}.root \
             --njobs 1 -q local \
             --era era2017 -m ExclusiveTop::RunExclusiveTop --ch 0 --runSysts;
         ;;
@@ -79,24 +84,25 @@ case $WHAT in
     DEBUG )
         
         python $CMSSW_BASE/src/TopLJets2015/TopAnalysis/scripts/runLocalAnalysis.py \
-            -i ${inputfileTESTSELSIGNAL} --tag ${inputfileTagSIGNAL} \
+            -i ${inputfileTESTSEL} --tag ${inputfileTag} \
             -o testsel.root --genWeights genweights_${githash}.root \
             --njobs 1 -q local  --debug \
             --era era2017 -m ExclusiveTop::RunExclusiveTop --ch 0 --runSysts;
         ;;
 
     SEL )
+        
         baseOpt="-i ${eosdir} --genWeights genweights_${githash}.root"
-	baseOpt="${baseOpt} -o ${outdir3} -q ${queue} --era era2017 -m ExclusiveTop::RunExclusiveTop --ch 0 --runSysts"
-	baseOpt="${baseOpt} --exactonly"        
-	python $CMSSW_BASE/src/TopLJets2015/TopAnalysis/scripts/runLocalAnalysis.py ${baseOpt} --only ${mc_samples_json};   
-	python $CMSSW_BASE/src/TopLJets2015/TopAnalysis/scripts/runLocalAnalysis.py ${baseOpt} --only ${signal_json};
-#	baseOpt_new="-i ${eosdir_new} --genWeights genweights_${githash_new}.root"
-#	baseOpt_new="${baseOpt_new} -o ${outdir4} -q ${queue} --era era2017 -m ExclusiveTop::RunExclusiveTop --ch 0 --runSysts"
-#	baseOpt_new="${baseOpt_new} --exactonly"        
-#	python $CMSSW_BASE/src/TopLJets2015/TopAnalysis/scripts/runLocalAnalysis.py ${baseOpt_new}  --only ${data_samples_json};	
+	    baseOpt="${baseOpt} -o ${outdir3} -q ${queue} --era era2017 -m ExclusiveTop::RunExclusiveTop --ch 0 --runSysts"
+	    baseOpt="${baseOpt} --exactonly"        
+	    python $CMSSW_BASE/src/TopLJets2015/TopAnalysis/scripts/runLocalAnalysis.py ${baseOpt} --only ${mc_samples_json};   
+    	#python $CMSSW_BASE/src/TopLJets2015/TopAnalysis/scripts/runLocalAnalysis.py ${baseOpt} --only ${signal_json};
+    	baseOpt_new="-i ${eosdir_new} --genWeights genweights_${githash_new}.root"
+	    baseOpt_new="${baseOpt_new} -o ${outdir4} -q ${queue} --era era2017 -m ExclusiveTop::RunExclusiveTop --ch 0 --runSysts"
+	    baseOpt_new="${baseOpt_new} --exactonly"        
+	    python $CMSSW_BASE/src/TopLJets2015/TopAnalysis/scripts/runLocalAnalysis.py ${baseOpt_new}  --only ${data_samples_json};	
 
-	;;
+	   ;;
 
     REG )
 #	cp /eos/user/b/bribeiro/${githash}/Chunks/MC*.root /eos/user/b/bribeiro/${githash_new}/Chunks/
@@ -104,23 +110,23 @@ case $WHAT in
 #	python scripts/KinAlg4tree.py /eos/user/b/bribeiro/955fa95_ul/*.root
 #	echo "ttbar reconstruction done -----------------------------------------------"
 	
-#	for file in /eos/user/b/bribeiro/955fa95_ul/*TT*.root
+#	for file in /eos/user/b/bribeiro/${githash_new}/*.root
 #	do
-#	    root -l -q macros/ApplyRegression.C'("'${file}'")'
+#	    root -l -q macros/ApplyRegression_systs.C'("'${file}'")'
         
 #	done
 #	echo "regression applied -------------------------------------------------------"
 	
-	for file in /eos/user/b/bribeiro/955fa95_ul/*TT*.root
+	for file in /eos/user/b/bribeiro/${githash_new}/*.root
 	do
-	    root -l -q macros/ApplyMVA_allsysts.C'("'${file}'")'
+	    root -l -q macros/ApplyMVA_thsysts.C'("'${file}'")'
 	done
 	
 	echo "BDT output added -----------------------------------------------"
 	;;
 
 
-   KIN )
+    KIN )
 	baseOpt=""
       	python $CMSSW_BASE/src/TopLJets2015/TopAnalysis/scripts/KinAlg4tree.py ${baseOpt};	
 	;;

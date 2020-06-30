@@ -25,15 +25,34 @@ int trainBDT()
 
   TMVA::Tools::Instance();
 
-  TChain *bkgchain = new TChain("Reg");
-  bkgchain->AddFile("/eos/user/b/bribeiro/955fa95_ul/MC13TeV_2017_TTJets.root");
+  TChain *bkgchain = new TChain("sel");
+  bkgchain->AddFile("/eos/user/b/bribeiro/ab05162/Chunks/MC13TeV_2017_TTJets_0.root");
+  bkgchain->AddFile("/eos/user/b/bribeiro/ab05162/Chunks/MC13TeV_2017_TTJets_1.root");
+  bkgchain->AddFile("/eos/user/b/bribeiro/ab05162/Chunks/MC13TeV_2017_TTJets_2.root");
+  bkgchain->AddFile("/eos/user/b/bribeiro/ab05162/Chunks/MC13TeV_2017_TTJets_3.root");
+  bkgchain->AddFile("/eos/user/b/bribeiro/ab05162/Chunks/MC13TeV_2017_TTJets_4.root");
+  bkgchain->AddFile("/eos/user/b/bribeiro/ab05162/Chunks/MC13TeV_2017_TTJets_5.root");
+  bkgchain->AddFile("/eos/user/b/bribeiro/ab05162/Chunks/MC13TeV_2017_TTJets_6.root");
+  bkgchain->AddFile("/eos/user/b/bribeiro/ab05162/Chunks/MC13TeV_2017_TTJets_7.root");
+  bkgchain->AddFile("/eos/user/b/bribeiro/ab05162/Chunks/MC13TeV_2017_TTJets_8.root");
+  bkgchain->AddFile("/eos/user/b/bribeiro/ab05162/Chunks/MC13TeV_2017_TTJets_9.root");
+  bkgchain->AddFile("/eos/user/b/bribeiro/ab05162/Chunks/MC13TeV_2017_TTJets_10.root");
+  bkgchain->AddFile("/eos/user/b/bribeiro/ab05162/Chunks/MC13TeV_2017_TTJets_11.root");
+  bkgchain->AddFile("/eos/user/b/bribeiro/ab05162/Chunks/MC13TeV_2017_TTJets_12.root");
+  bkgchain->AddFile("/eos/user/b/bribeiro/ab05162/Chunks/MC13TeV_2017_TTJets_13.root");
+  bkgchain->AddFile("/eos/user/b/bribeiro/ab05162/Chunks/MC13TeV_2017_TTJets_14.root");
+  bkgchain->AddFile("/eos/user/b/bribeiro/ab05162/Chunks/MC13TeV_2017_TTJets_15.root");
+  bkgchain->AddFile("/eos/user/b/bribeiro/ab05162/Chunks/MC13TeV_2017_TTJets_16.root");
 
-  TChain *signalchain = new TChain("Reg");
-  signalchain->AddFile("/eos/user/b/bribeiro/BDTtrainingsamples/MC13TeV_2017_FPMC_HW_QED_ttbar_13TeV_120_0.root");
-  signalchain->AddFile("/eos/user/b/bribeiro/BDTtrainingsamples/MC13TeV_2017_FPMC_HW_QED_ttbar_13TeV_130_0.root");
-  signalchain->AddFile("/eos/user/b/bribeiro/BDTtrainingsamples/MC13TeV_2017_FPMC_HW_QED_ttbar_13TeV_140_0.root");
-  signalchain->AddFile("/eos/user/b/bribeiro/BDTtrainingsamples/MC13TeV_2017_FPMC_HW_QED_ttbar_13TeV_150_0.root");
 
+  TChain *signalchain = new TChain("sel");
+  signalchain->AddFile("/eos/user/b/bribeiro/ab05162/Chunks/MC13TeV_2017_FPMC_HW_QED_ttbar_13TeV_120_0.root");
+  signalchain->AddFile("/eos/user/b/bribeiro/ab05162/Chunks/MC13TeV_2017_FPMC_HW_QED_ttbar_13TeV_130_0.root");
+  signalchain->AddFile("/eos/user/b/bribeiro/ab05162/Chunks/MC13TeV_2017_FPMC_HW_QED_ttbar_13TeV_140_0.root");
+  signalchain->AddFile("/eos/user/b/bribeiro/ab05162/Chunks/MC13TeV_2017_FPMC_HW_QED_ttbar_13TeV_150_0.root");
+
+
+  //  signalchain->AddFile("/eos/user/b/bribeiro/BDTtrainingsamples/MC13TeV_2017_FPMC_HW_QED_ttbar_13TeV_130_0.root");
   std::cout << "==> Start TMVAClassification" << std::endl;
 
   // Create a ROOT output file where TMVA will store ntuples, histograms, etc.
@@ -55,8 +74,8 @@ int trainBDT()
   loader.AddVariable("mpp");                                                                                                             
   loader.AddVariable("ypp");                                                                                                            
   
-  loader.AddVariable("reg_mtt");
-  loader.AddVariable("reg_ytt");  
+  loader.AddVariable("kinreco_mtt");
+  loader.AddVariable("kinreco_ytt");  
   loader.AddVariable("yvis");
   loader.AddVariable("deltarll");  
   loader.AddVariable("mll");  
@@ -129,15 +148,15 @@ int trainBDT()
 
   // Preselection
   //TCut mycuts = "abs(ht) > 100";
-  TCut mycutb = "mpp<9000 && ypp<9 ";
+  TCut mycutb = "mpp<9000";
 
   loader.SetCut(mycutb);
-  loader.PrepareTrainingAndTestTree( "", "", "nTrain_Signal=300:nTrain_Background=2000:nTest_Signal=300:nTest_Background=2000:SplitMode=Random:NormMode=EqualNumEvents" );
+  loader.PrepareTrainingAndTestTree( "", "", "nTrain_Signal=300:nTrain_Background=1000:nTest_Signal=300:nTest_Background=300:SplitMode=Random:NormMode=EqualNumEvents" );
   
   TMVA::Factory *factory = new TMVA::Factory( "TMVAClassification", outputFile, "!V:!Silent:Color:DrawProgressBar:Transformations=I:AnalysisType=Classification" );
 
   factory->BookMethod(&loader, TMVA::Types::kBDT, "BDT",
-		      "!H:!V:NTrees=30:MaxDepth=3:BoostType=AdaBoost:SeparationType=GiniIndex:nCuts=20:PruneMethod=NoPruning" );
+		      "!H:!V:NTrees=50:MaxDepth=3:BoostType=AdaBoost:SeparationType=GiniIndex:nCuts=20:PruneMethod=NoPruning" );
 
   //  factory->BookMethod(&loader, TMVA::Types::kMLP, "MLP_ANN","NCycles=50:HiddenLayers=30,10,3");
   //  factory->BookMethod(&loader, TMVA::Types::kTMlpANN, "TMlp_ANN", "NCycles=150:HiddenLayers=N,N-10" );

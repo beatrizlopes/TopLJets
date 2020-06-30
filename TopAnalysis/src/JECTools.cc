@@ -80,6 +80,7 @@ TLorentzVector JECTools::getSmearedJet(TLorentzVector &jp4, float genJet_pt,floa
   if(jerVarPartial>=0 && jerVarPartial<=1.0) {
     float jer_nom_sf = jerSF_->getScaleFactor(jparam, Variation::NOMINAL);
     float delta_sf=(jer_sf-jer_nom_sf)*jerVarPartial;    
+    std::cout << "<<<<<JECTools<<<<<< jer_sf is " << jer_sf << " and jer_nom_sf is " << jer_nom_sf << std::endl;
     jer_sf=jer_nom_sf+delta_sf;
   }
   
@@ -89,10 +90,12 @@ TLorentzVector JECTools::getSmearedJet(TLorentzVector &jp4, float genJet_pt,floa
       float sigma = jet_resolution * std::sqrt(std::max(float(jer_sf * jer_sf - 1.0),float(0.)));
       jerSmear = std::max(float(1.0 + rand_->Gaus(0, sigma)),float(0.));
     }
-    else {           
+  else {           
       float dPt = jp4.Pt()-genJet_pt;
       jerSmear = float(1.0 + (jer_sf - 1.) * dPt / jp4.Pt());
+      std::cout << "<<<<<JECTools<<<<<< jerSmear is :" << jerSmear << std::endl;
     }
+
   smearedJet *= jerSmear;  
   return smearedJet;
 }

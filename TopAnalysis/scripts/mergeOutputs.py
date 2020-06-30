@@ -18,7 +18,7 @@ def getBaseNames(dirname):
         if not ext == '.root': continue
         try:
             if not ('MC13TeV' in filename or 'Data13TeV' in filename) : continue
-            if not ('MC13TeV' in filename) : continue
+#            if not ('MC13TeV' in filename) : continue
 #            if not ('Data13' in filename) : continue
             fIn=ROOT.TFile.Open(dirname+'/'+item)
             goodFile = False

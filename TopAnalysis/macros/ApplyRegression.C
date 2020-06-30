@@ -34,8 +34,13 @@ int ApplyRegression(TString filename)
   // Create a new root output file.
   TString outfileName(filename);
   TFile* outputFile = TFile::Open( outfileName, "UPDATE" );
-  
-  TNtuple* OutTree= new TNtuple("Reg","Reg","run:lumi:ev:rho:channel:mll:nljets:nbjets:ht:metpt:metphi:l1pt:l1eta:l1phi:l1m:l2pt:l2eta:l2phi:l2m:b1pt:b1eta:b1phi:b1m:b2pt:b2eta:b2phi:b2m:px2:py2:pz2:E2:yvis:ysum:max_dy:min_dy:deltarll:deltaphill:mlb:xi0:xi1:mpp:ypp:gen_mtt:gen_ytt:rec_mtt:rec_ytt:reg_mtt:reg_ytt:xi0tt:xi1tt:weight");
+
+  //  char systNames[] = {};
+
+  // for(size_t is = 0; is < systNames.size(); is++)
+  //  {
+
+      TNtuple* OutTree= new TNtuple("Reg","Reg","run:lumi:ev:rho:channel:mll:nljets:nbjets:ht:metpt:metphi:l1pt:l1eta:l1phi:l1m:l2pt:l2eta:l2phi:l2m:b1pt:b1eta:b1phi:b1m:b2pt:b2eta:b2phi:b2m:px2:py2:pz2:E2:yvis:ysum:max_dy:min_dy:deltarll:deltaphill:mlb:xi0:xi1:mpp:ypp:gen_mtt:gen_ytt:rec_mtt:rec_ytt:reg_mtt:reg_ytt:xi0tt:xi1tt:weight");
 
   outputFile->cd();                                                                                                                                                                 
   //  signalOutTree->SetDirectory(outputFile);     
@@ -51,7 +56,7 @@ int ApplyRegression(TString filename)
   Float_t run,lumi,ev,rho,channel,mll,nljets,nbjets,ht,metpt,metphi,l1pt,l1eta,l1phi,l1m,l2pt,l2eta,l2phi,l2m,b1pt,b1eta,b1phi,b1m,b2pt,b2eta,b2phi,b2m,px2,py2,pz2,E2,yvis,ysum,max_dy,min_dy,deltarll,deltaphill,mlb,xi0,xi1,mpp,ypp,gen_mtt,gen_ytt,rec_mtt,rec_ytt,correction,weight;
 
   // load the input trees
-  TChain *bkgchain = new TChain("sel2");
+  TChain *bkgchain = new TChain("Sel");
   bkgchain->AddFile(filename);
   
   // Add the feature variables, names reference branches in inputFile ttree
@@ -225,6 +230,9 @@ int ApplyRegression(TString filename)
     }
 
     bkgchain->GetEntry(ievt);
+
+    if(rec_mtt<0) continue;
+
     // get the classifiers for each of the signal/background classifications
     classifier_m = reader->EvaluateRegression(0, method );
     classifier_y = reader1->EvaluateRegression(0, method );

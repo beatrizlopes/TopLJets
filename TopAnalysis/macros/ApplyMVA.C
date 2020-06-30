@@ -9,6 +9,7 @@
 #include <TRandom3.h>
 #include <TDirectory.h>
 
+#include "TMVA/Reader.h"
 #include "TMVA/Factory.h"
 #include "TMVA/Tools.h"
 

@@ -2,7 +2,7 @@
 #include <TFile.h>
 #include <TTree.h>
 #include <TH1D.h>
- #include <TChain.h>
+#include <TChain.h>
 #include <TCut.h>
 #include <TString.h>
 #include <TObject.h>
@@ -85,7 +85,7 @@ int ApplyMVA_allsysts(TString filename)
 
   
   TString method =  "BDT method";
-  reader->BookMVA( "BDT method", "dataset/weights/TMVAClassification_BDT.weights.xml" );
+  reader->BookMVA( "BDT method", "/afs/cern.ch/user/b/bribeiro/CMSSW_9_4_11/src/TopLJets2015/TopAnalysis/dataset/weights/TMVAClassification_BDT.weights.xml" );
 
   //add string of systnames
   TString systNames[] = { "puup",        "pudn",
@@ -95,27 +95,15 @@ int ApplyMVA_allsysts(TString filename)
 			  "eselup",      "eseldn",
 			  "mselup",      "mseldn",
 			  "l1prefireup", "l1prefiredn",
-			  "ees1up", "ees1dn", "ees2up", "ees2dn", "ees3up", "ees3dn", "ees4up", "ees4dn",  "ees5up", "ees5dn",  "ees6up", "e\
-es6dn",  "ees7up", "ees7dn",
+			  //"ees1up", "ees1dn", "ees2up", "ees2dn", 
+			  "ees3up", "ees3dn", "ees4up", "ees4dn",  
+			  //"ees5up", "ees5dn",
+			  "ees6up", "ees6dn", 
+			  "ees7up", "ees7dn",
 			  "mes1up", "mes1dn", "mes2up", "mes2dn", "mes3up", "mes3dn", "mes4up", "mes4dn",
-			  //"btagjesup",        "btagjesdn",                                                                                 
 			  "btaglfup",         "btaglfdn",
 			  "btaghfup",         "btaghfdn",
-    //"btaghfstats1up",   "btaghfstats1dn",                                                                            
-    //"btaghfstats2up",   "btaghfstats2dn",                                                                            
-    //"btaglfstats1up",   "btaglfstats1dn",                                                                            
-    //"btaglfstats2up",   "btaglfstats2dn",                                                                            
-    //"btagcferr1up",     "btagcferr1dn",                                                                              
-    //"btagcferr2up",     "btagcferr2dn",                                                                              
 			  "JERup",       "JERdn",
-			  //			  "JERstatup",   "JERstatdn",
-			  //			  "JERJECup",    "JERJECdn",
-			  //			  "JERPUup",     "JERPUdn",
-			  //			  "JERPLIup",    "JERPLIdn",
-			  //			  "JERptCutup",  "JERptCutdn",
-			  //			  "JERtruncup",  "JERtruncdn",
-			  //			  "JERpTdepup",  "JERpTdepdn",
-			  //			  "JERSTmFEup",  "JERSTmFEdn",
 			  "topptup",     "topptdn",
 			  "AbsoluteStatJECup","AbsoluteScaleJECup","AbsoluteMPFBiasJECup","FragmentationJECup","SinglePionECALJECup",
 			  "SinglePionHCALJECup","FlavorPureGluonJECup","FlavorPureQuarkJECup","FlavorPureCharmJECup",
@@ -143,9 +131,7 @@ es6dn",  "ees7up", "ees7dn",
 
   TH1F *hist = new TH1F("2b_BDT_output","2b_BDT_output",30,-1,1);
 
-  TTree *sel = (TTree*)outputFile->Get("sel");
-
-  TChain *bkgchain = new TChain("Reg");
+  TChain *bkgchain = new TChain("SEL");
   bkgchain->AddFile(filename);
   Long64_t nBEvent = bkgchain->GetEntries();  
 
@@ -154,40 +140,40 @@ es6dn",  "ees7up", "ees7dn",
   bkgchain->SetBranchAddress("ev",&ev);  
   bkgchain->SetBranchAddress("rho",&rho);
   //  bkgchain->SetBranchAddress("nvtx",&nvtx);
-  sel->SetBranchAddress("channel",&channel);
-  sel->SetBranchAddress("mll",&mll);
-  sel->SetBranchAddress("nljets",&nljets);
-  sel->SetBranchAddress("nbjets",&nbjets);
+  bkgchain->SetBranchAddress("channel",&channel);
+  bkgchain->SetBranchAddress("mll",&mll);
+  bkgchain->SetBranchAddress("nljets",&nljets);
+  bkgchain->SetBranchAddress("nbjets",&nbjets);
   //  loader->AddSpectator("ht");                                                                                                           
-  sel->SetBranchAddress("metpt",&metpt);
-  sel->SetBranchAddress("metphi",&metphi);
-  sel->SetBranchAddress("l1pt",&l1pt);
-  sel->SetBranchAddress("l1eta",&l1eta);
-  sel->SetBranchAddress("l1phi",&l1phi);
-  sel->SetBranchAddress("l1m",&l1m);
-  sel->SetBranchAddress("l2pt",&l2pt);
-  sel->SetBranchAddress("l2eta",&l2eta);
-  sel->SetBranchAddress("l2phi",&l2phi);
-  sel->SetBranchAddress("l2m",&l2m);
-  sel->SetBranchAddress("b1pt",&b1pt);
-  sel->SetBranchAddress("b1eta",&b1eta);
-  sel->SetBranchAddress("b1phi",&b1phi);
-  sel->SetBranchAddress("b1m",&b1m);
-  sel->SetBranchAddress("b2pt",&b2pt);
-  sel->SetBranchAddress("b2eta",&b2eta);
-  sel->SetBranchAddress("b2phi",&b2phi);
-  sel->SetBranchAddress("b2m",&b2m);
-  sel->SetBranchAddress("deltarll",&deltarll);
-  sel->SetBranchAddress("deltaphill",&deltaphill);
-  sel->SetBranchAddress("mlb",&mlb);
-  sel->SetBranchAddress("px2",&px2);
-  sel->SetBranchAddress("py2",&py2);
-  sel->SetBranchAddress("pz2",&pz2);
-  sel->SetBranchAddress("E2",&E2);
-  sel->SetBranchAddress("yvis",&yvis);
-  sel->SetBranchAddress("ysum",&ysum);
-  sel->SetBranchAddress("max_dy",&max_dy);
-  sel->SetBranchAddress("min_dy",&min_dy);
+  bkgchain->SetBranchAddress("metpt",&metpt);
+  bkgchain->SetBranchAddress("metphi",&metphi);
+  bkgchain->SetBranchAddress("l1pt",&l1pt);
+  bkgchain->SetBranchAddress("l1eta",&l1eta);
+  bkgchain->SetBranchAddress("l1phi",&l1phi);
+  bkgchain->SetBranchAddress("l1m",&l1m);
+  bkgchain->SetBranchAddress("l2pt",&l2pt);
+  bkgchain->SetBranchAddress("l2eta",&l2eta);
+  bkgchain->SetBranchAddress("l2phi",&l2phi);
+  bkgchain->SetBranchAddress("l2m",&l2m);
+  bkgchain->SetBranchAddress("b1pt",&b1pt);
+  bkgchain->SetBranchAddress("b1eta",&b1eta);
+  bkgchain->SetBranchAddress("b1phi",&b1phi);
+  bkgchain->SetBranchAddress("b1m",&b1m);
+  bkgchain->SetBranchAddress("b2pt",&b2pt);
+  bkgchain->SetBranchAddress("b2eta",&b2eta);
+  bkgchain->SetBranchAddress("b2phi",&b2phi);
+  bkgchain->SetBranchAddress("b2m",&b2m);
+  bkgchain->SetBranchAddress("deltarll",&deltarll);
+  bkgchain->SetBranchAddress("deltaphill",&deltaphill);
+  bkgchain->SetBranchAddress("mlb",&mlb);
+  bkgchain->SetBranchAddress("px2",&px2);
+  bkgchain->SetBranchAddress("py2",&py2);
+  bkgchain->SetBranchAddress("pz2",&pz2);
+  bkgchain->SetBranchAddress("E2",&E2);
+  bkgchain->SetBranchAddress("yvis",&yvis);
+  bkgchain->SetBranchAddress("ysum",&ysum);
+  bkgchain->SetBranchAddress("max_dy",&max_dy);
+  bkgchain->SetBranchAddress("min_dy",&min_dy);
   
   bkgchain->SetBranchAddress("mpp",&mpp);
   bkgchain->SetBranchAddress("ypp",&ypp);
@@ -197,13 +183,12 @@ es6dn",  "ees7up", "ees7dn",
   bkgchain->SetBranchAddress("rec_mtt",&rec_mtt);  
   bkgchain->SetBranchAddress("reg_ytt",&reg_ytt);
   bkgchain->SetBranchAddress("reg_mtt",&reg_mtt);  
-  sel->SetBranchAddress("weight",&weight);  
+  bkgchain->SetBranchAddress("weight",&weight);  
   
   for (Long64_t ievt=0; ievt<nBEvent; ievt++) {
 	// if(mpp<9000 && ypp<9)
     // { 
     bkgchain->GetEntry(ievt);
-    sel->GetEntry(ievt);
 
     if(mpp<9000 && ypp<9)
       {
@@ -226,16 +211,19 @@ es6dn",  "ees7up", "ees7dn",
 
 	  if(systNames[is].Contains("toppt") && !filename.Contains("TT")) continue;
 
-	  TTree *sel_syst = (TTree*)outputFile->Get(Form("sel_%s",s_name));
+	  if(!outputFile->GetListOfKeys()->Contains(Form("SEL_%s",s_name))) continue;
 	  
+	  TTree *sel_syst = (TTree*)outputFile->Get(Form("SEL_%s",s_name));
+
 	  //  Long64_t nSEvent = signalchain->GetEntries();
+	  std::cout << "starting syst " << s_name << std::endl;
   
-	  bkgchain->SetBranchAddress("run",&run);
-	  bkgchain->SetBranchAddress("lumi",&lumi);
-	  bkgchain->SetBranchAddress("ev",&ev);  
-	  bkgchain->SetBranchAddress("rho",&rho);
-	  //  bkgchain->SetBranchAddress("nvtx",&nvtx);
-	  bkgchain->SetBranchAddress("channel",&channel);
+	  sel_syst->SetBranchAddress("run",&run);
+	  sel_syst->SetBranchAddress("lumi",&lumi);
+	  sel_syst->SetBranchAddress("ev",&ev);  
+	  sel_syst->SetBranchAddress("rho",&rho);
+	  //  sel_syst->SetBranchAddress("nvtx",&nvtx);
+	  sel_syst->SetBranchAddress("channel",&channel);
 	  sel_syst->SetBranchAddress("mll",&mll);
 	  sel_syst->SetBranchAddress("nljets",&nljets);
 	  sel_syst->SetBranchAddress("nbjets",&nbjets);
@@ -270,25 +258,25 @@ es6dn",  "ees7up", "ees7dn",
 	  sel_syst->SetBranchAddress("max_dy",&max_dy);
 	  sel_syst->SetBranchAddress("min_dy",&min_dy);
 	  
-	  bkgchain->SetBranchAddress("mpp",&mpp);
-	  bkgchain->SetBranchAddress("ypp",&ypp);
-	  bkgchain->SetBranchAddress("gen_mtt",&gen_mtt);
-	  bkgchain->SetBranchAddress("gen_ytt",&gen_ytt);
-	  bkgchain->SetBranchAddress("rec_ytt",&rec_ytt);
-	  bkgchain->SetBranchAddress("rec_mtt",&rec_mtt);  
-	  bkgchain->SetBranchAddress("reg_ytt",&reg_ytt);
-	  bkgchain->SetBranchAddress("reg_mtt",&reg_mtt);  
-	  sel_syst->SetBranchAddress("syst_weight",&weight);  
+	  sel_syst->SetBranchAddress("mpp",&mpp);
+	  sel_syst->SetBranchAddress("ypp",&ypp);
+	  sel_syst->SetBranchAddress("gen_mtt",&gen_mtt);
+	  sel_syst->SetBranchAddress("gen_ytt",&gen_ytt);
+	  sel_syst->SetBranchAddress("rec_ytt",&rec_ytt);
+	  sel_syst->SetBranchAddress("rec_mtt",&rec_mtt);  
+	  sel_syst->SetBranchAddress("reg_ytt",&reg_ytt);
+	  sel_syst->SetBranchAddress("reg_mtt",&reg_mtt);  
+	  sel_syst->SetBranchAddress("weight",&weight);  
+
+	  Long64_t nEvent = sel_syst->GetEntries();  
 	  
-	  for (Long64_t ievt=0; ievt<nBEvent; ievt++) {
+	  for (Long64_t ievt=0; ievt<nEvent; ievt++) {
 	    // if(mpp<9000 && ypp<9)
 	    // { 
-	    bkgchain->GetEntry(ievt);
 	    sel_syst->GetEntry(ievt);
 	    
 	    if(mpp<9000 && ypp<9)
 	      {
-		
 		if (ievt%100000 == 0){
 		  std::cout << "--- ... Processing event: " << ievt << std::endl;
 		}
@@ -302,14 +290,13 @@ es6dn",  "ees7up", "ees7dn",
 	  }
 	}
       
-      outputFile->cd();                                                                                                                        
-      for(size_t isyst=0; isyst<nexpSysts;isyst++)
-	bdt_hists[isyst]->Write(0,TObject::kOverwrite);
-
     }
 
   outputFile->cd();                                                                                                                        
   hist->Write(0,TObject::kOverwrite);
+
+  for(size_t isyst=0; isyst<nexpSysts;isyst++)
+    bdt_hists[isyst]->Write(0,TObject::kOverwrite);
   
   outputFile->Close();
   
