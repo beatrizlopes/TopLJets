@@ -161,7 +161,7 @@ class PPSEff
 
 			RecoInit=true;
 		}
-		else{
+		else if(filename.find("Pixel")!=std::string::npos){
 		// load the efficiency histograms
 		_hef201745[static_cast<int>(Periods::era2017B)]  = (TH1D *)_file0->Get("Pixel/2017/2017B/h45_220_2017B_all_1D");
 		_hef201756[static_cast<int>(Periods::era2017B)]  = (TH1D *)_file0->Get("Pixel/2017/2017B/h56_220_2017B_all_1D");
@@ -187,6 +187,33 @@ class PPSEff
 		
 		EffInit=true;
 		
+		}
+		else if(filename.find("Strips")!=std::string::npos){
+		
+		_hef201745[static_cast<int>(Periods::era2017B)]  = (TH1D *)_file0->Get("Strips/2017/2017B/h45_2017B_all_1D");
+		_hef201756[static_cast<int>(Periods::era2017B)]  = (TH1D *)_file0->Get("Strips/2017/2017B/h56_2017B_all_1D");
+		_hef201745[static_cast<int>(Periods::era2017C1)] = (TH1D *)_file0->Get("Strips/2017/2017C1/h45_2017C1_all_1D");
+		_hef201756[static_cast<int>(Periods::era2017C1)] = (TH1D *)_file0->Get("Strips/2017/2017C1/h56_2017C1_all_1D");
+		_hef201745[static_cast<int>(Periods::era2017C2)] = (TH1D *)_file0->Get("Strips/2017/2017C2/h45_2017C2_all_1D");
+		_hef201756[static_cast<int>(Periods::era2017C2)] = (TH1D *)_file0->Get("Strips/2017/2017C2/h56_2017C2_all_1D");
+		_hef201745[static_cast<int>(Periods::era2017D)]  = (TH1D *)_file0->Get("Strips/2017/2017D/h45_2017D_all_1D");
+		_hef201756[static_cast<int>(Periods::era2017D)]  = (TH1D *)_file0->Get("Strips/2017/2017D/h56_2017D_all_1D");
+		_hef201745[static_cast<int>(Periods::era2017E)]  = (TH1D *)_file0->Get("Strips/2017/2017E/h45_2017E_all_1D");
+		_hef201756[static_cast<int>(Periods::era2017E)]  = (TH1D *)_file0->Get("Strips/2017/2017E/h56_2017E_all_1D");
+		_hef201745[static_cast<int>(Periods::era2017F1)] = (TH1D *)_file0->Get("Strips/2017/2017F1/h45_2017F1_all_1D");
+		_hef201756[static_cast<int>(Periods::era2017F1)] = (TH1D *)_file0->Get("Strips/2017/2017F1/h56_2017F1_all_1D");
+		_hef201745[static_cast<int>(Periods::era2017F2)] = (TH1D *)_file0->Get("Strips/2017/2017F2/h45_2017F2_all_1D");
+		_hef201756[static_cast<int>(Periods::era2017F2)] = (TH1D *)_file0->Get("Strips/2017/2017F2/h56_2017F2_all_1D");
+		_hef201745[static_cast<int>(Periods::era2017F3)] = (TH1D *)_file0->Get("Strips/2017/2017F3/h45_2017F3_all_1D");
+		_hef201756[static_cast<int>(Periods::era2017F3)] = (TH1D *)_file0->Get("Strips/2017/2017F3/h56_2017F3_all_1D");
+		
+		_nbins = _hef201756[0]->GetNbinsX();
+		_bw    = _hef201756[0]->GetBinWidth(1);
+		_xmin  = _hef201756[0]->GetBinCenter(1) - 0.5 * _bw;
+		_xmax  = _hef201756[0]->GetBinCenter(_nbins) + 0.5 * _bw;	
+		
+		EffInit=true;
+
 		}
 	}
 	

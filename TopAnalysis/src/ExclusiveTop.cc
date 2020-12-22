@@ -1,1332 +1,1378 @@
-// ROOT includes
 #include "TFile.h"
-#include "TROOT.h"
 #include "TH1.h"
 #include "TH2.h"
 #include "TSystem.h"
 #include "TGraph.h"
+#include "TKey.h"
 #include "TLorentzVector.h"
 #include "TGraphAsymmErrors.h"
-#include "TMatrixD.h"
 #include "TMath.h"
-#include "TMinuit.h"
-#include "TApplication.h"
+#include "TNtuple.h"
 
-// cpp includes
+#include "TopLJets2015/TopAnalysis/interface/MiniEvent.h"
+#include "TopLJets2015/TopAnalysis/interface/GeneratorTools.h"
+#include "TopLJets2015/TopAnalysis/interface/CommonTools.h"
+#include "TopLJets2015/TopAnalysis/interface/ExclusiveTop.h"
+//#include "TopQuarkAnalysis/TopTools/interface/MEzCalculator.h"
+#include "TopLJets2015/TopAnalysis/interface/JECTools.h"
+#include "TopLJets2015/TopAnalysis/interface/EfficiencyScaleFactorsWrapper.h"
+#include "TopLJets2015/TopAnalysis/interface/L1PrefireEfficiencyWrapper.h"
+#include "TopLJets2015/TopAnalysis/interface/KinematicReconstruction.h"
+#include "TopLJets2015/TopAnalysis/interface/PPSEff.h"
+
 #include <vector>
 #include <set>
 #include <iostream>
 #include <algorithm>
 #include <string>
-#include <sstream>
+#include <fstream>
 
-// package includes
-#include "TopLJets2015/TopAnalysis/interface/CommonTools.h"
-#include "TopLJets2015/TopAnalysis/interface/ExclusiveTop.h"
-#include "TopLJets2015/TopAnalysis/interface/NeutrinoEllipseCalculator.h"
-#include "TopQuarkAnalysis/TopTools/interface/MEzCalculator.h"
-#include "TopLJets2015/TopAnalysis/interface/PPSEff.h"
+#include "TMVA/Factory.h"
+#include "TMVA/Tools.h"
+#include "TMVA/Reader.h"
 
+//#include "TopLJets2015/TopAnalysis/interface/LHCcondsFac.h"
+//#include "TopLJets2015/CTPPSAnalysisTools/interface/LHCConditionsFactory.h"
+//#include "TopLJets2015/CTPPSAnalysisTools/interface/AlignmentsFactory.h"
+//#include "TopLJets2015/CTPPSAnalysisTools/interface/XiReconstructor.h"
 
 using namespace std;
-#define ADDVAR(x,name,t,tree) tree->Branch(name,x,TString(name)+TString(t))
 
-double m_TOP = 173.1;
-double m_W   =  80.379;
-double m_NU  =  0.;
+#define ADDVAR(x,name,tree) tree->Branch(name,&x);
 
-// ---- SWITCHES ----------------------------------------------------------------
-//#define DEBUG_ON                // activate in order to activate additional output for debugging and to limit entries
-#define HISTOGRAMS_ON           // comment to avoid creating histograms in root file
-#define SAVEERRORS_ON           // comment to avoid saving the quantities error in root file
 
-// Returns the index of the lesser element of sum_squared vector
-int dump_index(vector<double> sum_squared){
-    int index=0;
-    double a=0;
-    double b=0;
-    a=sum_squared[0];
-    for(size_t i=1; i<sum_squared.size() ; i++){
-        b=sum_squared[i];
-        if(b<=a){
-            a=b;
-            index=i;
-        }
+//run DESY KinReco top reconstruction algorithm
+bool do_kin_reco(std::vector<Particle>& leptons, std::vector<Jet>& jets, std::vector<Jet>& bjets, TLorentzVector& met, Bool_t debug, double& kinReco_ttbar_mass, double& kinReco_ttbar_rapidity) {
+    
+    bool hasKinRecoSol = false;
+    std::vector<TLorentzVector> allLeptons;
+    std::vector<TLorentzVector> allJets;
+    std::vector<TLorentzVector> allBJets;
+
+    for (size_t i=0; i < leptons.size(); i++){
+      allLeptons.push_back(leptons[i]);
     }
-    //cout << "index " << index << endl;
-    return index;
+
+    //Get jets indices
+    std::vector<int> jetIndices;
+    jetIndices.clear();
+    for (size_t i=0; i < jets.size(); i++){
+      jetIndices.push_back(i);
+      allJets.push_back(jets[i]);
+    }
+
+    std::vector<int> bjetIndices;
+    bjetIndices.clear();
+    for (size_t i=0; i < bjets.size(); i++){
+      bjetIndices.push_back(i);
+      allBJets.push_back(bjets[i]);
+    }
+
+    if(jets.size()<2 || bjets.size()<1) {
+      hasKinRecoSol = false;
+      return hasKinRecoSol;
+    }
+
+    if(debug) std::cout << "now doing ttbar kinematic reconstruction" << std::endl;
+    const KinematicReconstruction* kinematicReconstruction(0);
+    //For now random-number-based smearing
+    kinematicReconstruction = new KinematicReconstruction(1, true, false);
+    int idx_l1 = leptons[0].charge()>0 ? 1 : 0 ;
+    int idx_l2 = leptons[1].charge()>0 ? 1 : 0 ;
+    KinematicReconstructionSolutions kinematicReconstructionSolutions  =
+    kinematicReconstruction->solutions({idx_l1}, {idx_l2}, jetIndices, bjetIndices, allLeptons, allJets, met);
+    const bool hasSolution = kinematicReconstructionSolutions.numberOfSolutions();
+    if (hasSolution) {
+      hasKinRecoSol = true;
+
+      TLorentzVector recotop = kinematicReconstructionSolutions.solution().top();
+      TLorentzVector recoantitop = kinematicReconstructionSolutions.solution().antiTop();
+      TLorentzVector recottbar = recotop + recoantitop; 
+
+      //kinReco_ttbar_pt = recottbar.Pt();
+      kinReco_ttbar_mass = recottbar.M();
+      kinReco_ttbar_rapidity = recotop.Rapidity();
+
+    }
+    return hasKinRecoSol;
 }
 
-// PARTICLE_err returns the uncertainty on the particle: p (if err_type==0), eta (if err_type==1), phi (if err_type==2).
-// The uncertainties are extracted from tables
-double bjet_err(double p,double eta,double phi, int err_type){
-    eta=abs(eta);
-    double c_p,r_p,n_p,c_e,r_e,n_e,c_ph,r_ph,n_ph;
-    
-    if(eta>=0 && eta<0.0870)
-    {c_p=0.08790000;r_p=0.90500000; n_p=2.93000000;c_e=1.60700000;r_e=0.00000000; n_e=0.00611000;c_ph=1.67550000;r_ph=0.00000000; n_ph=0.00849000;}
-    if(eta>=0.0870 && eta<0.1740)
-    {c_p=0.08460000;r_p=0.96600000; n_p=2.14000000;c_e=1.62100000;r_e=0.00000000; n_e=0.00554;c_ph=1.70500000;r_ph=0.00000000; n_ph=0.00791000;}
-    if(eta>=0.1740 && eta<0.2610)
-    {c_p=0.07890000;r_p=0.99900000; n_p=1.74000000;c_e=1.61160000;r_e=0.00000000; n_e=0.00618;c_ph=1.70810000;r_ph=0.00000000; n_ph=0.0078;}
-    if(eta>=0.2610 && eta<0.3480)
-    {c_p=0.08150000;r_p=0.96100000; n_p=2.08000000;c_e=1.62740000;r_e=0.00000000; n_e=0.00577;c_ph=1.70130000;r_ph=0.00000000; n_ph=0.00766;}
-    if(eta>=0.3480 && eta<0.4350)
-    {c_p=0.07630000;r_p=1.02400000; n_p=1.21000000;c_e=1.63090000;r_e=0.00000000; n_e=0.00587;c_ph=1.69770000;r_ph=0.00000000; n_ph=0.00784;}
-    if(eta>=0.4350 && eta<0.5220)
-    {c_p=0.07600000;r_p=1.00900000; n_p=1.65000000;c_e=1.63880000;r_e=0.00000000; n_e=0.00648;c_ph=1.71110000;r_ph=0.00000000; n_ph=0.00787;}
-    if(eta>=0.5220 && eta<0.6090)
-    {c_p=0.06880000;r_p=1.05500000; n_p=0.92000000;c_e=1.64200000;r_e=0.00000000; n_e=0.00607;c_ph=1.70990000;r_ph=0.00000000; n_ph=0.00762;}
-    if(eta>=0.6090 && eta<0.6960)
-    {c_p=0.07200000;r_p=1.05170000; n_p=0.00000000;c_e=1.65260000;r_e=0.00000000; n_e=0.00656;c_ph=1.72850000;r_ph=0.00000000; n_ph=0.00750;}
-    if(eta>=0.6960 && eta<0.7830)
-    {c_p=0.07540000;r_p=1.06800000; n_p=0.00000000;c_e=1.65360000;r_e=0.00000000; n_e=0.00687;c_ph=1.71680000;r_ph=0.00000000; n_ph=0.00779;}
-    if(eta>=0.7830 && eta<0.8700)
-    {c_p=0.07510000;r_p=1.07970000; n_p=0.00000000;c_e=1.65300000;r_e=0.00000000; n_e=0.00764;c_ph=1.74680000;r_ph=0.00000000; n_ph=0.00744;}
-    if(eta>=0.8700 && eta<0.9570)
-    {c_p=0.07980000;r_p=1.07840000; n_p=0.00000000;c_e=1.66150000;r_e=0.00000000; n_e=0.00782;c_ph=1.75840000;r_ph=0.00000000; n_ph=0.00758;}
-    if(eta>=0.9570 && eta<1.0440)
-    {c_p=0.07430000;r_p=1.11190000; n_p=0.00000000;c_e=1.67650000;r_e=0.00000000; n_e=0.00785;c_ph=1.77180000;r_ph=0.00000000; n_ph=0.00798;}
-    if(eta>=1.0440 && eta<1.1310)
-    {c_p=0.07570000;r_p=1.14090000; n_p=0.00000000;c_e=1.68270000;r_e=0.00000000; n_e=0.00816;c_ph=1.79710000;r_ph=0.00000000; n_ph=0.00812;}
-    if(eta>=1.1310 && eta<1.2180)
-    {c_p=0.07550000;r_p=1.15240000; n_p=0.00000000;c_e=1.73900000;r_e=0.00000000; n_e=0.00810;c_ph=1.81990000;r_ph=0.00000000; n_ph=0.00846;}
-    if(eta>=1.2180 && eta<1.3050)
-    {c_p=0.08250000;r_p=1.15410000; n_p=0.00000000;c_e=1.74910000;r_e=0.00000000; n_e=0.01052;c_ph=1.86830000;r_ph=0.00000000; n_ph=0.00910;}
-    if(eta>=1.3050 && eta<1.3920)
-    {c_p=0.08770000;r_p=1.18100000; n_p=0.00000000;c_e=1.74100000;r_e=0.00000000; n_e=0.01346;c_ph=1.91170000;r_ph=0.00000000; n_ph=0.01070;}
-    if(eta>=1.3920 && eta<1.4790)
-    {c_p=0.10310000;r_p=1.14400000; n_p=0.00000000;c_e=1.77200000;r_e=0.00000000; n_e=0.01026;c_ph=1.99920000;r_ph=0.00000000; n_ph=0.01069;}
-    if(eta>=1.4790 && eta<1.5660)
-    {c_p=0.10260000;r_p=1.15100000; n_p=0.00000000;c_e=1.78600000;r_e=0.00000000; n_e=0.01088;c_ph=1.99100000;r_ph=0.00000000; n_ph=0.00985;}
-    if(eta>=1.5660 && eta<1.6530)
-    {c_p=0.09090000;r_p=1.16300000; n_p=0.00000000;c_e=1.82400000;r_e=0.00000000; n_e=0.01008;c_ph=1.97000000;r_ph=0.00000000; n_ph=0.00874;}
-    if(eta>=1.6530 && eta<1.7400)
-    {c_p=0.08850000;r_p=1.15600000; n_p=0.00000000;c_e=1.84900000;r_e=0.00000000; n_e=0.00872;c_ph=1.57000000;r_ph=0.00000000; n_ph=0.00761;}
-    if(eta>=1.7400 && eta<1.8300)
-    {c_p=0.08930000;r_p=1.12800000; n_p=0.00000000;c_e=1.91200000;r_e=0.00000000; n_e=0.00922;c_ph=1.93300000;r_ph=0.00000000; n_ph=0.00690;}
-    if(eta>=1.8300 && eta<1.9300)
-    {c_p=0.07960000;r_p=1.13400000; n_p=0.00000000;c_e=1.88400000;r_e=0.00000000; n_e=0.01102;c_ph=1.89500000;r_ph=0.00000000; n_ph=0.00665;}
-    if(eta>=1.9300 && eta<2.0430)
-    {c_p=0.06530000;r_p=1.13630000; n_p=0.00000000;c_e=1.89500000;r_e=0.00000000; n_e=0.01168;c_ph=1.85700000;r_ph=0.00000000; n_ph=0.00646;}
-    if(eta>=2.0430 && eta<2.1720)
-    {c_p=0.06240000;r_p=1.13800000; n_p=0.00000000;c_e=1.90200000;r_e=0.00000000; n_e=0.01183;c_ph=1.87300000;r_ph=0.00000000; n_ph=0.00647;}
-    if(eta>=2.1720 && eta<2.3220)
-    {c_p=0.06530000;r_p=1.12400000; n_p=0.00000000;c_e=1.91100000;r_e=0.00000000; n_e=0.01127;c_ph=1.87300000;r_ph=0.00000000; n_ph=0.00540;}
-    if(eta>=2.3220)
-    {c_p=0.05040000;r_p=1.20200000; n_p=0.50000000;c_e=2.28000000;r_e=0.00000000; n_e=0.01053;c_ph=1.98800000;r_ph=0.00000000; n_ph=0.00887;}
-    
-    double theta=2*atan(exp(-eta));
-    
-    if(err_type==0){return sqrt(c_p*c_p*p*p*sin(theta)*sin(theta)+r_p*r_p*p*sin(theta)+n_p*n_p);}
-    else if (err_type==1){return sqrt(c_e*c_e/(p*p)+r_e*r_e/p+n_e*n_e);}
-    else if (err_type==2){return sqrt(c_ph*c_ph/(p*p)+r_ph*r_ph/p+n_ph*n_ph);}
-    else { return 0; } // THIS WILL CAUSE THE FIT TO CRASH --> err_type must be 0,1,2
+
+std::vector<int> ComputeLBcombination(std::vector<Particle> leptons, std::vector<Jet> bJets)
+{
+  std::vector<int> lb_bestpair(0,0);
+  TLorentzVector lb_min(0,0,0,0);
+  int bestlepton=0, bestB = 0;
+
+  if(bJets.size()>0) {
+
+    lb_min = leptons[0]+bJets[0];
+    //	  minDeltaR = leptons[0].DeltaR(bJets[0]);
+    //lb_minDeltaR = leptons[0]+bJets[0];
+    for(size_t i=0;i<leptons.size();i++) {
+      for(size_t j=0;j<bJets.size();j++) {
+	       TLorentzVector lb = leptons[i]+bJets[j];
+	      //		   if(debug) cout << "lb mass" << lb.M() << endl;
+	       if(lb.M()<lb_min.M()) {
+	         lb_min=lb;
+            bestlepton=i;
+            bestB=j;
+        }
+      }
+    }
+    lb_bestpair.push_back(bestlepton);
+    lb_bestpair.push_back(bestB);
+  }
+  
+  return lb_bestpair; 
 }
 
-double ljet_err(double p,double eta,double phi, int err_type){
-    eta=abs(eta);
-    
-    double c_p,r_p,n_p,c_e,r_e,n_e,c_ph,r_ph,n_ph;
-    
-    if(eta>=0 && eta<0.0870)
-    {c_p=0.07390000;r_p=0.90400000; n_p=2.39000000;c_e=1.48700000;r_e=0.00000000; n_e=0.00986000;c_ph=1.54610000;r_ph=0.00000000; n_ph=0.01155000;}
-    if(eta>=0.0870 && eta<0.1740)
-    {c_p=0.07390000;r_p=0.92500000; n_p=1.90000000;c_e=1.45050000;r_e=0.00000000; n_e=0.01024;c_ph=1.48680000;r_ph=0.00000000; n_ph=0.01224000;}
-    if(eta>=0.1740 && eta<0.2610)
-    {c_p=0.06720000;r_p=0.94300000; n_p=2.02000000;c_e=1.44220000;r_e=0.00000000; n_e=0.01047;c_ph=1.50530000;r_ph=0.00000000; n_ph=0.01159;}
-    if(eta>=0.2610 && eta<0.3480)
-    {c_p=0.06570000;r_p=0.97100000; n_p=1.73000000;c_e=1.48270000;r_e=0.00000000; n_e=0.01009;c_ph=1.49650000;r_ph=0.00000000; n_ph=0.01204;}
-    if(eta>=0.3480 && eta<0.4350)
-    {c_p=0.06690000;r_p=0.94300000; n_p=2.09000000;c_e=1.47810000;r_e=0.00000000; n_e=0.01026;c_ph=1.51630000;r_ph=0.00000000; n_ph=0.01184;}
-    if(eta>=0.4350 && eta<0.5220)
-    {c_p=0.06690000;r_p=0.95200000; n_p=1.89000000;c_e=1.47910000;r_e=0.00000000; n_e=0.01065;c_ph=1.50480000;r_ph=0.00000000; n_ph=0.01221;}
-    if(eta>=0.5220 && eta<0.6090)
-    {c_p=0.06980000;r_p=0.93500000; n_p=2.02000000;c_e=1.46160000;r_e=0.00000000; n_e=0.01103;c_ph=1.50120000;r_ph=0.00000000; n_ph=0.01193;}
-    if(eta>=0.6090 && eta<0.6960)
-    {c_p=0.06340000;r_p=0.98100000; n_p=1.80000000;c_e=1.47420000;r_e=0.00000000; n_e=0.01095;c_ph=1.52640000;r_ph=0.00000000; n_ph=0.01159;}
-    if(eta>=0.6960 && eta<0.7830)
-    {c_p=0.05730000;r_p=1.03000000; n_p=1.11000000;c_e=1.46330000;r_e=0.00000000; n_e=0.01123;c_ph=1.51400000;r_ph=0.00000000; n_ph=0.01193;}
-    if(eta>=0.7830 && eta<0.8700)
-    {c_p=0.06720000;r_p=0.9920000; n_p=1.73000000;c_e=1.48330000;r_e=0.00000000; n_e=0.01149;c_ph=1.54820000;r_ph=0.00000000; n_ph=0.01122;}
-    if(eta>=0.8700 && eta<0.9570)
-    {c_p=0.06450000;r_p=1.06100000; n_p=0.9300000;c_e=1.5212000;r_e=0.00000000; n_e=0.01132;c_ph=1.56030000;r_ph=0.00000000; n_ph=0.01175;}
-    if(eta>=0.9570 && eta<1.0440)
-    {c_p=0.06170000;r_p=1.07700000; n_p=1.44000000;c_e=1.48860000;r_e=0.00000000; n_e=0.01218;c_ph=1.57330000;r_ph=0.00000000; n_ph=0.01135;}
-    if(eta>=1.0440 && eta<1.1310)
-    {c_p=0.06420000;r_p=1.11000000; n_p=0.72000000;c_e=1.48070000;r_e=0.00000000; n_e=0.01239;c_ph=1.57390000;r_ph=0.00000000; n_ph=0.01221;}
-    if(eta>=1.1310 && eta<1.2180)
-    {c_p=0.05980000;r_p=1.15800000; n_p=0.54000000;c_e=1.52920000;r_e=0.00000000; n_e=0.01204;c_ph=1.61650000;r_ph=0.00000000; n_ph=0.01161;}
-    if(eta>=1.2180 && eta<1.3050)
-    {c_p=0.05320000;r_p=1.21410000; n_p=0.00000000;c_e=1.52750000;r_e=0.00000000; n_e=0.01453;c_ph=1.64260000;r_ph=0.00000000; n_ph=0.01244;}
-    if(eta>=1.3050 && eta<1.3920)
-    {c_p=0.05830000;r_p=1.24180000; n_p=0.00000000;c_e=1.47370000;r_e=0.00000000; n_e=0.01841;c_ph=1.68600000;r_ph=0.00000000; n_ph=0.01441;}
-    if(eta>=1.3920 && eta<1.4790)
-    {c_p=0.06730000;r_p=1.25480000; n_p=0.00000000;c_e=1.52920000;r_e=0.00000000; n_e=0.01432;c_ph=1.71230000;r_ph=0.00000000; n_ph=0.01507;}
-    if(eta>=1.4790 && eta<1.5660)
-    {c_p=0.05920000;r_p=1.25950000; n_p=0.00000000;c_e=1.57180000;r_e=0.00000000; n_e=0.01358;c_ph=1.73310000;r_ph=0.00000000; n_ph=0.01307;}
-    if(eta>=1.5660 && eta<1.6530)
-    {c_p=0.03990000;r_p=1.23260000; n_p=0.00000000;c_e=1.56400000;r_e=0.00000000; n_e=0.01267;c_ph=1.73490000;r_ph=0.00000000; n_ph=0.01179;}
-    if(eta>=1.6530 && eta<1.7400)
-    {c_p=0.02820000;r_p=1.21750000; n_p=0.00000000;c_e=1.61360000;r_e=0.00000000; n_e=0.01261;c_ph=1.71360000;r_ph=0.00000000; n_ph=0.01118;}
-    if(eta>=1.7400 && eta<1.8300)
-    {c_p=0.03860000;r_p=1.17960000; n_p=0.00000000;c_e=1.67590000;r_e=0.00000000; n_e=0.01174;c_ph=1.68610000;r_ph=0.00000000; n_ph=0.01100;}
-    if(eta>=1.8300 && eta<1.9300)
-    {c_p=0.03810000;r_p=1.13200000; n_p=0.00000000;c_e=1.63300000;r_e=0.00000000; n_e=0.01365;c_ph=1.67390000;r_ph=0.00000000; n_ph=0.01044;}
-    if(eta>=1.9300 && eta<2.0430)
-    {c_p=0.0000000;r_p=1.12480000; n_p=0.00000000;c_e=1.65090000;r_e=0.00000000; n_e=0.01340;c_ph=1.680100000;r_ph=0.00000000; n_ph=0.01056;}
-    if(eta>=2.0430 && eta<2.1720)
-    {c_p=0.00000000;r_p=1.11740000; n_p=0.0000000;c_e=1.63300000;r_e=0.00000000; n_e=0.01481;c_ph=1.65640000;r_ph=0.00000000; n_ph=0.01084;}
-    if(eta>=2.1720 && eta<2.3220)
-    {c_p=0.00000000;r_p=1.08890000; n_p=1.51040000;c_e=1.63500000;r_e=0.00000000; n_e=0.01430;c_ph=1.66830000;r_ph=0.00000000; n_ph=0.01113;}
-    if(eta>=2.3220)
-    {c_p=0.00000000;r_p=1.06820000; n_p=2.65000000;c_e=2.04200000;r_e=0.00000000; n_e=0.01414;c_ph=1.75290000;r_ph=0.00000000; n_ph=0.01311;}
-    
-    double theta=2*atan(exp(-eta));
-    
-    if(err_type==0){return sqrt(c_p*c_p*p*p*sin(theta)*sin(theta)+r_p*r_p*p*sin(theta)+n_p*n_p);}
-    else if(err_type==1){return sqrt(c_e*c_e/(p*p)+r_e*r_e/p+n_e*n_e);}
-    else if(err_type==2){return sqrt(c_ph*c_ph/(p*p)+r_ph*r_ph/p+n_ph*n_ph);}
-    else { return 0; } // THIS WILL CAUSE THE FIT TO CRASH --> err_type must be 0,1,2
-}
-
-double mu_err(double p,double eta,double phi, int err_type){
-    eta=abs(eta);
-    
-    double c_p,r_p,n_p,c_e,r_e,n_e,c_ph,r_ph,n_ph;
-    
-    if(eta>=0 && eta<0.10)
-    {c_p=0.00530000;r_p=0.0012329; n_p=2.0001434;c_e=0.00305000;r_e=0.00000000; n_e=0.00043240;c_ph=0.00304000;r_ph=0.00018100; n_ph=0.0000719;}
-    if(eta>=0.10 && eta<0.20)
-    {c_p=0.00553000;r_p=0.00122959; n_p=0.00013670;c_e=0.00350000;r_e=0.00000000; n_e=0.00038330;c_ph=0.0029900;r_ph=0.00015000; n_ph=0.00007190;}
-    if(eta>=0.20 && eta<0.30)
-    {c_p=0.00609000;r_p=0.00126893; n_p=0.00013220;c_e=0.00269000;r_e=0.00000000; n_e=0.00033830;c_ph=0.003040000;r_ph=0.00023400; n_ph=0.00006820;}
-    if(eta>=0.30 && eta<0.40)
-    {c_p=0.00687000;r_p=0.00132409; n_p=0.00012760;c_e=0.00273000;r_e=0.00000000; n_e=0.00030640;c_ph=0.00313000;r_ph=0.00024200; n_ph=0.00006700;}
-    if(eta>=0.40 && eta<0.50)
-    {c_p=0.00699000;r_p=0.00136460; n_p=0.00013320;c_e=0.00281000;r_e=0.00000000; n_e=0.00028470;c_ph=0.003310000;r_ph=0.00022300; n_ph=0.00006760;}
-    if(eta>=0.50 && eta<0.60)
-    {c_p=0.00742000;r_p=0.00138092; n_p=0.00012850;c_e=0.00242000;r_e=0.00000000; n_e=0.00028330;c_ph=0.003400000;r_ph=0.00018000; n_ph=0.00006940;}
-    if(eta>=0.60 && eta<0.70)
-    {c_p=0.00788000;r_p=0.00139850; n_p=0.00012410;c_e=0.00276000;r_e=0.00000000; n_e=0.00028300;c_ph=0.00344000;r_ph=0.000268000; n_ph=0.00006640;}
-    if(eta>=0.70 && eta<0.80)
-    {c_p=0.00832000;r_p=0.00143528; n_p=0.00012380;c_e=0.00326000;r_e=0.00000000; n_e=0.00027360;c_ph=0.00350000;r_ph=0.00022000; n_ph=0.00007160;}
-    if(eta>=0.80 && eta<0.90)
-    {c_p=0.00930000;r_p=0.00152113; n_p=0.00012440;c_e=0.00325000;r_e=0.00000000; n_e=0.00025360;c_ph=0.00328000;r_ph=0.00044500; n_ph=0.00006070;}
-    if(eta>=0.90 && eta<1.00)
-    {c_p=0.01098000;r_p=0.00180097; n_p=0.00014770;c_e=0.00326000;r_e=0.00000000; n_e=0.00024060;c_ph=0.00395000;r_ph=0.00030500; n_ph=0.00007610;}
-    if(eta>=1.0000 && eta<1.100)
-    {c_p=0.01188000;r_p=0.00184714; n_p=0.00014360;c_e=0.00387000;r_e=0.00000000; n_e=0.00022460;c_ph=0.00411000;r_ph=0.00027000; n_ph=0.00008110;}
-    if(eta>=1.10 && eta<1.20)
-    {c_p=0.01375000;r_p=0.00184140; n_p=0.00012330;c_e=0.00390000;r_e=0.00000000; n_e=0.00021530;c_ph=0.00434000;r_ph=0.00042400; n_ph=0.00006740;}
-    if(eta>=1.20 && eta<1.30)
-    {c_p=0.01432000;r_p=0.00197793; n_p=0.00013660;c_e=0.00390000;r_e=0.00000000; n_e=0.00020530;c_ph=0.00378000;r_ph=0.00066300; n_ph=0.00005580;}
-    if(eta>=1.30 && eta<1.40)
-    {c_p=0.01465000;r_p=0.00208521; n_p=0.00014840;c_e=0.00389000;r_e=0.00000000; n_e=0.0002131;c_ph=0.00397000;r_ph=0.00059300; n_ph=0.00007000;}
-    if(eta>=1.40 && eta<1.50)
-    {c_p=0.01419000;r_p=0.00207764; n_p=0.00015210;c_e=0.00403000;r_e=0.00000000; n_e=0.00022100;c_ph=0.00411000;r_ph=0.00074000; n_ph=0.00004600;}
-    if(eta>=1.50 && eta<1.60)
-    {c_p=0.01334000;r_p=0.00207255; n_p=0.00016100;c_e=0.00400000;r_e=0.00000000; n_e=0.00021970;c_ph=0.00376000;r_ph=0.00082600; n_ph=0.00004900;}
-    if(eta>=1.60 && eta<1.70)
-    {c_p=0.01304000;r_p=0.00222486; n_p=0.00018980;c_e=0.00404000;r_e=0.00000000; n_e=0.0002242;c_ph=0.00379000;r_ph=0.00083800; n_ph=0.00006660;}
-    if(eta>=1.70 && eta<1.80)
-    {c_p=0.01277000;r_p=0.00263811; n_p=0.00027250;c_e=0.00396000;r_e=0.00000000; n_e=0.00025370;c_ph=0.00429000;r_ph=0.00083000; n_ph=0.00008600;}
-    if(eta>=1.80 && eta<1.90)
-    {c_p=0.01489000;r_p=0.00313961; n_p=0.00033100;c_e=0.00417000;r_e=0.00000000; n_e=0.00027520;c_ph=0.00419000;r_ph=0.00084000; n_ph=0.00011500;}
-    if(eta>=1.90 && eta<2.00)
-    {c_p=0.01473000;r_p=0.00366521; n_p=0.00045600;c_e=0.00437000;r_e=0.00000000; n_e=0.00029680;c_ph=0.003920000;r_ph=0.00104000; n_ph=0.00011900;}
-    if(eta>=2.00 && eta<2.1000)
-    {c_p=0.01667000;r_p=0.00440120; n_p=0.00058100;c_e=0.00429000;r_e=0.00000000; n_e=0.00031940;c_ph=0.00405000;r_ph=0.00110000; n_ph=0.00014900;}
-    if(eta>=2.100 && eta<2.200)
-    {c_p=0.01641000;r_p=0.00495142; n_p=0.00074700;c_e=0.00479000;r_e=0.00000000; n_e=0.00037380;c_ph=0.0053900;r_ph=0.00087000; n_ph=0.00019500;}
-    if(eta>=2.200 && eta<2.30)
-    {c_p=0.01710000;r_p=0.00568498; n_p=0.00094500;c_e=0.00526000;r_e=0.00000000; n_e=0.00042750;c_ph=0.00470000;r_ph=0.00129000; n_ph=0.00018900;}
-    if(eta>=2.30)
-    {c_p=0.01590000;r_p=0.00643950; n_p=0.00130400;c_e=0.00449000;r_e=0.00000000; n_e=0.00052200;c_ph=0.00370000;r_ph=0.00176000; n_ph=0.00019800;}
-    
-    double theta=2*atan(exp(-eta));
-    
-    if(err_type==0){return p*p*sin(theta)*sin(theta)*sqrt(c_p*c_p/(p*p*sin(theta)*sin(theta))+r_p*r_p/(p*sin(theta))+n_p*n_p);}
-    else if(err_type==1){return sqrt(c_e*c_e/(p*p)+r_e*r_e/p+n_e*n_e);}
-    else if(err_type==2){return sqrt(c_ph*c_ph/(p*p)+r_ph*r_ph/p+n_ph*n_ph);}
-    else { return 0; } // THIS WILL CAUSE THE FIT TO CRASH --> err_type must be 0,1,2
-}
-
-double e_err(double p,double eta,double phi, int err_type){
-    eta=abs(eta);
-    
-    double c_p,r_p,n_p,c_e,r_e,n_e,c_ph,r_ph,n_ph;
-    
-    if(eta>=0 && eta<0.1740)
-    {c_p=0.00635000;r_p=0.07110000; n_p=0.26800000;c_e=0.00460000;r_e=0.00000000; n_e=0.00045350;c_ph=0.00311000;r_ph=0.00120600; n_ph=0.00009290;}
-    if(eta>=0.1740 && eta<0.2610)
-    {c_p=0.00330000;r_p=0.08990000; n_p=0.12600000;c_e=0.00381000;r_e=0.00000000; n_e=0.00038600;c_ph=0.00362000;r_ph=0.00120300; n_ph=0.00008700;}
-    if(eta>=0.2610 && eta<0.3480)
-    {c_p=0.00566000;r_p=0.07850000; n_p=0.22700000;c_e=0.00327000;r_e=0.00000000; n_e=0.00035180;c_ph=0.00514000;r_ph=0.00091000; n_ph=0.00012590;}
-    if(eta>=0.3480 && eta<0.4350)
-    {c_p=0.00519000;r_p=0.08990000; n_p=0.19800000;c_e=0.00232000;r_e=0.00000000; n_e=0.00033220;c_ph=0.00368000;r_ph=0.00127600; n_ph=0.00010300;}
-    if(eta>=0.4350 && eta<0.5220)
-    {c_p=0.00448000;r_p=0.08830000; n_p=0.27800000;c_e=0.00267000;r_e=0.00000000; n_e=0.00031120;c_ph=0.00355000;r_ph=0.00128800; n_ph=0.00009500;}
-    if(eta>=0.5220 && eta<0.6090)
-    {c_p=0.00360000;r_p=0.09150000; n_p=0.18800000;c_e=0.002660;r_e=0.00000000; n_e=0.00031790;c_ph=0.00000000;r_ph=0.00159900; n_ph=0.00000000;}
-    if(eta>=0.6090 && eta<0.6960)
-    {c_p=0.00370000;r_p=0.09020000; n_p=0.23600000;c_e=0.00295000;r_e=0.00000000; n_e=0.00032990;c_ph=0.00418000;r_ph=0.00130200; n_ph=0.00010700;}
-    if(eta>=0.6960 && eta<0.7830)
-    {c_p=0.00200000;r_p=0.09860000; n_p=0.24800000;c_e=0.00312000;r_e=0.00000000; n_e=0.00033050;c_ph=0.00456000;r_ph=0.00116000; n_ph=0.00014610;}
-    if(eta>=0.7830 && eta<0.8700)
-    {c_p=0.00320000;r_p=0.10460000; n_p=0.28600000;c_e=0.00392000;r_e=0.00000000; n_e=0.00030260;c_ph=0.00280000;r_ph=0.00156000; n_ph=0.00012400;}
-    if(eta>=0.8700 && eta<0.9570)
-    {c_p=0.00000000;r_p=0.10680000; n_p=0.30600000;c_e=0.00405000;r_e=0.00000000; n_e=0.00028930;c_ph=0.00220000;r_ph=0.00174000; n_ph=0.00012900;}
-    if(eta>=0.9570 && eta<1.0440)
-    {c_p=0.00000000;r_p=0.10910000; n_p=0.48700000;c_e=0.00369000;r_e=0.00000000; n_e=0.00028420;c_ph=0.00400000;r_ph=0.00173000; n_ph=0.00014800;}
-    if(eta>=1.0440 && eta<1.1310)
-    {c_p=0.00000000;r_p=0.13000000; n_p=0.58700000;c_e=0.00384000;r_e=0.00000000; n_e=0.00029050;c_ph=0.00000000;r_ph=0.00204600; n_ph=0.00015000;}
-    if(eta>=1.1310 && eta<1.2180)
-    {c_p=0.00000000;r_p=0.14650000; n_p=0.81900000;c_e=0.00474000;r_e=0.00000000; n_e=0.00027940;c_ph=0.00000000;r_ph=0.00209400; n_ph=0.00018100;}
-    if(eta>=1.2180 && eta<1.3050)
-    {c_p=0.00000000;r_p=0.13800000; n_p=0.90300000;c_e=0.00444000;r_e=0.00000000; n_e=0.00026780;c_ph=0.00400000;r_ph=0.00188000; n_ph=0.00024000;}
-    if(eta>=1.3050 && eta<1.3920)
-    {c_p=0.00000000;r_p=0.14290000; n_p=0.98800000;c_e=0.00408000;r_e=0.00000000; n_e=0.00029510;c_ph=0.00490000;r_ph=0.00209000; n_ph=0.00024400;}
-    if(eta>=1.3920 && eta<1.4790)
-    {c_p=0.00000000;r_p=0.20160000; n_p=0.89000000;c_e=0.00400000;r_e=0.00000000; n_e=0.00029060;c_ph=0.00400000;r_ph=0.00249000; n_ph=0.00023100;}
-    if(eta>=1.4790 && eta<1.6530)
-    {c_p=0.02770000;r_p=0.24400000; n_p=0.66000000;c_e=0.00451000;r_e=0.00000000; n_e=0.00027320;c_ph=0.00360000;r_ph=0.00262000; n_ph=0.00026200;}
-    if(eta>=1.6530 && eta<1.7400)
-    {c_p=0.01440000;r_p=0.15800000; n_p=1.07000000;c_e=0.00497000;r_e=0.00000000; n_e=0.00027700;c_ph=0.00540000;r_ph=0.00265000; n_ph=0.00034100;}
-    if(eta>=1.7400 && eta<1.8300)
-    {c_p=0.00620000;r_p=0.19300000; n_p=0.59000000;c_e=0.00371000;r_e=0.00000000; n_e=0.00030640;c_ph=0.00600000;r_ph=0.00279000; n_ph=0.00035800;}
-    if(eta>=1.8300 && eta<1.9300)
-    {c_p=0.01240000;r_p=0.15400000; n_p=0.66000000;c_e=0.00444000;r_e=0.00000000; n_e=0.00030570;c_ph=0.00950000;r_ph=0.00267000; n_ph=0.00033500;}
-    if(eta>=1.9300 && eta<2.0430)
-    {c_p=0.00960000;r_p=0.17100000; n_p=0.37000000;c_e=0.00497000;r_e=0.00000000; n_e=0.00033390;c_ph=0.00410000;r_ph=0.00362000; n_ph=0.00022500;}
-    if(eta>=2.0430 && eta<2.1720)
-    {c_p=0.01890000;r_p=0.01000000; n_p=0.73500000;c_e=0.00466000;r_e=0.00000000; n_e=0.00036940;c_ph=0.01090000;r_ph=0.00287000; n_ph=0.00032600;}
-    if(eta>=2.1720 && eta<2.3220)
-    {c_p=0.01130000;r_p=0.14700000; n_p=0.00000000;c_e=0.00472000;r_e=0.00000000; n_e=0.00045540;c_ph=0.00400000;r_ph=0.00446000; n_ph=0.00000000;}
-    if(eta>=2.3220)
-    {c_p=0.01460000;r_p=0.12350000; n_p=0.00000000;c_e=0.00360000;r_e=0.00000000; n_e=0.00059400;c_ph=0.01550000;r_ph=0.00370000; n_ph=0.00035000;}
-    
-    double theta=2*atan(exp(-eta));
-    
-    if(err_type==0){return sqrt(c_p*c_p*(p*p*sin(theta)*sin(theta))+r_p*r_p*(p*sin(theta))+n_p*n_p);}
-    else if(err_type==1){return sqrt(c_e*c_e/(p*p)+r_e*r_e/p+n_e*n_e);}
-    else if(err_type==2){return sqrt(c_ph*c_ph/(p*p)+r_ph*r_ph/p+n_ph*n_ph);}
-    else { return 0; } // THIS WILL CAUSE THE FIT TO CRASH --> err_type must be 0,1,2
-    
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-//      MAIN
-// ---------------------------------------------------------------------------------------------------------------------
 void RunExclusiveTop(TString filename,
                      TString outname,
-                     Int_t channelSelection,
-                     Int_t chargeSelection,
-                     TH1F *normH,
-                     TH1F *genPU,
+                     Int_t channelSelection, 
+                     Int_t chargeSelection, 
+                     TH1F *normH, 
+                     TH1F *genPU, 
                      TString era,
                      Bool_t debug,
-					 std::string systVar)
+                     TString systVar)
 {
-    /////////////////////
-    // INITIALIZATION //
-    ///////////////////
-    const char* CMSSW_BASE = getenv("CMSSW_BASE");
-    // CTPPS reconstruction part
-    //ctpps::XiReconstructor proton_reco;
-    //proton_reco.feedDispersions(Form("%s/src/TopLJets2015/CTPPSAnalysisTools/data/2017/dispersions.txt", CMSSW_BASE));
-    
-    //ctpps::AlignmentsFactory ctpps_aligns;
-    //ctpps_aligns.feedAlignments(Form("%s/src/TopLJets2015/CTPPSAnalysisTools/data/2017/alignments_30jan2017.txt", CMSSW_BASE));
-    
-    //ctpps::LHCConditionsFactory lhc_conds;
-    //lhc_conds.feedConditions(Form("%s/src/TopLJets2015/CTPPSAnalysisTools/data/2017/xangle_tillTS2.csv", CMSSW_BASE));
-    //lhc_conds.feedConditions(Form("%s/src/TopLJets2015/CTPPSAnalysisTools/data/2017/xangle_afterTS2.csv", CMSSW_BASE));
-    
-    bool isTTbar = filename.Contains("_TTJets");
-	bool isData = filename.Contains("Data13TeV") || filename.Contains("SingleMuon") || filename.Contains("SingleElectron");
-	bool isPythia8 = filename.Contains("pythia8");
-    
-    //PREPARE OUTPUT
-    TString baseName=gSystem->BaseName(outname);
-    TString dirName=gSystem->DirName(outname);
-    TFile *fOut=TFile::Open(dirName+"/"+baseName,"RECREATE");
-    fOut->cd();
-    
-    //READ TREE FROM FILE
-    MiniEvent_t ev;
-    TFile *f = TFile::Open(filename);
-	TH1 *counter=(TH1 *)f->Get("analysis/counter");
-    if(!counter) {cout << "Corrupted or missing counter: \"analysis/counter\" " << endl;return;}
-	TH2F *RPcount=(TH2F *)f->Get("analysis/RPcount");
-    if(!RPcount) {cout << "Corrupted or missing RPcount: \"analysis/RPcount\" " << endl;return;}
-    TH1 *triggerList=(TH1 *)f->Get("analysis/triggerList");
-    TTree *t = (TTree*)f->Get("analysis/tree");
-    attachToMiniEventTree(t,ev);
-    Int_t nentries(t->GetEntriesFast());
-    
-    //debug = 1; // manual turn on DEBUG mode
-#ifdef DEBUG_ON
-//    if (debug) {
-        int nentries_cap = 5000; // restricted number of entries for testing (10k+ for BTD)
-        if (nentries>nentries_cap) nentries = nentries_cap;
-        std::cout << "--- debug mode activated" << std::endl;
-//    }
-#endif
-    
-    t->GetEntry(0);
-    
-    std::cout << "--- producing " << outname << " from " << nentries << " events" << std::endl;
-    
-    //auxiliary to solve neutrino pZ using MET
-    MEzCalculator neutrinoPzComputer;
-    
-    //LUMINOSITY+PILEUP
-    LumiTools lumi(era,genPU);
-    
-    //LEPTON EFFICIENCIES
-    EfficiencyScaleFactorsWrapper lepEffH(isData,era);
-    
-    //B-TAG CALIBRATION
-    //BTagSFUtil btvSF(era,"DeepCSV",BTagEntry::OperatingPoint::OP_MEDIUM,"",0);
-    BTagSFUtil btvSF(era,BTagEntry::OperatingPoint::OP_MEDIUM,"",0);
-	
-    //JEC/JER
-    JECTools jec(era);
-	
-    // Proton correction class
-    PPSEff *PPS_reco = new PPSEff(Form("%s/src/TopLJets2015/TopAnalysis/data/era2017/reco_charactersitics_version1.root", CMSSW_BASE));
 
-    // BOOK PROTON TREE (DATA ONLY)
-    fOut->cd();
-	TTree *outPT=new TTree("protons","protons");
-    outPT->Branch("run",&ev.run,"run/i");
-    outPT->Branch("event",&ev.event,"event/l");
-    outPT->Branch("lumi",&ev.lumi,"lumi/i");
-    outPT->Branch("nvtx",&ev.nvtx,"nvtx/I");
-    outPT->Branch("rho",&ev.rho,"rho/F");
-    outPT->Branch("nchPV",&ev.nchPV,"nchPV/I");
-    outPT->Branch("beamXangle",&ev.beamXangle,"beamXangle/F");
-    float m_protonVars_p1_xi=0, m_protonVars_p2_xi=0;
-	outPT->Branch("p1_xi",&m_protonVars_p1_xi);
-	outPT->Branch("p2_xi",&m_protonVars_p2_xi);
-	
-		
-    // BOOK OUTPUT TREE
-    TTree *outT=new TTree("tree","tree");
-    outT->Branch("run",&ev.run,"run/i");
-    outT->Branch("event",&ev.event,"event/l");
-    outT->Branch("lumi",&ev.lumi,"lumi/i");
-    outT->Branch("nvtx",&ev.nvtx,"nvtx/I");
-    outT->Branch("rho",&ev.rho,"rho/F");
-    outT->Branch("nchPV",&ev.nchPV,"nchPV/I");
-    outT->Branch("beamXangle",&ev.beamXangle,"beamXangle/F");
-	
-	// Parton shower weights
-	if(!isData){
-	  outT->Branch("g_npsw",    &ev.g_npsw,   "g_npsw/I");
-	  outT->Branch("g_psw",      ev.g_psw,    "g_psw[g_npsw]/F");
-	}
-    
-	ADDVAR(&ev.met_pt,"met_pt","/F",outT);
-    ADDVAR(&ev.met_phi,"met_phi","/F",outT);
-    ADDVAR(&ev.met_sig,"met_sig","/F",outT);
-	
-    TString fvars[]={
-        "t_pt","t_eta", "t_phi", "t_m", "t_charge", "t_isHadronic",
-        "tbar_pt","tbar_eta", "tbar_phi", "tbar_m",
-        "ttbar_pt","ttbar_eta", "ttbar_phi", "ttbar_m", "ttbar_E",
-        
-        // quantities of objects used to build the ttbar
-        "l_px", "l_py", "l_pz",
-        "nu_px", "nu_py", "nu_pz", "nu_complex",
-        "bJet_had_px","bJet_had_py", "bJet_had_pz",
-        "bJet_lep_px","bJet_lep_py", "bJet_lep_pz",
-        "lightJet0_px", "lightJet0_py", "lightJet0_pz",
-        "lightJet1_px", "lightJet1_py", "lightJet1_pz",
-        
-#ifdef SAVEERRORS_ON
-        "e_l_px", "e_l_py", "e_l_pz",
-        "e_nu_px", "e_nu_py", "e_nu_pz", "e_nu_pxpy",
-        "e_bJet_had_px", "e_bJet_had_py", "e_bJet_had_pz",
-        "e_bJet_lep_px", "e_bJet_lep_py", "e_bJet_lep_pz",
-        "e_lightJet0_px", "e_lightJet0_py", "e_lightJet0_pz",
-        "e_lightJet1_px", "e_lightJet1_py", "e_lightJet1_pz",
-#endif
-        
-#ifdef DEBUG_ON
-        // test variables
-        "test1", "test2", "test3", "test4", "test5",
-#endif
-        
-        // quantities for all objects in event
-        "nBjets", "nLightJets", "nJets", "ht", "cat",
+  /////////////////////
+  // INITIALIZATION //
+  ///////////////////
+  bool runSysts = true;
+  bool prepareTraining = false;
+  bool prepareProtonData = false;
 
-        "l_pt", "l_eta", "l_phi", "l_m", "l_E", "lepton_isolation",
-        "nu_pt", "nu_eta", "nu_phi",
-        "p1_xi", "p2_xi", "ppsSF_wgt", "ppsSF_wgt_err",
-		"weight", "gen_wgt", "toppt_wgt", "selSF_wgt", "trigSF_wgt",
-		"selSF_wgt_err", "trigSF_wgt_err", "pu_wgt", "ptag_wgt", "ptag_wgt_err",
-		"ren_Up","fac_Up","scale_Up",
-		"ren_Down","fac_Down","scale_Down",
-		"isr_Up","fsr_Up",
-		"isr_Down","fsr_Down",
+  const char* CMSSW_BASE = getenv("CMSSW_BASE");
+  
+  
+  float run_bdt, lumi_bdt, event_bdt, rho_bdt, mpp_bdt, ypp_bdt, reco_mtt_bdt, reco_ytt_bdt, yvis_bdt, deltarll_bdt, mll_bdt,
+    ysum_bdt,  min_dy_bdt, nljets_bdt, metpt_bdt, E2_bdt, deltaphibb_bdt;
+  //metphi_bdt, 
 
-        "bJet0_pt","bJet0_eta", "bJet0_phi", "bJet0_m", "bJet0_E",
-        "bJet1_pt","bJet1_eta", "bJet1_phi", "bJet1_m", "bJet1_E",
-        "bJet2_pt","bJet2_eta", "bJet2_phi", "bJet2_m", "bJet2_E",
-        "bJet3_pt","bJet3_eta", "bJet3_phi", "bJet3_m", "bJet3_E",
-        
-        "lightJet0_pt", "lightJet0_eta", "lightJet0_phi", "lightJet0_m", "lightJet0_E",
-        "lightJet1_pt", "lightJet1_eta", "lightJet1_phi", "lightJet1_m", "lightJet1_E",
-        "lightJet2_pt", "lightJet2_eta", "lightJet2_phi", "lightJet2_m", "lightJet2_E",
-        "lightJet3_pt", "lightJet3_eta", "lightJet3_phi", "lightJet3_m", "lightJet3_E",
-        
-        // quantities of generated objects (MC truth)
-        "gen_ttbar_pt","gen_ttbar_eta", "gen_ttbar_phi", "gen_ttbar_m", "gen_ttbar_E",
-        "gen_t_pt","gen_t_eta", "gen_t_phi", "gen_t_m",
-        "gen_tbar_pt","gen_tbar_eta", "gen_tbar_phi", "gen_tbar_m",
-        "gen_b_pt","gen_b_eta", "gen_b_phi", "gen_b_m",
-        "gen_bbar_pt","gen_bbar_eta", "gen_bbar_phi", "gen_bbar_m"
-        };
-    std::map<TString,Float_t> outVars;
-    for(size_t i=0; i<sizeof(fvars)/sizeof(TString); i++){
-        outVars[fvars[i]]=0.;
-        ADDVAR(&(outVars[fvars[i]]),fvars[i],"/F",outT);
-    }
-    ADDVAR(&(outVars["nJets"]),"nJets","/I",outPT);
-    ADDVAR(&(outVars["nBjets"]),"nBjets","/I",outPT);
+  TMVA::Tools::Instance();
+  TMVA::Reader *reader = new TMVA::Reader( "!Color:!Silent" );
+  TString method =  "BDT method";
+  
+  if(!prepareTraining && !prepareProtonData) {
+  
+    std::cout << "==> Start TMVA Reader" << std::endl;
+  
+    reader->AddSpectator("run",&run_bdt);
+    reader->AddSpectator("lumi",&lumi_bdt);
+    reader->AddSpectator("ev",&event_bdt);
+    reader->AddSpectator("rho",&rho_bdt);                                                                                                    
+    reader->AddVariable("mpp",&mpp_bdt);
+    reader->AddVariable("ypp",&ypp_bdt);
+    reader->AddVariable("kinreco_mtt",&reco_mtt_bdt);
+    reader->AddVariable("kinreco_ytt",&reco_ytt_bdt);
+    reader->AddVariable("yvis",&yvis_bdt);
+    reader->AddVariable("deltarll",&deltarll_bdt);
+    reader->AddVariable("mll",&mll_bdt);
+    reader->AddVariable("fabs(b2phi-b1phi)",&deltaphibb_bdt);
+    reader->AddVariable("ysum",&ysum_bdt);
+    //reader->AddVariable("metphi",&metphi_bdt);
+    reader->AddVariable("min_dy",&min_dy_bdt);                                                                                                                           
+    reader->AddVariable("nljets",&nljets_bdt);
+    reader->AddVariable("metpt",&metpt_bdt);
+    reader->AddVariable("E2",&E2_bdt);
+    
+    reader->BookMVA( "BDT method", "/eos/user/b/bribeiro/exclusiveTTBarDilepton/BDTTrainingResults/TMVAClassification_BDT.weights.xml");
+  }
 
-#ifdef HISTOGRAMS_ON
-    //BOOK HISTOGRAMS
-    HistTool ht;
-    ht.setNsyst(0);
-    ht.addHist("puwgtctr",     new TH1F("puwgtctr",    ";Weight sums;Events",2,0,2));
-    ht.addHist("ch_tag",       new TH1F("ch_tag",      ";Channel Tag;Events",10,0,10));
-    ht.addHist("nvtx",         new TH1F("nvtx",        ";Vertex multiplicity;Events",55,-0.5,49.5));
-    ht.addHist("njets",        new TH1F("njets",       ";Jet multiplicity;Events",15,-0.5,14.5));
-    ht.addHist("nbjets",       new TH1F("nbjets",      ";b jet multiplicity;Events",10,-0.5,9.5));
-    ht.addHist("ht",           new TH1F("ht",          ";H_{T} [GeV];Events",500,0,2500));
-    
-    ht.addHist("mttbar_rec",   new TH1F("mttbar_rec",  ";M_{ttbar,rec} [GeV];Events",50,300,1200));
-    ht.addHist("mttbar_gen",   new TH1F("mttbar_gen",  ";M_{ttbar,gen} [GeV];Events",50,300,1200));
-    ht.addHist("mttbar_res",   new TH1F("mttbar_res",  ";M_{ttbar,rec}-M_{ttbar,gen} [GeV];Events",100,-500,500));
-    
-    ht.addHist("ptttbar_rec", new TH1F("ptttbar_rec",";Pt_{ttbar,rec} [GeV];Events",50,0,100));
-    ht.addHist("ptttbar_gen", new TH1F("ptttbar_gen",";Pt_{ttbar,gen} [GeV];Events",50,0,100));
-    ht.addHist("ptttbar_res", new TH1F("ptttbar_res",";Pt_{ttbar,rec}-Pt_{ttbar,gen} [GeV];Events",50,-150,150));
-    
-    ht.addHist("yttbar_rec", new TH1F("yttbar_rec",";Y_{ttbar,rec} ;Events",75,-2.5,2.5));
-    ht.addHist("yttbar_gen", new TH1F("yttbar_gen",";Y_{ttbar,gen} ;Events",75,-2.5,2.5));
-    ht.addHist("yttbar_res", new TH1F("yttbar_res",";Y_{ttbar,rec}-Y_{ttbar,gen} ;Events",75,-1.5,1.5));
-    
-    ht.addHist("mt_res"   ,   new TH1F("mt_res",  ";M_{t,rec}-M_{t,gen} [GeV];Events",50,-700,700));
-    ht.addHist("mtbar_res",   new TH1F("mtbar_res",  ";M_{tbar,rec}-M_{tbar,gen} [GeV];Events",50,-700,700));
-    ht.addHist("ptt_res",     new TH1F("ptt_res",";Pt_{t,rec}-Pt_{t,gen} [GeV];Events",50,-150,150));
-    ht.addHist("pttbar_res",  new TH1F("pttbar_res",";Pt_{tbar,rec}-Pt_{ttbar,gen} [GeV];Events",50,-150,150));
-    ht.addHist("yt_res",    new TH1F("yt_res",";Y_{t,rec}-Y_{t,gen} ;Events",75,-2.5,2.5));
-    ht.addHist("ytbar_res", new TH1F("ytbar_res",";Y_{tbar,rec}-Y_{tbar,gen} ;Events",75,-2.5,2.5));
-    
-    ht.addHist("mtop_res_hadronic",   new TH1F("mtop_res_hadronic",  ";M_{top,rec}-M_{top,gen} [GeV];Events",100,-500,500));
-    ht.addHist("pttop_res_hadronic",  new TH1F("pttop_res_hadronic",";Pt_{top,rec}-Pt_{top,gen} [GeV];Events",50,-150,150));
-    ht.addHist("ytop_res_hadronic",   new TH1F("ytop_res_hadronic",";Y_{top,rec}-Y_{top,gen} ;Events",75,-2.5,2.5));
-    ht.addHist("mtop_res_leptonic",   new TH1F("mtop_res_leptonic",  ";M_{top,rec}-M_{top,gen} [GeV];Events",100,-500,500));
-    ht.addHist("pttop_res_leptonic",  new TH1F("pttop_res_leptonic",";Pt_{top,rec}-Pt_{top,gen} [GeV];Events",50,-150,150));
-    ht.addHist("ytop_res_leptonic",   new TH1F("ytop_res_leptonic",";Y_{top,rec}-Y_{top,gen} ;Events",75,-2.5,2.5));
-	
-    // normalization and event count
-    ht.addHist("evt_count",    new TH1F("evt_count",   ";Selection Stage;Events",10,0,10));
-    ht.getPlots()["evt_count"]->GetXaxis()->SetBinLabel(1,"Total");
-    ht.getPlots()["evt_count"]->GetXaxis()->SetBinLabel(2,"Sumweighted");
-    ht.getPlots()["evt_count"]->GetXaxis()->SetBinLabel(3,"preselection");
-    ht.getPlots()["evt_count"]->GetXaxis()->SetBinLabel(4,"=2 p (data)");
-    ht.getPlots()["evt_count"]->GetXaxis()->SetBinLabel(5,"trigger");
-    ht.getPlots()["evt_count"]->GetXaxis()->SetBinLabel(6,"=1 lep");
-    ht.getPlots()["evt_count"]->GetXaxis()->SetBinLabel(7,"#geq4 jets");
-    ht.getPlots()["evt_count"]->GetXaxis()->SetBinLabel(8,"#geq2 bjets");
-    ht.getPlots()["evt_count"]->SetBinContent(1,counter->GetBinContent(1));
-    ht.getPlots()["evt_count"]->SetBinContent(2,counter->GetBinContent(2));
-    ht.getPlots()["evt_count"]->SetBinContent(3,counter->GetBinContent(3));	
+  //ctpps::LHCConditionsFactory lhc_conds;
+  //lhc_conds.feedConditions(Form("%s/src/TopLJets2015/CTPPSAnalysisTools/data/2017/xangle_tillTS2.csv", CMSSW_BASE));
+  //lhc_conds.feedConditions(Form("%s/src/TopLJets2015/CTPPSAnalysisTools/data/2017/xangle_afterTS2.csv", CMSSW_BASE));
 
-    // proton count
-    ht.addHist("pn_count",    new TH1F("pn_count",   ";;Events",5,0,5));
-	ht.getPlots()["pn_count"]->GetXaxis()->SetBinLabel(1,"0 hits");
-	ht.getPlots()["pn_count"]->GetXaxis()->SetBinLabel(2,"RP0 hit");
-	ht.getPlots()["pn_count"]->GetXaxis()->SetBinLabel(3,"RP1 hit");
-	ht.getPlots()["pn_count"]->GetXaxis()->SetBinLabel(4,"both RP");
-	ht.getPlots()["pn_count"]->GetXaxis()->SetBinLabel(5,"pres + nB#geq1");
-	int nbin = 0;
-	nbin=RPcount->FindBin(0.5,0.5); ht.getPlots()["pn_count"]->SetBinContent(1,RPcount->GetBinContent(nbin));
-	nbin=RPcount->FindBin(1.5,0.5); ht.getPlots()["pn_count"]->SetBinContent(2,RPcount->GetBinContent(nbin));
-	nbin=RPcount->FindBin(0.5,1.5); ht.getPlots()["pn_count"]->SetBinContent(3,RPcount->GetBinContent(nbin));
-	nbin=RPcount->FindBin(1.5,1.5); ht.getPlots()["pn_count"]->SetBinContent(4,RPcount->GetBinContent(nbin));
-	ht.getPlots()["pn_count"]->SetBinContent(5,counter->GetBinContent(4));
-#endif
-    
-    std::cout << "--- init done" << std::endl;
-    
-    //EVENT SELECTION WRAPPER
-    SelectionTool selector(filename, false, triggerList, SelectionTool::AnalysisType::TOP);
-	// selector.minJetPt = 25;
-    
-	// JEC/JER settings
-	int sys = 0;
-	if(systVar.find("jerUp")!=string::npos) sys = 1;
-	if(systVar.find("jerDn")!=string::npos) sys = -1;
-	if(systVar.find("jecUp")!=string::npos) sys = 2;
-	if(systVar.find("jecDn")!=string::npos) sys = -2;
-    if(systVar.find("jecAbsUp")!=string::npos) sys = 3;
-	if(systVar.find("jecAbsDn")!=string::npos) sys = -3;	
-    if(systVar.find("jecRelUp")!=string::npos) sys = 4;
-	if(systVar.find("jecRelDn")!=string::npos) sys = -4;	
-    if(systVar.find("jecPileupUp")!=string::npos) sys = 5;
-	if(systVar.find("jecPileupDn")!=string::npos) sys = -5;	
-    if(systVar.find("jecFlavUp")!=string::npos) sys = 6;
-	if(systVar.find("jecFlavDn")!=string::npos) sys = -6;	
-    if(systVar.find("jecHighPtUp")!=string::npos) sys = 7;
-	if(systVar.find("jecHighPtDn")!=string::npos) sys = -7;	
-    if(systVar.find("jecTimeUp")!=string::npos) sys = 8;
-	if(systVar.find("jecTimeDn")!=string::npos) sys = -8;
-	if(sys>0){cout << "INFO: Running JEC/JER up variation"<<endl;}
-	else if(sys<0){cout << "INFO: Running JEC/JER down variation"<<endl;}
-	else{cout << "INFO: Running nominal jet callibration"<<endl;}
+  PPSEff *multiRP_efficiency = new PPSEff("/eos/project/c/ctpps/subsystems/Pixel/RPixTracking/pixelEfficiencies_multiRP.root");
+  PPSEff *strip_radiation_efficiency = new PPSEff("/eos/project/c/ctpps/subsystems/Strips/StripsTracking/PreliminaryEfficiencies_July132020_1D2DMultiTrack.root");
 
-	// btagSF settings
-	string option = "central";
-	if(systVar.find("btagUp")!=string::npos) {
-		cout << "INFO: Running btagSF up variation"<<endl;
-		option = "up";}
-	else if(systVar.find("btagDn")!=string::npos) {
-		cout << "INFO: Running btagSF down variation"<<endl;
-		option = "down";}
-	else{cout << "INFO: Running nominal btag SF"<<endl;}
-    
-	// Proton reconstuction systematics
-	float pps_err = 0;
-	if(systVar.find("ppsUp")!=string::npos) {
-		cout << "INFO: Running PPS xi reco. up variation"<<endl;
-		pps_err = 1;}
-	else if(systVar.find("ppsDn")!=string::npos) {
-		cout << "INFO: Running PPS xi reco. down variation"<<endl;
-		pps_err = -1;}
-	else{cout << "INFO: Running nominal PPS reco"<<endl;}
-	
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //////////////////////////  LOOP OVER EVENTS  /////////////////////////////////////////////////////////////////
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    
-    for (Int_t iev=0;iev<nentries;iev++) {
-        t->GetEntry(iev);
-        if(iev%10==0) printf ("\r [%3.0f%%] done", 100.*(float)iev/(float)nentries);
-        
-        //      int fill_number = run_to_fill.getFillNumber(ev.run);
-        //      proton_reco.setAlignmentConstants(pots_align.getAlignmentConstants(fill_number));
-        
-        //assign randomly a run period
-        TString period = lumi.assignRunPeriod();
-        
-        ////////////////////
-        // EVENT WEIGHTS //
-        ///////////////////
-        float wgt(1.0);
-        std::vector<double>plotwgts(1,wgt);
-        
-        //////////////////
-        // CORRECTIONS //
-        /////////////////
-        btvSF.addBTagDecisions(ev);
-        if(!isData) btvSF.updateBTagDecisions(ev, option, option); 
-        //btvSF.updateBTagDecisions(ev); // check it !!!
-        jec.smearJetEnergies(ev);
-        
-        //////////////////////////
-        // RECO LEVEL SELECTION //
-        //////////////////////////
-        TString chTag = selector.flagFinalState(ev, {}, {}, sys); // writes the name in chTag, last argument is JEC/JER systematics
-        // ch
-		Int_t ch_tag = 0;
-#ifdef HISTOGRAMS_ON
-        ht.fill("evt_count", 3, plotwgts); // count all events before any selection
-        if      (chTag=="EM")    ch_tag = 1;
-        else if (chTag=="MM")    ch_tag = 2;
-        else if (chTag=="EE")    ch_tag = 3;
-        else if (chTag=="E")     ch_tag = 4;
-        else if (chTag=="M")     ch_tag = 5;
-        else                     ch_tag = 9;
-        ht.fill("ch_tag", ch_tag, plotwgts);
-#endif
-        std::vector<Particle> &leptons     = selector.getSelLeptons();
-        std::vector<Jet>      &jets        = selector.getJets();
-        std::vector<Jet>      bJets,lightJets;
-        std::vector<Particle> selectedLeptons;
-        double p1_xi =0.; // proton in positive pot
-        double p2_xi =0.; // proton in negative pot
-        
-        //  selection of lightJets and bJets
-        for(size_t ij=0; ij<jets.size(); ij++) {
-            if(jets[ij].flavor()==5) bJets.push_back(jets[ij]);
-            else                     lightJets.push_back(jets[ij]);
-        }
-        
-        // selection of leptons
-        for( size_t i_lept=0;i_lept<leptons.size();i_lept++) {
-            if (leptons[i_lept].pt()<30.) continue;
-			if (leptons[i_lept].id()==11 && fabs(leptons[i_lept].eta())>2.1) continue;
-            //        if (leptons[i_lept].reliso()>0.10) continue;   //usually tighter
-            selectedLeptons.push_back(leptons[i_lept]);
-        }
-		
-        // selection of protons and reco unc.
-		// Note fwdtrk_xiError is deprecated, using reco from 
-		// https://twiki.cern.ch/twiki/bin/view/CMS/TaggedProtonsRecoCharacteristics
-        for (int ift=0; ift<ev.nfwdtrk; ift++) {
-            const unsigned short pot_raw_id = ev.fwdtrk_pot[ift];
-            if(ev.fwdtrk_method[ift]==1){  // selecting only MultiRP protons
-                if (pot_raw_id<100){ // positive z  (pot_raw_id=3)
-                    p1_xi = ev.fwdtrk_xi[ift] + pps_err*PPS_reco->getRecoErr(ev.fwdtrk_xi[ift],0,ev.run);
-                }
-            else {   // negative z   (pot_raw_id=103)
-                p2_xi = ev.fwdtrk_xi[ift] + pps_err*PPS_reco->getRecoErr(ev.fwdtrk_xi[ift],1,ev.run);
-            }
-        }
-    }
-	
-        outVars["nJets"]=jets.size();
-        outVars["nBjets"]=bJets.size();
+  MiniEvent_t ev;
+
+  //PREPARE OUTPUT
+  TString baseName=gSystem->BaseName(outname); 
+  TString dirName=gSystem->DirName(outname);
+  TFile *fOut=TFile::Open(dirName+"/"+baseName,"RECREATE");
+  fOut->cd();
+
+  //create output tree
+  TNtuple *outTsel=new TNtuple("sel","sel","run:lumi:ev:nvtx:rho:channel:mll:nljets:nbjets:ht:metpt:metphi:l1pt:l1eta:l1phi:l1m:l2pt:l2eta:l2phi:l2m:b1pt:b1eta:b1phi:b1m:b2pt:b2eta:b2phi:b2m:px2:py2:pz2:E2:yvis:ysum:max_dy:min_dy:deltarll:deltaphill:mlb:xi0:xi1:mpp:ypp:gen_mtt:gen_ytt:kinreco_mtt:kinreco_ytt:weight");
+  outTsel->SetDirectory(fOut);
+
+  //write pps info tree
+  TTree *pps_info = new TTree("ppsinfo","ppsinfo");
+  int pps_n0, pps_n1 = 0;
+  double pps_xi0 = -1;
+  double pps_xi1 = -1;
+
+  if(prepareProtonData) {
+
+    pps_info->Branch("pps_ntrk0",&pps_n0);
+    pps_info->Branch("pps_ntrk1",&pps_n1);
+    pps_info->Branch("pps_xi0",&pps_xi0);
+    pps_info->Branch("pps_xi1",&pps_xi1);
+  }
+
+
+  bool hasETrigger,hasMTrigger,hasMMTrigger,hasEETrigger,hasEMTrigger; //hasATrigger;
+  bool isSS=false,isSF=false; //isA;
+  float beamXangle(0);
+  int nRPtk(0);//RPid[50];
+  //float RPfarcsi[50]:// RPnearcsi[50];
+
+  L1PrefireEfficiencyWrapper* l1PrefireWR = new L1PrefireEfficiencyWrapper(filename.Contains("Data13TeV"),era);
+
+  //READ TREE FROM FILE
+  TFile *f = TFile::Open(filename);  
+  TH1 *triggerList=(TH1 *)f->Get("analysis/triggerList");
+  TH1 *counter=(TH1 *)f->Get("analysis/counter");
+  TTree *t = (TTree*)f->Get("analysis/tree");
+  attachToMiniEventTree(t,ev);
+  Int_t nentries(t->GetEntriesFast());
+  //int entrynumber = -1;
+  if (debug) nentries = 1000; //restrict number of entries for testing
+  t->GetEntry(0);
+
+  cout << "...producing " << outname << " from " << nentries << " events" << endl;
+
+  //Check if its signal MC
+  bool isSignal = false;
+  if(filename.Contains("excl_ttbar_dilep_QED") or filename.Contains("FPMC") ) {isSignal = true; std::cout << ">>>>>>>>>>>>analysing signal file" << std::endl;}
+  if(isSignal) {
+    if(filename.Contains("120")) beamXangle = 120;
+    if(filename.Contains("130")) beamXangle = 130;
+    if(filename.Contains("140")) beamXangle = 140;
+    if(filename.Contains("150")) beamXangle = 150;
+    if(debug) cout << "LHC crossing angle is " << beamXangle << "micro rad." << endl;   
+  } 
+  
+  ////Get ntrks and csis from a data file
+  TFile *fakefile = TFile::Open("/afs/cern.ch/user/b/bribeiro/CMSSW_9_4_11/src/TopLJets2015/TopAnalysis/data/protonData.root");
+  
+  int data_n0 = 0, data_n1 = 0;
+  double data_xi0 = -1;
+  double data_xi1 = -1;
  
-		// Store proton pool at preselection
-		if(ev.isData){
-			m_protonVars_p1_xi = p1_xi;
-			m_protonVars_p2_xi = p2_xi;
-			outPT->Fill();
-		}
+  TRandom3 generator(0);
+  TTree* pps_data = (TTree*)fakefile->Get("ppsinfo");
 
-    // ---- EVENT SELECTION --------------------------------------------------------------
+  if(!prepareProtonData) {
 
-	if(chTag!="E" && chTag!="M" )   continue; // events with electrons (id=11) or muons (id=13)
-#ifdef HISTOGRAMS_ON
-        ht.fill("evt_count", 4, plotwgts); // count events after channel selection
-#endif
-	if (selectedLeptons.size()!=1) continue; // ONLY events with 1 selected lepton
-#ifdef HISTOGRAMS_ON
-        ht.fill("evt_count", 5, plotwgts); // count events after selection on number of leptons (SHOULD BE SAME)
-#endif
-        if ( jets.size()  < 4 )        continue; // ONLY events with at least 4 jets
-#ifdef HISTOGRAMS_ON
-        ht.fill("evt_count", 6, plotwgts); // count events after selection on number of jets
-#endif
-        if ( bJets.size() < 2 )        continue; // ONLY events with at least 2 BJets
-#ifdef HISTOGRAMS_ON
-        ht.fill("evt_count", 7, plotwgts); // count events after selection on number of Bjets
-#endif
+    pps_data->SetBranchAddress("pps_ntrk0",&data_n0);
+    pps_data->SetBranchAddress("pps_ntrk1",&data_n1);
+    pps_data->SetBranchAddress("pps_xi0",&data_xi0);
+    pps_data->SetBranchAddress("pps_xi1",&data_xi1);
+  
+  }
 
-#ifdef HISTOGRAMS_ON
-        ht.fill("puwgtctr",0,plotwgts);
-#endif  
-        outVars["weight"] = outVars["gen_wgt"] = outVars["toppt_wgt"] = outVars["selSF_wgt"] = outVars["trigSF_wgt"] = 1;
-        outVars["pu_wgt"] = outVars["ptag_wgt"] =  outVars["ppsSF_wgt"] = 1;
+  //LUMINOSITY+PILEUP
+  LumiTools lumi(era,genPU);
+  std::map<Int_t,Float_t> lumiPerRun=lumi.lumiPerRun();
 
-		outVars["ppsSF_wgt_err"] = outVars["ptag_wgt_err"] = 0;
-		
-        outVars["ren_Down"] = outVars["scale_Down"] = outVars["fac_Down"] = 0;
-        outVars["ren_Up"] = outVars["scale_Up"] = outVars["fac_Up"] = 0;
-		
-		
-        if (!ev.isData) {
-            wgt  = (normH? normH->GetBinContent(1) : 1.0);          // norm weight
-            double puWgt(lumi.pileupWeight(ev.g_pu,period)[0]);     // pu weight
-            std::vector<double>puPlotWgts(1,puWgt);
-            
-#ifdef HISTOGRAMS_ON
-            ht.fill("puwgtctr",1,puPlotWgts);
-#endif
-            
-            // lepton trigger*selection weights (update the code later)
-            EffCorrection_t trigSF = lepEffH.getTriggerCorrection(leptons,{},{},period);
-            EffCorrection_t  selSF = lepEffH.getOfflineCorrection(leptons[0], period);
-			outVars["trigSF_wgt"] = trigSF.first;
-			outVars["trigSF_wgt_err"] = trigSF.second;
-			if(!outVars["trigSF_wgt"]) cout << "WARNING: trigSF = 0, check your selection! " << endl;
-			outVars["selSF_wgt"] = selSF.first;
-			outVars["selSF_wgt_err"] = selSF.second;
-			if(!outVars["trigSF_wgt"]) cout << "WARNING: trigSF = 0, check your selection! " << endl;
-            wgt *= outVars["trigSF_wgt"]*outVars["selSF_wgt"];
-            
-            //top pt weighting
-            outVars["toppt_wgt"] = 1.0;
-            if(isTTbar) {
-                for (int igen=0; igen<ev.ngtop; igen++) {
-                    if(abs(ev.gtop_id[igen])!=6) continue;
-                    outVars["toppt_wgt"] *= TMath::Exp(0.0615-0.0005*ev.gtop_pt[igen]);
-                }
-            }
-			wgt *= outVars["toppt_wgt"];
-			
-			// generator weights
-			outVars["gen_wgt"] = (ev.g_nw>0 ? ev.g_w[0] : 1.0);
-			
-            wgt *= outVars["gen_wgt"];                              // generator level weights
-					
-            plotwgts[0]=wgt;                                        //update weight for plotter
-			outVars["weight"] = wgt;
-			
-			// Systematic uncertainties (convert to 1 +/- form):
-			if(ev.g_nw>5 && ev.g_w[1]){ // scale variations
-				outVars["ren_Up"] = (ev.g_w[2])/ev.g_w[1]-1;
-				outVars["fac_Up"] = (ev.g_w[4])/ev.g_w[1]-1;
-				outVars["scale_Up"] = (ev.g_w[6])/ev.g_w[1]-1;
-				outVars["ren_Down"] = 1-(ev.g_w[3])/ev.g_w[1];
-				outVars["fac_Down"] = 1-(ev.g_w[5])/ev.g_w[1];
-				outVars["scale_Down"] = 1-(ev.g_w[7])/ev.g_w[1];
-			}
-			outVars["isr_Up"] = outVars["fsr_Up"] = 0;
-			outVars["isr_Down"] = outVars["fsr_Down"] = 0;
-			if(isPythia8){ // Py8 PS variations 
-//https://github.com/cms-sw/cmssw/blob/master/Configuration/Generator/python/PSweightsPythia/PythiaPSweightsSettings_cfi.py
-				int nW = ev.g_npsw;
-				if(nW==46 && ev.g_psw[0]){ // 46 weights of ISR and FSR, take only the first ones
-					outVars["isr_Up"] = (ev.g_psw[8])/ev.g_psw[0]-1;
-					outVars["fsr_Up"] = (ev.g_psw[9])/ev.g_psw[0]-1;
-					outVars["isr_Down"] = 1-(ev.g_psw[6])/ev.g_psw[0];
-					outVars["fsr_Down"] = 1-(ev.g_psw[7])/ev.g_psw[0];
-				}
-				if(nW==24 && ev.g_psw[0]){ // in signal no ISR weights
-					outVars["fsr_Up"] = (ev.g_psw[5])/ev.g_psw[0]-1;
-					outVars["fsr_Down"] = 1-(ev.g_psw[6])/ev.g_psw[0];
-				}
-			}
+  //LEPTON EFFICIENCIES
+  EfficiencyScaleFactorsWrapper lepEffH(filename.Contains("Data13TeV"),era);
 
-		
-        } // end is MC
+  //B-TAG CALIBRATION
+  BTagSFUtil btvSF(era,BTagEntry::OperatingPoint::OP_MEDIUM,"",0);
+  std::map<TString,TGraph*>  fragWeights  = getBFragmentationWeights(era);
+
+  //JEC/JER
+  JECTools jerTool_(era);  
+
+  //systematics from theory
+  bool isTT = filename.Contains("TTJets");
+
+  size_t nthSysts = 0;
+  size_t nexpSysts = 0;
+
+  TString thSystNames[]={"muRup",        "muRdn",
+                          "muFup",       "muFdn",
+                          "muRmuFup",    "muRmuFdn",
+                          "isrup",      "isrdn",
+                          "fsrup",      "fsrdn"};
+
+  TString expSystNames[]={"puup",        "pudn",
+//                          "eetrigup",    "eetrigdn",
+//                          "emtrigup",    "emtrigdn",
+//                          "mmtrigup",    "mmtrigdn",
+                          "eselup",      "eseldn",
+                          "mselup",      "mseldn",
+                          "l1prefireup", "l1prefiredn",
+//                          "ees1up", "ees1dn", "ees2up", "ees2dn", "ees3up", "ees3dn", "ees4up", "ees4dn",  "ees5up", "ees5dn",  "ees6up", "ees6dn",  "ees7up", "ees7dn",
+//                          "mes1up", "mes1dn", "mes2up", "mes2dn", "mes3up", "mes3dn", "mes4up", "mes4dn",
+                          "btagup",         "btagdn",
+//                          "btaghfup",         "btaghfdn",
+                          "JERup",       "JERdn",
+                          "topptup",     "topptdn",
+                          "AbsoluteStatJECup","AbsoluteScaleJECup","AbsoluteMPFBiasJECup","FragmentationJECup","SinglePionECALJECup",
+                          "SinglePionHCALJECup","FlavorPureGluonJECup","FlavorPureQuarkJECup","FlavorPureCharmJECup","FlavorPureBottomJECup",
+                          "TimePtEtaJECup","RelativeJEREC1JECup","RelativeJEREC2JECup","RelativeJERHFJECup","RelativePtBBJECup","RelativePtEC1JECup",
+                          "RelativePtEC2JECup","RelativePtHFJECup","RelativeBalJECup","RelativeFSRJECup","RelativeStatFSRJECup","RelativeStatECJECup",
+                          "RelativeStatHFJECup","PileUpDataMCJECup","PileUpPtRefJECup","PileUpPtBBJECup","PileUpPtEC1JECup","PileUpPtEC2JECup","PileUpPtHFJECup",
+                          "AbsoluteStatJECdn","AbsoluteScaleJECdn","AbsoluteMPFBiasJECdn","FragmentationJECdn","SinglePionECALJECdn",
+                          "SinglePionHCALJECdn","FlavorPureGluonJECdn","FlavorPureQuarkJECdn","FlavorPureCharmJECdn","FlavorPureBottomJECdn",
+                          "TimePtEtaJECdn","RelativeJEREC1JECdn","RelativeJEREC2JECdn","RelativeJERHFJECdn","RelativePtBBJECdn","RelativePtEC1JECdn",
+                          "RelativePtEC2JECdn","RelativePtHFJECdn","RelativeBalJECdn","RelativeFSRJECdn","RelativeStatFSRJECdn","RelativeStatECJECdn",
+                          "RelativeStatHFJECdn","PileUpDataMCJECdn","PileUpPtRefJECdn","PileUpPtBBJECdn","PileUpPtEC1JECdn","PileUpPtEC2JECdn","PileUpPtHFJECdn",
+                          "bfragup", "bfragdn"};
+
+  if(runSysts && filename.Contains("MC")) {
+
+    nthSysts = sizeof(thSystNames)/sizeof(TString);
+    nexpSysts = sizeof(expSystNames)/sizeof(TString);
+  }
+
+  //std::cout << isTT << std::endl;
+
+  //BOOK HISTOGRAMS
+  HistTool ht;
+  ht.setNsyst(0);
+ 
+  ht.addHist("evt_count",    new TH1F("evt_count",   ";Selection Stage;Events",10,0,10));
+  ht.getPlots()["evt_count"]->GetXaxis()->SetBinLabel(1,"Total");
+  ht.getPlots()["evt_count"]->GetXaxis()->SetBinLabel(2,"Sumweighted");
+  ht.getPlots()["evt_count"]->GetXaxis()->SetBinLabel(3,"preselection");
+  ht.getPlots()["evt_count"]->SetBinContent(1,counter->GetBinContent(1));
+  ht.getPlots()["evt_count"]->SetBinContent(2,counter->GetBinContent(2));
+  ht.getPlots()["evt_count"]->SetBinContent(3,counter->GetBinContent(3)); 
+
+  ht.addHist("puwgtctr",     new TH1F("puwgtctr",    ";Weight sums;Events",2,0,2));
+  ht.addHist("nvtx",         new TH1F("nvtx",        ";Vertex multiplicity;Events",50,0,100));
+  ht.addHist("nlep",         new TH1F("nlep",        ";Lepton multipliciy;Events",3,2,5));
+  ht.addHist("nljets",       new TH1F("nljets",      ";light jet multiplicity;Events",6,0,6)); 
+  ht.addHist("nbjets",       new TH1F("nbjets",      ";b jet multiplicity;Events",5,0,5));
+  ht.addHist("lmpt",         new TH1F("lmpt",        ";Lepton 1 transverse momentum [GeV];Events",56,20,300));
+  //ht.addHist("lmeta",        new TH1F("lmeta",       ";Lepton 1 pseudo-rapidity;Events",10,0,2.5));
+  ht.addHist("lppt",         new TH1F("lppt",        ";Lepton 2 transverse momentum [GeV];Events",56,20,300));
+  //ht.addHist("lpeta",        new TH1F("lpeta",       ";Lepton 2 pseudo-rapidity;Events",10,0,2.5));
+  Float_t mllbins[]={0,50,100,150,200,250,300,400,600};
+  //ht.addHist("mll",          new TH1F("mll",         ";Dilepton invariant mass [GeV];Events",sizeof(mllbins)/sizeof(Float_t)-1,mllbins));
+  ht.addHist("mll",          new TH1F("mll",         ";Dilepton invariant mass [GeV];Events",sizeof(mllbins)/sizeof(Float_t)-1,mllbins));
+  Float_t drllbins[]={0,0.4,0.8,1.2,1.6,2,2.4,2.8,3.2,3.6,4,4.4,5,5.4,5.8,6};
+  ht.addHist("drll",         new TH1F("drll",        ";#DeltaR(l,l');Events",sizeof(drllbins)/sizeof(Float_t)-1,drllbins));
+  Float_t Mlbbins[]={0,20,40,60,80,100,120,140,160,180,220,260,300};
+  ht.addHist("Mlb",         new TH1F("Mlb",        ";Invariant mass of lb ;Events",sizeof(Mlbbins)/sizeof(Float_t)-1,Mlbbins));
+  ht.addHist("Mlb_dr",         new TH1F("Mlb_dr",        ";Invariant mass of lb ;Events",sizeof(Mlbbins)/sizeof(Float_t)-1,Mlbbins));
+  ht.addHist("Mlb_min",         new TH1F("Mlb_min",        ";Invariant mass of lb ;Events",sizeof(Mlbbins)/sizeof(Float_t)-1,Mlbbins));
+  ht.addHist("Mlb_same",         new TH1F("Mlb_same",        ";Invariant mass of lb ;Events",sizeof(Mlbbins)/sizeof(Float_t)-1,Mlbbins));
+  ht.addHist("mRP",         new TH1F("mRP",        ";Mass of pp ;Events",20,0,3000));
+  ht.addHist("yRP",         new TH1F("yRP",        ";Rapidity of pp ;Events",20,-4,4));
+  ht.addHist("jet1pt",         new TH1F("jet1pt",        ";Leading jet transverse momentum [GeV] ;Events",50,0,250));
+
+  Float_t ptbosonbins[]={0,25,50,75,100,125,150,175,200,225,250,300};
+  ht.addHist("ptll",         new TH1F("ptll",        ";Transverse momentum [GeV];Events",sizeof(ptbosonbins)/sizeof(Float_t)-1,ptbosonbins));
+  //  ht.addHist("phistar",      new TH1F("phistar",     ";Dilepton #phi^{*};Events",50,0,5000));
+  // ht.addHist("costhetaCS",   new TH1F("costhetaCS",  ";Dilepton cos#theta^{*}_{CS};Events",50,-1,1));
+  ht.addHist("met",          new TH1F("met",         ";Missing transverse energy [GeV];Events",50,0,250));
+
+  ht.addHist("E2",          new TH1F("E2",         ";E^2 [GeV];Events",50,0,10000));
+  ht.addHist("yvis",          new TH1F("yvis",         ";ttbar system rapidity;Events",50,-5,5));
+  ht.addHist("ysum",          new TH1F("ysum",         ";summed abs rapidity of ttbar decay products; Events",50,0,20));
+  ht.addHist("mindy",          new TH1F("mindy",         ";minimum delta y between (lepton,b-jet) ;Events",50,0,4));
+
+  Float_t deltaphibins[]={0,0.2,0.4,0.6,0.8,1.2,1.4,1.6,1.8,2.0,2.2,2.4,2.6,2.8,3.0,3.2};
+  ht.addHist("deltaphill",  new TH1F("deltaphill", ";#Delta#phi(l,l) [rad];Events",sizeof(deltaphibins)/sizeof(Float_t)-1,deltaphibins));
+  ht.addHist("deltaphibb",  new TH1F("deltaphibb", ";#Delta#phi(b,b) [rad];Events",sizeof(deltaphibins)/sizeof(Float_t)-1,deltaphibins));
+  
+//ht.addHist("acopl",        new TH1F("acopl",       ";Acoplanarity;Events",50,0,1.0));
+  
+  ht.addHist("ntkrp",        new TH1F("ntkrp",       ";Track multiplicity; Events",6,0,6) );
+    
+ //  ht.addHist("csirp",        new TH1F("csirp",       ";#xi = #deltap/p; Events",50,0,0.3) );
+  // ht.addHist("xangle",       new TH1F("xangle",      ";Crossing angle; Events",10,100,200) );
+  ht.addHist("h",        new TH1F("h",       ";h [GeV]; Events",50,0,80) );
+  ht.addHist("scalarhtb",        new TH1F("htb",       ";H_T (b) [GeV]; Events",50,0,80) );
+  ht.addHist("scalarhtj",        new TH1F("htj",       ";H_T (j) [GeV]; Events",50,0,80) );
+  
+  ht.addHist("xi0",     new TH1F("xi0",    ";#xi_0; Events",50,0,0.3) );
+  ht.addHist("xi1",     new TH1F("xi1",    ";#xi_1; Events",50,0,0.3) );
+  ht.addHist("newxi0",     new TH1F("newxi0",    ";#xi_0 new; Events",50,0,0.3) );
+  ht.addHist("newxi1",     new TH1F("newxi1",    ";#xi_1 new; Events",50,0,0.3) );
+    
+  ht.addHist("mRP",     new TH1F("mRP",    ";M_{RP}; Events",20,0,3000) );
+  ht.addHist("yRP",     new TH1F("yRP",    ";y_{RP}; Events",20,-3,3) );
+
+  ht.addHist("kin_reco_ttbar_mass",     new TH1F("kin_reco_ttbar_mass",    ";M_{ttbar}; Events",20,0,2000) );
+  ht.addHist("kin_reco_ttbar_rapidity",     new TH1F("kin_reco_ttbar_rapidity",    ";y_{ttbar}; Events",20,-3,3) );
+
+  ht.addHist("gen_ttbar_mass",     new TH1F("gen_ttbar_mass",    ";M_{ttbar}; Events",20,0,2000) );
+  ht.addHist("gen_ttbar_rapidity",     new TH1F("gen_ttbar_rapidity",    ";y_{ttbar}; Events",20,-3,3) );
+
+  ht.addHist("gen_mtt_reco_mtt",     new TH1F("(gen_m_{tt}-reco_m_{tt})/gen_m_{tt}",    ";gen_m_{tt}-reco_m_{tt}/gen_m_{tt}; Events",50,-2,2) );
+  //Float_t bdtBins[]={-1.,-0.867,-0.733,-0.6,-0.467,-0.333,-0.2,-0.067,0.067,0.2,0.333,0.467,0.867};
+  ht.addHist("BDToutput",     new TH1F("BDToutput",    ";BDToutput; Events",15,-1,0.6) );
+  ht.addHist("gen_mtt_vs_reco_mtt",      new TH2F("gen m_{tt} vs. kin_reco_m_{tt}",";gen m_{tt} (GeV) ;kin_reco_m_{tt} (GeV);Events",100,0,2000,100,0,2000));
+
+  ht.addHist("evyields",     new TH1F("evyields",    ";Category; Events",7,0,7) );
+
+  ht.getPlots()["evyields"]->GetXaxis()->SetBinLabel(1,"inc");
+  ht.getPlots()["evyields"]->GetXaxis()->SetBinLabel(2,"#geq1b");
+  ht.getPlots()["evyields"]->GetXaxis()->SetBinLabel(3,"lowMlb");
+  ht.getPlots()["evyields"]->GetXaxis()->SetBinLabel(4,"Z");
+  ht.getPlots()["evyields"]->GetXaxis()->SetBinLabel(5,"bb");
+  ht.getPlots()["evyields"]->GetXaxis()->SetBinLabel(6,"passmRP");
+  ht.getPlots()["evyields"]->GetXaxis()->SetBinLabel(7,"passnewmRP");
+  
+  ht.addHist("mrp_vs_yrp",      new TH2F("mRP vs. yRP",";m_{RP};y_{RP};Events",100,0,3000,100,-5,5));
+  //  ht.addHist("Mlb_minM_vs_minDeltaR",      new TH2F("Mlb min vs. Mlb minDeltaR",";m_{lb} min ;m_{lb} min #Delta R;Events",100,0,300,100,0,300));
+  //ht.addHist("Mlb_minM_vs_minDeltaR_match",      new TH2F("Mlb min vs. Mlb minDeltaR matched",";m_{lb} min ;m_{lb} min #Delta R;Events",100,0,300,100,0,300));
+  ht.addHist("mtt_vs_ytt",      new TH2F("mtt vs. ytt",";m_{tt};y_{tt};Events",100,0,3000,100,-5,5));
+  ht.addHist("mtt_vs_ytt_acc",      new TH2F("mtt vs. ytt (acc)",";m_{tt};y_{tt};Events",100,0,3000,100,-5,5));
+
+  ////////////////////////////////////////////////////////
+  //instantiate BDToutput histogram to track with systs//
+  //////////////////////////////////////////////////////
+  
+  TString hoi = "BDToutput";
+  TH1 *histo=ht.getPlots()[hoi];
+   
+  //experimental systs
+  ht.addHist(hoi+"_exp",      
+                  new TH2D(hoi+"_exp", 
+                           Form(";%s;Experimental systematic variation;Events",histo->GetName()),
+                           histo->GetNbinsX(),-1,1,
+                           nexpSysts,0,nexpSysts));
+  
+  for(size_t is=0; is<nexpSysts; is++) {
+    ht.get2dPlots()[hoi+"_exp"]->GetYaxis()->SetBinLabel(is+1,expSystNames[is]);
+    ht.addHist(hoi+"_"+expSystNames[is], new TH1F(hoi+"_"+expSystNames[is],    ";"+hoi+"_"+expSystNames[is]+"; Events",15,-0.8,0.4) );
+  }
+       
+  //theory systs
+  if(nthSysts>0){
+    ht.addHist(hoi+"_th",      
+                  new TH2D(hoi+"_th", 
+			   Form(";%s;Theory systematic variation;Events",histo->GetName()),
+			   histo->GetNbinsX(),-1,1,
+			   nthSysts,0,nthSysts));
+    for(size_t is=0; is<nthSysts; is++) {
+      ht.get2dPlots()[hoi+"_exp"]->GetYaxis()->SetBinLabel(is+1,thSystNames[is]);
+      ht.addHist(hoi+"_"+thSystNames[is], new TH1F(hoi+"_"+thSystNames[is],    ";"+hoi+"_"+thSystNames[is]+"; Events",15,-0.8,0.4) );
+    }      
+  }
+
+  std::cout << "init done" << std::endl;
+  if (debug){std::cout<<"\n DEBUG MODE"<<std::endl;}
+
+  ////////////////////////////
+  // Start event selection //
+  //////////////////////////
+
+  //EVENT SELECTION WRAPPER
+  SelectionTool selector(filename, false, triggerList);
+
+  ////////////////////////////
+  /////START EVENT LOOP /////
+  //////////////////////////
+
+  for (Int_t iev=0;iev<nentries;iev++) {
+
+
+    t->GetEntry(iev);
+    if(iev%1000==0) { printf("\r [%3.0f%%] done", 100.*(float)iev/(float)nentries); fflush(stdout); }
+      
+    //save generator level info for ttbar system (mass and rapidity)
+    float gen_mtt(-1),gen_ytt(-10);     
+      
+    if(!ev.isData){
+ 
+ 	    std::vector<Particle> genTops=selector.getGenTops(ev);
+	
+      if(genTops.size()==2){
+        gen_mtt=(genTops[0]+genTops[1]).M();
+        gen_ytt=(genTops[0]+genTops[1]).Rapidity();
+      }
+    }
+   
+    //start weights and pu weight control
+    std::vector<double> trivialwgts(1,1.0);
+    float wgt(1.0), btagWgt(1.0);
+    std::vector<double>plotwgts(1,wgt);
+    std::vector<float> puWgts(3,1.0),topptWgts(2,1.0),bfragWgts(2,1.0);
+    EffCorrection_t l1trigprefireProb(1.0,0.);
+    TString period = lumi.assignRunPeriod();
+
+    //pileup weights for MC
+    if(!ev.isData){
+      ht.fill("puwgtctr",0,plotwgts);
+      puWgts=lumi.pileupWeight(ev.g_pu,period);
+      std::vector<double>puPlotWgts(1,puWgts[0]);
+      ht.fill("puwgtctr",1,puPlotWgts);
+    }  
+
+    //add btag decisions
+    btvSF.addBTagDecisions(ev);
+    if(!ev.isData) btvSF.updateBTagDecisions(ev,"central","central");      
+    jerTool_.smearJetEnergies(ev);
+
+    ///////////////////////////
+    // RECO LEVEL SELECTION  //
+    ///////////////////////////
+    //trigger
+    
+    hasETrigger=(selector.hasTriggerBit("HLT_Ele35_WPTight_Gsf_v", ev.triggerBits));
+    bool hasHighPtMTrigger=(selector.hasTriggerBit("HLT_Mu50_v",     ev.triggerBits));
+    bool hasStdMTrigger=(selector.hasTriggerBit("HLT_IsoMu24_v",     ev.triggerBits) ||
+                         selector.hasTriggerBit("HLT_IsoMu24_2p1_v", ev.triggerBits) ||
+                         selector.hasTriggerBit("HLT_IsoMu27_v",     ev.triggerBits) );     
+    hasMMTrigger=(selector.hasTriggerBit("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ",                  ev.triggerBits) ||
+                  selector.hasTriggerBit("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8_v",          ev.triggerBits) ||
+                  selector.hasTriggerBit("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v",        ev.triggerBits) );
+    hasEETrigger=(selector.hasTriggerBit("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v",             ev.triggerBits) ||
+                  selector.hasTriggerBit("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v",          ev.triggerBits) );
+    hasEMTrigger=(selector.hasTriggerBit("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v",    ev.triggerBits) ||
+                  selector.hasTriggerBit("HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v", ev.triggerBits) ||
+                  selector.hasTriggerBit("HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v",    ev.triggerBits) ||
+                  selector.hasTriggerBit("HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v", ev.triggerBits) ||
+                  selector.hasTriggerBit("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v",     ev.triggerBits) ||
+                  selector.hasTriggerBit("HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v",  ev.triggerBits) );
+
+    if (ev.isData) { 
+      //use only these unprescaled triggers for these eras
+      if(filename.Contains("2017E") || filename.Contains("2017F")){
+        hasStdMTrigger=selector.hasTriggerBit("HLT_IsoMu27_v",ev.triggerBits);
+      }
+      if(!(filename.Contains("2017A") || filename.Contains("2017B"))){
+        hasMMTrigger=(selector.hasTriggerBit("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8_v",   ev.triggerBits) ||
+                      selector.hasTriggerBit("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v", ev.triggerBits) );
+      }
+    }
+    
+    hasMTrigger=(hasHighPtMTrigger || hasStdMTrigger);
+    //identify the offline final state from the leading leptons
+    int l1idx(0),l2idx(1);
+    std::vector<Particle> leptons = selector.flaggedLeptons(ev);     
+    leptons = selector.selLeptons(leptons,SelectionTool::TIGHT,SelectionTool::MVA90,20,2.4);
+
+    //jets
+    std::vector<Jet> allJets = selector.getGoodJets(ev,30.,2.4,leptons); //,photons);
+      
+    //met
+    TLorentzVector met(0,0,0,0);
+    met.SetPtEtaPhiM(ev.met_pt,0,ev.met_phi,0.);
+      
+    //
+    //OFFLINE SELECTION(S)
+    //
+    bool passTightSel(false);//passMediumSel(false);
+    if(leptons.size()>1){
         
-        //if (ev.isData) {
-        //    const edm::EventID ev_id( ev.run, ev.lumi, ev.event );
-            // LHC information retrieval from LUT
-        //    const ctpps::conditions_t lhc_cond = lhc_conds.get( ev_id );
-        //    const double xangle = lhc_cond.crossing_angle;
-        //    for (int ift=0; ift<ev.nfwdtrk; ift++) {
-                // only look at strips!
-        //        const unsigned short pot_raw_id = 100*ev.fwdtrk_arm[ift]+/*10*ev.fwdtrk_station[ift]+*/ev.fwdtrk_pot[ift];
-        //        const ctpps::alignment_t align = ctpps_aligns.get( ev_id, pot_raw_id );
-        //        double xi, xi_error;
-        //        proton_reco.reconstruct(xangle, pot_raw_id, ev.fwdtrk_x[ift]/10.+align.x_align, xi, xi_error);
-        //    }
-        //}
+      bool isTrigSafe(leptons[0].Pt()>30 && fabs(leptons[0].Eta())<2.1);
+
+      bool isLeadingTight( (leptons[0].id()==11 && leptons[0].hasQualityFlag(SelectionTool::MVA80)) ||
+                             (leptons[0].id()==13 && leptons[0].hasQualityFlag(SelectionTool::TIGHT)) );
+      bool isSubLeadingTight( (leptons[1].id()==11 && leptons[1].hasQualityFlag(SelectionTool::MVA80)) ||
+                                (leptons[1].id()==13 && leptons[1].hasQualityFlag(SelectionTool::TIGHT)) );
+      passTightSel = (isTrigSafe && isLeadingTight && isSubLeadingTight);
         
+      //bool isLeadingMedium( (leptons[0].id()==11 && leptons[0].hasQualityFlag(SelectionTool::MVA90)) ||
+                           // (leptons[0].id()==13 && leptons[0].hasQualityFlag(SelectionTool::LOOSE)) );        
+      //bool isSubLeadingMedium( (leptons[1].id()==11 && leptons[1].hasQualityFlag(SelectionTool::MVA90)) ||
+                            //   (leptons[1].id()==13 && leptons[1].hasQualityFlag(SelectionTool::LOOSE)) );
+      //passMediumSel = (isTrigSafe && isLeadingMedium && isSubLeadingMedium);        
+    }
+
+    //apply selection
+    TString selCat("");
+    int selCode(0);
+    
+    //If we don't have 2 tight leptons, we don't consider the event:
+    if(leptons.size()<2) continue;
+    if(!passTightSel) continue;
+    ht.fill("evt_count", 4, plotwgts);
+
+    //set kinematics
+    TLorentzVector ll(0,0,0,0);
+    TLorentzVector lm(0,0,0,0),lp(0,0,0,0);
+    float dilepton_mass(0);
+    float dilepton_dr(0); //llht(0),mtll(0);
+
+    selCode=leptons[l1idx].id()*leptons[l2idx].id();
+    isSF=( leptons[l1idx].id()==leptons[l2idx].id() );
+    isSS=( leptons[l1idx].charge()*leptons[l2idx].charge() > 0 );
+      
+    //exclude event if leading leptons have the same sign
+    if(isSS) continue;
+    
+    //define ttbar decay channel  
+    if(selCode==11*11) selCat="ee";
+    if(selCode==11*13) selCat="em";
+    if(selCode==13*13) selCat="mm";
+
+    //define dilepton kinematic variables
+    lm=TLorentzVector(leptons[l1idx].charge()>0 ? leptons[l1idx] : leptons[l2idx]);
+    lp=TLorentzVector (leptons[l1idx].charge()>0 ? leptons[l2idx] : leptons[l1idx]);
+    ll=lm+lp;
+    dilepton_mass=ll.M();
+    dilepton_dr=leptons[l1idx].DeltaR(leptons[l2idx]);
+    
+    //further selection for dileptons
+    if(dilepton_mass<20) continue;
+    bool isZ=( isSF && !isSS && fabs(dilepton_mass-91)<15);
+    
+    //check again triggers to max. efficiency and avoid double counting
+    if(ev.isData) {
+
+      if(selCode==11*11) {
+        if( !selector.isDoubleEGPD()      && !selector.isSingleElectronPD()) continue;
+        if( selector.isDoubleEGPD()       && !hasEETrigger ) continue;
+        if( selector.isSingleElectronPD() && !(hasETrigger && !hasEETrigger) ) continue;
+      }
+      if(selCode==13*13) {
+        if( !selector.isDoubleMuonPD() && !selector.isSingleMuonPD()) continue;
+        if( selector.isDoubleMuonPD()  && !hasMMTrigger ) continue;
+        if( selector.isSingleMuonPD()  && !(hasMTrigger && !hasMMTrigger) ) continue;
+      }
+      if(selCode==11*13) {
+        if( !selector.isMuonEGPD()        && !selector.isSingleElectronPD() && !selector.isSingleMuonPD()) continue;
+        if( selector.isMuonEGPD()         && !hasEMTrigger ) continue;
+        if( selector.isSingleElectronPD() && !(hasETrigger && !hasEMTrigger) ) continue;
+        if( selector.isSingleMuonPD()     && !(hasMTrigger && !hasETrigger && !hasEMTrigger) ) continue;
+      }
+    }
+      
+    //jets (require PU jet id)
+    int njets(0);
+    std::vector<Jet> bJets,lightJets,jets;
+    float scalarht(0.),scalarhtb(0.),scalarhtj(0.);
+    
+    for(size_t ij=0; ij<allJets.size(); ij++) {
+      int idx=allJets[ij].getJetIndex();
+      bool passBtag(ev.j_btag[idx]>0);
+
+      int jid=ev.j_id[idx];
+      bool passLoosePu((jid>>2)&0x1);          
+      if(!passLoosePu) continue;
+
+      if(passBtag) { bJets.push_back(allJets[ij]);     scalarhtb+=allJets[ij].pt();  }
+      else         { lightJets.push_back(allJets[ij]); scalarhtj+= allJets[ij].pt(); }
+      njets++;
         
-        // ----- START RECONSTRUCTION OF TTBAR -------------------------------------------------------
-        if(bJets.size()>=2 && lightJets.size()>=2)        {    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            //  in theory this selection was made already
-            
-            //determine the neutrino kinematics
-            TLorentzVector met(0,0,0,0);
-            met.SetPtEtaPhiM(ev.met_pt,0.,ev.met_phi,0.);
-            neutrinoPzComputer.SetMET(met);
-            neutrinoPzComputer.SetLepton(leptons[0].p4());
-            float nupz=neutrinoPzComputer.Calculate();
-            TLorentzVector neutrino(met.Px(),met.Py(),nupz ,TMath::Sqrt(TMath::Power(met.Pt(),2)+TMath::Power(nupz,2)));
-            
-            // compute scalar ht
-            float scalarht(0.);
-            for(size_t ij=0; ij<jets.size(); ij++) {
-                scalarht += jets[ij].pt();
-            }
-            scalarht += leptons[0].pt();
-            scalarht += neutrino.Pt();
+      jets.push_back(allJets[ij]);
+      scalarht += jets[ij].pt();          
+    }
+      
+    
+    TLorentzVector lb_min(0,0,0,0);
+    if(bJets.size()>0) {
+      std::vector<int> lbpair = ComputeLBcombination(leptons,bJets);  
+      lb_min = leptons[lbpair[0]]+bJets[lbpair[1]];     
+    }
 
-            TLorentzVector t_rec_had(0,0,0,0);
-            TLorentzVector t_rec_lep(0,0,0,0);
-            TLorentzVector bJet_had(0,0,0,0);
-            TLorentzVector bJet_lep(0,0,0,0);
-            TLorentzVector lightJet0(0,0,0,0);
-            TLorentzVector lightJet1(0,0,0,0);
+    //compute hadronic recoil
+    TLorentzVector h = met+ll;
+    for(size_t i=0; i<bJets.size();i++) {
+	   if(i<3) h+=bJets[i];
+    }
+    
+    //histogram categories for different selection steps
+    std::vector<TString> cats(1,selCat);
+    int catsize = 1;      
 
-            TLorentzVector t_rec(0,0,0,0);
-            TLorentzVector tbar_rec(0,0,0,0);
+    
+    if(bJets.size()>0) {
+      catsize = (int)cats.size();
+      for(int i=0;i<catsize;i++) cats.push_back(cats[i]+"_1b");
+    }
+    
+    if(bJets.size()>1) {
+      catsize = (int)cats.size();
+      for(int i=0;i<catsize;i++) cats.push_back(cats[i]+"_2b");
+    }
 
-            // the combination of object whose mass is closer to the top one is chosen
-            vector <int> combination;          // indexes of:   bJetHad, lightJet1, lightJet2, bJetLep
-            vector <vector <int> > marker;  // list of all combinations
-            vector <double> mistake;        // mass differences between top candidate and true mass for each combination
+    if(isSF && !isZ) {
+      catsize = (int)cats.size();
+      for(int i=0;i<catsize;i++) cats.push_back(cats[i]+"_notZ");
+    }
 
-            // create list of all combinations
-            // for the time being only the first 2 LightJets are used
-            if (bJets.size()>=2) {
-                marker.push_back( {0,0,1,1} );
-                marker.push_back( {1,0,1,0} );
-            }
-            if (bJets.size()>=3) {
-                marker.push_back( {0,0,1,2} );
-                marker.push_back( {2,0,1,0} );
-                marker.push_back( {1,0,1,2} );
-                marker.push_back( {2,0,1,1} );
-            }
-            if (bJets.size()==4) {
-                marker.push_back( {0,0,1,3} );
-                marker.push_back( {3,0,1,0} );
-                marker.push_back( {1,0,1,3} );
-                marker.push_back( {3,0,1,1} );
-                marker.push_back( {2,0,1,3} );
-                marker.push_back( {3,0,1,2} );
-            }
+    //if(isSF && isZ) {
+    //  catsize = (int)cats.size();
+    //  for(int i=0;i<catsize;i++) cats.push_back(cats[i]+"_Zpeak");
+    //}
+      
+    if(bJets.size()>0 && lb_min.M()<160) {
+      catsize = (int)cats.size();
+      for(int i=0;i<catsize;i++) cats.push_back(cats[i]+"_lowMlb");
+    }
 
-            // build t_rec_had and t_rec_lep for every combination,
-            // compute difference between top candidate and true mass for every combination
-            // and store it in the mistake vector
-            for (size_t i_comb=0; i_comb<marker.size(); i_comb++) {
-                t_rec_had = bJets[ marker[i_comb][0] ].p4() +lightJets[ marker[i_comb][1] ].p4()+ lightJets[  marker[i_comb][2] ].p4();   // b+q+q
-                t_rec_lep = bJets[ marker[i_comb][3] ].p4() +leptons[0].p4() +neutrino;            // b+l+nu
-                mistake.push_back( abs(t_rec_had.M()-m_TOP)+abs(t_rec_lep.M()-m_TOP) );
-            }
+    //if(scalarhtj<10) {
+    //  catsize = (int)cats.size();
+    //  for(int i=0;i<catsize;i++) cats.push_back(cats[i]+"_0ht");
+    //}      
 
-            int correct_index=dump_index(mistake);   // index of best candidate
-            combination = marker[correct_index];     // combination of best candidate
-			
-            // build the best top candidates
-            bJet_had  = bJets[ combination[0] ].p4();
-            bJet_lep  = bJets[ combination[3] ].p4();
-            lightJet0 = lightJets[ combination[1] ].p4();
-            lightJet1 = lightJets[  combination[2] ].p4();
-			
-            t_rec_had = bJet_had + lightJet0 + lightJet1;   // b+q+q
-            t_rec_lep = bJet_lep + leptons[0].p4() + neutrino;            // b+l+nu
+    ////////////////////
+    // Event WEIGHTS //
+    //////////////////
+    
+    EffCorrection_t trigSF(1.,0.);
+    trigSF = lepEffH.getTriggerCorrection(leptons,{},{},period);
+    EffCorrection_t sel1SF(1.,0.),sel2SF(1.,0.);
+    EffCorrection_t combinedESF(1.0,0.0), combinedMSF(1.0,0.0);
+    vector <double> pixeff(2,1.0);
 
-            bool isThadronic = 0;
-            if (leptons[0].charge()>0.) {
-                isThadronic = 0; // the top quark decayed in leptons, the tbar decayed in jets
-                t_rec    = t_rec_lep;
-                tbar_rec = t_rec_had;
-            } else {
-                isThadronic = 1; // the top quark decayed in jets, the tbar decayed in leptons
-                t_rec    = t_rec_had;
-                tbar_rec = t_rec_lep;
-            }
-            
-            //reconstructed ttbar system
-            TLorentzVector ttbarSystem_rec = t_rec_had + t_rec_lep;
+    btagWgt= 1;
 
-            //generated t and tbar
-            TLorentzVector t_gen(0,0,0,0);
-            TLorentzVector tbar_gen(0,0,0,0);
-            TLorentzVector ttbarSystem_gen(0,0,0,0);
-            TLorentzVector b_gen(0,0,0,0);
-            TLorentzVector bbar_gen(0,0,0,0);
-            Bool_t firstB = 1;
-            Bool_t firstBbar = 1;
-            for (int igen=0; igen<ev.ngtop; igen++) {
-                if( ev.gtop_id[igen]==6 ) {
-                    t_gen.SetPtEtaPhiM(ev.gtop_pt[igen],ev.gtop_eta[igen],ev.gtop_phi[igen],ev.gtop_m[igen]);
-                } else if( ev.gtop_id[igen]==-6 ) {
-                    tbar_gen.SetPtEtaPhiM(ev.gtop_pt[igen],ev.gtop_eta[igen],ev.gtop_phi[igen],ev.gtop_m[igen]);
-                } else if( ev.gtop_id[igen]==5 && firstB==1 ) {
-                    b_gen.SetPtEtaPhiM(ev.gtop_pt[igen],ev.gtop_eta[igen],ev.gtop_phi[igen],ev.gtop_m[igen]);
-                    firstB = 0;
-                } else if( ev.gtop_id[igen]==-5 && firstBbar==1 ) {
-                    bbar_gen.SetPtEtaPhiM(ev.gtop_pt[igen],ev.gtop_eta[igen],ev.gtop_phi[igen],ev.gtop_m[igen]);
-                    firstBbar = 0;
-                }
-            }
-            ttbarSystem_gen = t_gen+tbar_gen;
-
-
-#ifdef SAVEERRORS_ON
-            // MATTEO'S CODE ----------- compute UNCERTAINTIES ---------------------------------------------
-            TF1 theta("theta", "2*atan(exp(-x))",0, 1e10);
-            TF1 err_theta_fracdeltaeta("err_theta","abs(-2*(exp(-x)/(1+pow(exp(-x),2))))",-1e10,1e10);
-
-            // translate my quantities in Matteo's quantities
-            double pt_b1     =   bJet_had.Pt();
-            double eta_b1    =   bJet_had.Eta();    // .Rapidity();
-            double phi_b1    =   bJet_had.Phi();
-
-            double pt_b2     =   bJet_lep.Pt();
-            double eta_b2    =   bJet_lep.Eta();    // .Rapidity();
-            double phi_b2    =   bJet_lep.Phi();
-
-            double pt_q1     =   lightJet0.Pt();
-            double eta_q1    =   lightJet0.Eta();    // .Rapidity();
-            double phi_q1    =   lightJet0.Phi();
-
-            double pt_q2     =   lightJet1.Pt();
-            double eta_q2    =   lightJet1.Eta();    // .Rapidity();
-            double phi_q2    =   lightJet1.Phi();
-
-            double pt_l     =   leptons[0].p4().Pt();
-            double eta_l    =   leptons[0].p4().Eta();    // .Rapidity();
-            double phi_l    =   leptons[0].p4().Phi();
-            double m_l      =   leptons[0].p4().M();
-
-//            double pt_nu     =   neutrino.Pt();
-//            double eta_nu    =   neutrino.Eta();    // .Rapidity();
-//            double phi_nu    =   neutrino.Phi();
-//            double m_nu      =   neutrino.M();
-
-            // compute uncertainties on eta,p,phi,theta quantities
-            double e_b1_eta=bjet_err(abs(pt_b1/sin(theta.Eval(eta_b1))),eta_b1,phi_b1,1);
-            double e_b1_p=sqrt(pow(bjet_err(abs(pt_b1/sin(theta.Eval(eta_b1))),eta_b1,phi_b1,0)/(sin(theta.Eval(eta_b1))),2)+pow(pt_b1/pow(sin(theta.Eval(eta_b1)),2)*cos(theta.Eval(eta_b1))*err_theta_fracdeltaeta.Eval(eta_b1)*e_b1_eta,2));
-            double e_b1_phi=bjet_err(abs(pt_b1/sin(theta.Eval(eta_b1))),eta_b1,phi_b1,2);
-            double e_b1_theta=e_b1_eta*err_theta_fracdeltaeta.Eval(eta_b1);
-
-            double e_b2_eta=bjet_err(abs(pt_b2/sin(theta.Eval(eta_b2))),eta_b2,phi_b2,1);
-            double e_b2_p=sqrt(pow(bjet_err(abs(pt_b2/sin(theta.Eval(eta_b2))),eta_b2,phi_b2,0)/(sin(theta.Eval(eta_b2))),2)+pow(pt_b2/pow(sin(theta.Eval(eta_b2)),2)*cos(theta.Eval(eta_b2))*err_theta_fracdeltaeta.Eval(eta_b2)*e_b2_eta,2));
-            double e_b2_phi=bjet_err(abs(pt_b2/sin(theta.Eval(eta_b2))),eta_b1,phi_b2,2);
-            double e_b2_theta=e_b2_eta*err_theta_fracdeltaeta.Eval(eta_b2);
-
-            double e_q1_eta=ljet_err(abs(pt_q1/sin(theta.Eval(eta_q1))),eta_q1,phi_q1,1);
-            double e_q1_p=sqrt(pow(ljet_err(abs(pt_q1/sin(theta.Eval(eta_q1))),eta_q1,phi_q1,0)/(sin(theta.Eval(eta_q1))),2)+pow(pt_q1/pow(sin(theta.Eval(eta_q1)),2)*cos(theta.Eval(eta_q1))*err_theta_fracdeltaeta.Eval(eta_q1)*e_q1_eta,2));
-            double e_q1_phi=ljet_err(abs(pt_q1/sin(theta.Eval(eta_q1))),eta_q1,phi_q1,2);
-            double e_q1_theta=e_q1_eta*err_theta_fracdeltaeta.Eval(eta_q1);
-
-            double e_q2_eta=ljet_err(abs(pt_q2/sin(theta.Eval(eta_q2))),eta_q2,phi_q2,1);
-            double e_q2_p=sqrt(pow(ljet_err(abs(pt_q2/sin(theta.Eval(eta_q2))),eta_q2,phi_q2,0)/(sin(theta.Eval(eta_q2))),2)+pow(pt_q2/pow(sin(theta.Eval(eta_q2)),2)*cos(theta.Eval(eta_q2))*err_theta_fracdeltaeta.Eval(eta_q2)*e_q2_eta,2));
-            double e_q2_phi=ljet_err(abs(pt_q2/sin(theta.Eval(eta_q2))),eta_q2,phi_q2,2);
-            double e_q2_theta=e_q2_eta*err_theta_fracdeltaeta.Eval(eta_q2);
-
-            double e_l_eta,e_l_p,e_l_phi,e_l_theta;
-            if(m_l>=0.1){
-              e_l_eta=mu_err(abs(pt_l/sin(theta.Eval(eta_l))),eta_l,phi_l,1);
-              e_l_p=sqrt(pow(mu_err(abs(pt_l/sin(theta.Eval(eta_l))),eta_l,phi_l,0)/(sin(theta.Eval(eta_l))),2)+pow(pt_l/pow(sin(theta.Eval(eta_l)),2)*cos(theta.Eval(eta_l))*err_theta_fracdeltaeta.Eval(eta_l)*e_l_eta,2));
-              e_l_phi=mu_err(abs(pt_l/sin(theta.Eval(eta_l))),eta_l,phi_l,2);
-              e_l_theta=e_l_eta*err_theta_fracdeltaeta.Eval(eta_l);
-            } else {
-              e_l_eta=e_err(abs(pt_l/sin(theta.Eval(eta_l))),eta_l,phi_l,1);
-              e_l_p=sqrt(pow(e_err(abs(pt_l/sin(theta.Eval(eta_l))),eta_l,phi_l,0)/(sin(theta.Eval(eta_l))),2)+pow(pt_l/pow(sin(theta.Eval(eta_l)),2)*cos(theta.Eval(eta_l))*err_theta_fracdeltaeta.Eval(eta_l)*e_l_eta,2));
-              e_l_phi=e_err(abs(pt_l/sin(theta.Eval(eta_l))),eta_l,phi_l,2);
-              e_l_theta=e_l_eta*err_theta_fracdeltaeta.Eval(eta_l);
-            }
-
-            // propagate uncertainties to x,y,z quantities
-             double e_b1_x=sqrt(pow(e_b1_p*sin(theta.Eval(eta_b1))*cos(phi_b1),2)+pow(pt_b1/sin(theta.Eval(eta_b1))*cos(theta.Eval(eta_b1))*cos(phi_b1)*e_b1_theta,2)+pow(pt_b1/sin(theta.Eval(eta_b1))*sin(theta.Eval(eta_b1))*sin(phi_b1)*e_b1_phi,2));
-//             if ( e_b1_x>4.*bJet_Hadronic.Px()) e_b1_x=4.*bJet_Hadronic.Px(); // if the error diverges set it to a maximum
-               double e_b1_y=sqrt(pow(e_b1_p*sin(theta.Eval(eta_b1))*sin(phi_b1),2)+pow(pt_b1/sin(theta.Eval(eta_b1))*cos(theta.Eval(eta_b1))*sin(phi_b1)*e_b1_theta,2)+pow(pt_b1/sin(theta.Eval(eta_b1))*sin(theta.Eval(eta_b1))*cos(phi_b1)*e_b1_phi,2));
-//             if ( e_b1_y>4.*bJet_Hadronic.Py()) e_b1_y=4.*bJet_Hadronic.Py(); // if the error diverges set it to a maximum
-               double e_b1_z=sqrt(pow(e_b1_p*cos(theta.Eval(eta_b1)),2)+pow(pt_b1/sin(theta.Eval(eta_b1))*sin(theta.Eval(eta_b1))*e_b1_theta,2));
-//             if ( e_b1_z>4.*bJet_Hadronic.Pz()) e_b1_z=4.*bJet_Hadronic.Pz(); // if the error diverges set it to a maximum
-
-             double e_b2_x=sqrt(pow(e_b2_p*sin(theta.Eval(eta_b2))*cos(phi_b2),2)+pow(pt_b2/sin(theta.Eval(eta_b2))*cos(theta.Eval(eta_b2))*cos(phi_b2)*e_b2_theta,2)+pow(pt_b2/sin(theta.Eval(eta_b2))*sin(theta.Eval(eta_b2))*sin(phi_b2)*e_b2_phi,2));
-//             if ( e_b2_x>4.*bJet_Leptonic.Px()) e_b2_x=4.*bJet_Leptonic.Px(); // if the error diverges set it to a maximum
-             double e_b2_y=sqrt(pow(e_b2_p*sin(theta.Eval(eta_b2))*sin(phi_b2),2)+pow(pt_b2/sin(theta.Eval(eta_b2))*cos(theta.Eval(eta_b2))*sin(phi_b2)*e_b2_theta,2)+pow(pt_b2/sin(theta.Eval(eta_b2))*sin(theta.Eval(eta_b2))*cos(phi_b2)*e_b2_phi,2));
-//             if ( e_b2_y>4.*bJet_Leptonic.Py()) e_b2_y=4.*bJet_Leptonic.Py(); // if the error diverges set it to a maximum
-             double e_b2_z=sqrt(pow(e_b2_p*cos(theta.Eval(eta_b2)),2)+pow(pt_b2/sin(theta.Eval(phi_b2))*sin(theta.Eval(eta_b2))*e_b2_theta,2));
-//             if ( e_b2_z>4.*bJet_Leptonic.Pz()) e_b2_z=4.*bJet_Leptonic.Pz(); // if the error diverges set it to a maximum
-
-             double e_l_x=sqrt(pow(e_l_p*sin(theta.Eval(eta_l))*cos(phi_l),2)+pow(pt_l/sin(theta.Eval(eta_l))*cos(theta.Eval(eta_l))*cos(phi_l)*e_l_theta,2)+pow(pt_l/sin(theta.Eval(eta_l))*sin(theta.Eval(eta_l))*sin(phi_l)*e_l_phi,2));
-//             if ( e_l_x>4.*leptons[0].p4().Px() ) e_l_x=4.*leptons[0].p4().Px(); // if the error diverges set it to a maximum
-             double e_l_y= sqrt(pow(e_l_p*sin(theta.Eval(eta_l))*sin(phi_l),2)+pow(pt_b1/sin(theta.Eval(eta_l))*cos(theta.Eval(eta_l))*sin(phi_l)*e_l_theta,2)+pow(pt_l/sin(theta.Eval(eta_l))*sin(theta.Eval(eta_l))*cos(phi_l)*e_l_phi,2));
-//             if ( e_l_y>4.*leptons[0].p4().Py() ) e_l_y=4.*leptons[0].p4().Py(); // if the error diverges set it to a maximum
-             double e_l_z=sqrt(pow(e_l_p*cos(theta.Eval(eta_l)),2)+pow(pt_l/sin(theta.Eval(eta_l))*sin(theta.Eval(eta_l))*e_l_theta,2));
-//             if ( e_l_z>4.*leptons[0].p4().Pz() ) e_l_z=4.*leptons[0].p4().Pz(); // if the error diverges set it to a maximum
-
-             double e_nu_x=6.*neutrino.Pt(); // 6 times because six is big enough. We set a very big error on neutrino
-             double e_nu_y=6.*neutrino.Pt();
-             double e_nu_z=6.*neutrino.Pt();
-
-             double e_q1_x=sqrt(pow(e_q1_p*sin(theta.Eval(eta_q1))*cos(phi_q1),2)+pow(pt_q1/sin(theta.Eval(eta_q1))*cos(theta.Eval(eta_q1))*cos(phi_q1)*e_q1_theta,2)+pow(pt_q1/sin(theta.Eval(eta_q1))*sin(theta.Eval(eta_q1))*sin(phi_b1)*e_q1_phi,2));
-             double e_q1_y=sqrt(pow(e_q1_p*sin(theta.Eval(eta_q1))*sin(phi_q1),2)+pow(pt_q1/sin(theta.Eval(eta_q1))*cos(theta.Eval(eta_q1))*sin(phi_q1)*e_q1_theta,2)+pow(pt_q1/sin(theta.Eval(eta_q1))*sin(theta.Eval(eta_q1))*cos(phi_q1)*e_q1_phi,2));
-             double e_q1_z=sqrt(pow(e_q1_p*cos(theta.Eval(eta_q1)),2)+pow(pt_q1/sin(theta.Eval(eta_q1))*sin(theta.Eval(eta_q1))*e_q1_theta,2));
-
-             double e_q2_x=sqrt(pow(e_q2_p*sin(theta.Eval(eta_q2))*cos(phi_q2),2)+pow(pt_q1/sin(theta.Eval(eta_q2))*cos(theta.Eval(eta_q2))*cos(phi_q2)*e_q2_theta,2)+pow(pt_q2/sin(theta.Eval(eta_q2))*sin(theta.Eval(eta_q2))*sin(phi_b2)*e_q2_phi,2));
-             double e_q2_y=sqrt(pow(e_q2_p*sin(theta.Eval(eta_q2))*sin(phi_q2),2)+pow(pt_q2/sin(theta.Eval(eta_q2))*cos(theta.Eval(eta_q2))*sin(phi_q2)*e_q2_theta,2)+pow(pt_q2/sin(theta.Eval(eta_q2))*sin(theta.Eval(eta_q2))*cos(phi_q2)*e_q2_phi,2));
-             double e_q2_z=sqrt(pow(e_q2_p*cos(theta.Eval(eta_q2)),2)+pow(pt_q2/sin(theta.Eval(eta_q2))*sin(theta.Eval(eta_q2))*e_q2_theta,2));
-            // END OF MATTEO'S CODE -------------------------------------------------------------------------------------------
-
-            // translate Matteo's quantities back (maybe fill some TLorentzVector??)
-
-            TVector3 errXYZ_bJet_had(e_b1_x,e_b1_y,e_b1_z);
-            TVector3 errXYZ_bJet_lep(e_b2_x,e_b2_y,e_b2_z);
-            TVector3 errXYZ_lightJet0(e_q1_x,e_q1_y,e_q1_z);
-            TVector3 errXYZ_lightJet1(e_q2_x,e_q2_y,e_q2_z);
-            TVector3 errXYZ_lepton(e_l_x,e_l_y,e_l_z);
-            TVector3 errXYZ_neutrino(e_nu_x,e_nu_y,e_nu_z);
-/*
-            TVector3 errPOLAR_bJet_had(0,0,0);      errPOLAR_bJet_had.SetPtEtaPhi();
-            TVector3 errPOLAR_bJet_lep(0,0,0);
-            TVector3 errPOLAR_lightJet0(0,0,0);
-            TVector3 errPOLAR_lightJet1(0,0,0);
-            TVector3 errPOLAR_lepton(0,0,0);
-            TVector3 errPOLAR_neutrino(0,0,0);
-*/
-#endif
-
-#ifdef HISTOGRAMS_ON
-            //control histograms
-            ht.fill("nvtx",   ev.nvtx,      plotwgts);
-            ht.fill("nbjets", bJets.size(), plotwgts);
-            ht.fill("njets",  jets.size(),  plotwgts);
-
-            // create separate histograms for resolution of tops if reconstructed from jets or leptons
-            if (isThadronic) {
-                ht.fill("mtop_res_hadronic", t_rec.M()-t_gen.M(),   plotwgts);
-                ht.fill("mtop_res_leptonic", tbar_rec.M()-tbar_gen.M(),   plotwgts);
-
-                ht.fill("pttop_res_hadronic", t_rec.Pt()-t_gen.Pt(),   plotwgts);
-                ht.fill("pttop_res_leptonic", tbar_rec.Pt()-tbar_gen.Pt(),   plotwgts);
-
-                ht.fill("ytop_res_hadronic", t_rec.Rapidity()-t_gen.Rapidity(),   plotwgts);
-                ht.fill("ytop_res_leptonic", tbar_rec.Rapidity()-tbar_gen.Rapidity(),   plotwgts);
-            } else {
-                ht.fill("mtop_res_leptonic", t_rec.M()-t_gen.M(),   plotwgts);
-                ht.fill("mtop_res_hadronic", tbar_rec.M()-tbar_gen.M(),   plotwgts);
-
-                ht.fill("pttop_res_leptonic", t_rec.Pt()-t_gen.Pt(),   plotwgts);
-                ht.fill("pttop_res_hadronic", tbar_rec.Pt()-tbar_gen.Pt(),   plotwgts);
-
-                ht.fill("ytop_res_leptonic", t_rec.Rapidity()-t_gen.Rapidity(),   plotwgts);
-                ht.fill("ytop_res_hadronic", tbar_rec.Rapidity()-tbar_gen.Rapidity(),   plotwgts);
-            }
-
-            ht.fill("mttbar_gen", ttbarSystem_gen.M(),   plotwgts);
-            ht.fill("mttbar_rec", ttbarSystem_rec.M(),   plotwgts);
-            ht.fill("mttbar_res", ttbarSystem_rec.M() - ttbarSystem_gen.M(), plotwgts);
-
-            ht.fill("yttbar_rec", ttbarSystem_rec.Rapidity(),   plotwgts);
-            ht.fill("yttbar_gen", ttbarSystem_gen.Rapidity(),   plotwgts);
-            ht.fill("yttbar_res", ttbarSystem_rec.Rapidity()-ttbarSystem_gen.Rapidity(),   plotwgts);
-
-            ht.fill("ptttbar_rec", ttbarSystem_rec.Pt(),   plotwgts);
-            ht.fill("ptttbar_gen", ttbarSystem_gen.Pt(),   plotwgts);
-            ht.fill("ptttbar_res", ttbarSystem_rec.Pt()-ttbarSystem_gen.Pt(),   plotwgts);
-
-            ht.fill("mt_res", t_rec.M() - t_gen.M(), plotwgts);
-            ht.fill("mtbar_res", tbar_rec.M() - tbar_gen.M(), plotwgts);
-            ht.fill("yt_res", t_rec.Rapidity()-t_gen.Rapidity(),   plotwgts);
-            ht.fill("ytbar_res", tbar_rec.Rapidity()-tbar_gen.Rapidity(),   plotwgts);
-            ht.fill("ptt_res", t_rec.Pt()-tbar_gen.Pt(),   plotwgts);
-            ht.fill("pttbar_res", tbar_rec.Pt()-tbar_gen.Pt(),   plotwgts);
-
-            ht.fill("ht", scalarht , plotwgts);
-#endif
-
-            //   --- write the variables which will be written in tree ---
-            outVars["t_pt"]     = t_rec.Pt();
-            outVars["t_eta"]    = t_rec.Rapidity();
-            outVars["t_phi"]    = t_rec.Phi();
-            outVars["t_m"]      = t_rec.M();
-            outVars["t_charge"] =1;
-            outVars["t_isHadronic"]= isThadronic;
-
-            outVars["tbar_pt"]=tbar_rec.Pt();
-            outVars["tbar_eta"]=tbar_rec.Rapidity();
-            outVars["tbar_phi"]=tbar_rec.Phi();
-            outVars["tbar_m"]=tbar_rec.M();
-
-            outVars["ttbar_pt"]=ttbarSystem_rec.Pt();
-            outVars["ttbar_eta"]=ttbarSystem_rec.Rapidity();
-            outVars["ttbar_phi"]=ttbarSystem_rec.Phi();
-            outVars["ttbar_m"]=ttbarSystem_rec.M();
-            outVars["ttbar_E"]=ttbarSystem_rec.E();
-
-            /* quantities of objects used to build the ttbar */
-            outVars["l_px"]=leptons[0].p4().Px();
-            outVars["l_py"]=leptons[0].p4().Py();
-            outVars["l_pz"]=leptons[0].p4().Pz();
-            outVars["nu_px"]=neutrino.Px();
-            outVars["nu_py"]=neutrino.Py();
-            outVars["nu_pz"]=neutrino.Pz();
-            outVars["nu_complex"] = neutrinoPzComputer.IsComplex() ? 1 : 0;
-            outVars["bJet_had_px"]=bJet_had.Px();
-            outVars["bJet_had_py"]=bJet_had.Py();
-            outVars["bJet_had_pz"]=bJet_had.Pz();
-            outVars["bJet_lep_px"]=bJet_lep.Px();
-            outVars["bJet_lep_py"]=bJet_lep.Py();
-            outVars["bJet_lep_pz"]=bJet_lep.Pz();
-            outVars["lightJet0_px"]=lightJet0.Px();
-            outVars["lightJet0_py"]=lightJet0.Py();
-            outVars["lightJet0_pz"]=lightJet0.Pz();
-            outVars["lightJet1_px"]=lightJet1.Px();
-            outVars["lightJet1_py"]=lightJet1.Py();
-            outVars["lightJet1_pz"]=lightJet1.Pz();
-
-#ifdef SAVEERRORS_ON
-            outVars["e_l_px"]       = errXYZ_lepton.Px();
-            outVars["e_l_py"]       = errXYZ_lepton.Py();
-            outVars["e_l_pz"]       = errXYZ_lepton.Pz();
-            outVars["e_nu_px"]      = errXYZ_neutrino.Px();
-            outVars["e_nu_py"]      = errXYZ_neutrino.Py();
-            outVars["e_nu_pz"]      = errXYZ_neutrino.Pz();
-            outVars["e_nu_pxpy"]    = 0.;
-            outVars["e_bJet_had_px"]= errXYZ_bJet_had.Px();
-            outVars["e_bJet_had_py"]= errXYZ_bJet_had.Py();
-            outVars["e_bJet_had_pz"]= errXYZ_bJet_had.Pz();
-            outVars["e_bJet_lep_px"]= errXYZ_bJet_lep.Px();
-            outVars["e_bJet_lep_py"]= errXYZ_bJet_lep.Py();
-            outVars["e_bJet_lep_pz"]= errXYZ_bJet_lep.Pz();
-            outVars["e_lightJet0_px"]=errXYZ_lightJet0.Px();
-            outVars["e_lightJet0_py"]=errXYZ_lightJet0.Py();
-            outVars["e_lightJet0_pz"]=errXYZ_lightJet0.Pz();
-            outVars["e_lightJet1_px"]=errXYZ_lightJet1.Px();
-            outVars["e_lightJet1_py"]=errXYZ_lightJet1.Py();
-            outVars["e_lightJet1_pz"]=errXYZ_lightJet1.Pz();
-#endif
-            
-#ifdef DEBUG_ON
-            // test variables
-            outVars["test1"]       = (e_l_p-errXYZ_lepton.Mag())/e_l_p;
-            outVars["test2"]       = (e_l_eta-errXYZ_lepton.Eta())/e_l_eta;
-            outVars["test3"]       = (e_l_phi-errXYZ_lepton.Phi())/e_l_phi;
-            outVars["test4"]       = (e_l_theta-errXYZ_lepton.Theta())/e_l_theta;
-            outVars["test5"]       = -1.;
-#endif
-            
-            // quantities for all objects in event
-            outVars["nLightJets"]=lightJets.size();
-            outVars["ht"]=scalarht;
-            outVars["cat"]=float(ch_tag);
-
-            outVars["l_pt"]=leptons[0].Pt();
-            outVars["l_eta"]=leptons[0].Rapidity();
-            outVars["l_phi"]=leptons[0].Phi();
-            outVars["l_m"]=leptons[0].M();
-            outVars["l_E"]=leptons[0].E();
-            outVars["lepton_isolation"]=ev.l_relIso[0];
-
-            outVars["nu_pt"]=neutrino.Pt();
-            outVars["nu_eta"]=neutrino.Rapidity();
-            outVars["nu_phi"]=neutrino.Phi();
-
-            outVars["p1_xi"]=p1_xi;
-            outVars["p2_xi"]=p2_xi;
-			
-            outVars["lightJet0_pt"]=lightJets[0].Pt();
-            outVars["lightJet0_eta"]=lightJets[0].Rapidity();
-            outVars["lightJet0_phi"]=lightJets[0].Phi();
-            outVars["lightJet0_m"]=lightJets[0].M();
-            outVars["lightJet0_E"]=lightJets[0].E();
-            outVars["lightJet1_pt"]=lightJets[1].Pt();
-            outVars["lightJet1_eta"]=lightJets[1].Rapidity();
-            outVars["lightJet1_phi"]=lightJets[1].Phi();
-            outVars["lightJet1_m"]=lightJets[1].M();
-            outVars["lightJet1_E"]=lightJets[1].E();
-            if (lightJets.size()==3) {
-                outVars["lightJet2_pt"]=  lightJets[2].Pt();
-                outVars["lightJet2_eta"]= lightJets[2].Rapidity();
-                outVars["lightJet2_phi"]= lightJets[2].Phi();
-                outVars["lightJet2_m"]=   lightJets[2].M();
-                outVars["lightJet2_E"]=   lightJets[2].E();
-                outVars["lightJet3_pt"]=  0. ;
-                outVars["lightJet3_eta"]= 0. ;
-                outVars["lightJet3_phi"]= 0. ;
-                outVars["lightJet3_m"]=   0. ;
-                outVars["lightJet3_E"]=   0. ;
-            } else if (lightJets.size()>=4) {
-                outVars["lightJet2_pt"]=  lightJets[2].Pt();
-                outVars["lightJet2_eta"]= lightJets[2].Rapidity();
-                outVars["lightJet2_phi"]= lightJets[2].Phi();
-                outVars["lightJet2_m"]=   lightJets[2].M();
-                outVars["lightJet2_E"]=   lightJets[2].E();
-                outVars["lightJet3_pt"]=  lightJets[3].Pt();
-                outVars["lightJet3_eta"]= lightJets[3].Rapidity();
-                outVars["lightJet3_phi"]= lightJets[3].Phi();
-                outVars["lightJet3_m"]=   lightJets[3].M();
-                outVars["lightJet3_E"]=   lightJets[3].E();
-            } else { // lightJets.size()==2
-                outVars["lightJet2_pt"]=  0. ;
-                outVars["lightJet2_eta"]= 0. ;
-                outVars["lightJet2_phi"]= 0. ;
-                outVars["lightJet2_m"]=   0. ;
-                outVars["lightJet2_E"]=   0. ;
-                outVars["lightJet3_pt"]=  0. ;
-                outVars["lightJet3_eta"]= 0. ;
-                outVars["lightJet3_phi"]= 0. ;
-                outVars["lightJet3_m"]=   0. ;
-                outVars["lightJet3_E"]=   0. ;
-            }
-
-            outVars["bJet0_pt"]=bJets[0].Pt();
-            outVars["bJet0_eta"]=bJets[0].Rapidity();
-            outVars["bJet0_phi"]=bJets[0].Phi();
-            outVars["bJet0_m"]=bJets[0].M();
-            outVars["bJet0_E"]=bJets[0].E();
-            outVars["bJet1_pt"]=bJets[1].Pt();
-            outVars["bJet1_eta"]=bJets[1].Rapidity();
-            outVars["bJet1_phi"]=bJets[1].Phi();
-            outVars["bJet1_m"]=bJets[1].M();
-            outVars["bJet1_E"]=bJets[1].E();
-            if (bJets.size()==3) {
-                outVars["bJet2_pt"]=  bJets[2].Pt();
-                outVars["bJet2_eta"]= bJets[2].Rapidity();
-                outVars["bJet2_phi"]= bJets[2].Phi();
-                outVars["bJet2_m"]=   bJets[2].M();
-                outVars["bJet2_E"]=   bJets[2].E();
-                outVars["bJet3_pt"]=  0. ;
-                outVars["bJet3_eta"]= 0. ;
-                outVars["bJet3_phi"]= 0. ;
-                outVars["bJet3_m"]=   0. ;
-                outVars["bJet3_E"]=   0. ;
-            } else if (bJets.size()>=4) {
-                outVars["bJet2_pt"]=  bJets[2].Pt();
-                outVars["bJet2_eta"]= bJets[2].Rapidity();
-                outVars["bJet2_phi"]= bJets[2].Phi();
-                outVars["bJet2_m"]=   bJets[2].M();
-                outVars["bJet2_E"]=   bJets[2].E();
-                outVars["bJet3_pt"]=  bJets[3].Pt();
-                outVars["bJet3_eta"]= bJets[3].Rapidity();
-                outVars["bJet3_phi"]= bJets[3].Phi();
-                outVars["bJet3_m"]=   bJets[3].M();
-                outVars["bJet3_E"]=   bJets[3].E();
-            } else { // bJets.size()==2
-                outVars["bJet2_pt"]=  0. ;
-                outVars["bJet2_eta"]= 0. ;
-                outVars["bJet2_phi"]= 0. ;
-                outVars["bJet2_m"]=   0. ;
-                outVars["bJet2_E"]=   0. ;
-                outVars["bJet3_pt"]=  0. ;
-                outVars["bJet3_eta"]= 0. ;
-                outVars["bJet3_phi"]= 0. ;
-                outVars["bJet3_m"]=   0. ;
-                outVars["bJet3_E"]=   0. ;
-            }
-            // quantities of generated objects (MC truth)
-            outVars["gen_ttbar_pt"]=ttbarSystem_gen.Pt();
-            outVars["gen_ttbar_eta"]=ttbarSystem_gen.Rapidity();
-            outVars["gen_ttbar_phi"]=ttbarSystem_gen.Phi();
-            outVars["gen_ttbar_m"]=ttbarSystem_gen.M();
-            outVars["gen_ttbar_E"]=ttbarSystem_gen.E();
-
-            outVars["gen_t_pt"]=t_gen.Pt();
-            outVars["gen_t_eta"]=t_gen.Rapidity();
-            outVars["gen_t_phi"]=t_gen.Phi();
-            outVars["gen_t_m"]=t_gen.M();
-            outVars["gen_tbar_pt"]=tbar_gen.Pt();
-            outVars["gen_tbar_eta"]=tbar_gen.Rapidity();
-            outVars["gen_tbar_phi"]=tbar_gen.Phi();
-            outVars["gen_tbar_m"]=tbar_gen.M();
-
-            outVars["gen_b_pt"]=b_gen.Pt();
-            outVars["gen_b_eta"]=b_gen.Rapidity();
-            outVars["gen_b_phi"]=b_gen.Phi();
-            outVars["gen_b_m"]=b_gen.M();
-            outVars["gen_bbar_pt"]=bbar_gen.Pt();
-            outVars["gen_bbar_eta"]=bbar_gen.Rapidity();
-            outVars["gen_bbar_phi"]=bbar_gen.Phi();
-            outVars["gen_bbar_m"]=bbar_gen.M();
-
-            //---------------------------------
-            // FILL TREE
-            outT->Fill();
-
-        } // end of if(bJets.size()>=2 && lightJets.size()>=2)
-    } // end of loop over events
-        std::cout << std::endl;
-		std::cout << "saved " << outT->GetEntries() << " events " << std::endl;
-        //close input file
-        f->Close();
-
-        //save histos to file
-        fOut->cd();
-
-    #ifdef HISTOGRAMS_ON
-        for (auto& it : ht.getPlots())  {
-            it.second->SetDirectory(fOut); it.second->Write();
+    if (!ev.isData) {
+      l1trigprefireProb=l1PrefireWR->getCorrection(allJets);
+      
+      // norm weight
+      wgt  = (normH? normH->GetBinContent(1) : 1.0);
+      
+      // lepton trigger*selection weights
+      sel1SF = lepEffH.getOfflineCorrection(leptons[l1idx], period);
+      sel2SF = lepEffH.getOfflineCorrection(leptons[l2idx], period);
+      
+      //for ttbar compute top pt SF        
+      if(isTT) {
+	  
+        for(Int_t igen=0; igen<ev.ngtop; igen++) {
+          if(abs(ev.gtop_id[igen])!=6) continue;
+          double topsf=TMath::Exp(0.156-0.00137*ev.gtop_pt[igen]);
+          if(debug) std::cout << "topsf was calculated to be " << topsf << std::endl;
+          topptWgts[0] *= topsf;
+          topptWgts[1] *= 1./topsf;
         }
-        for (auto& it : ht.get2dPlots())  {
-            it.second->SetDirectory(fOut); it.second->Write();
+      }
+      
+      //b-fragmentation weights
+      bfragWgts[0] = computeBFragmentationWeight(ev,fragWeights["downFrag"]);
+      bfragWgts[1] = computeBFragmentationWeight(ev,fragWeights["upFrag"]);
+      
+      wgt *= puWgts[0]*l1trigprefireProb.first*trigSF.first*sel1SF.first*sel2SF.first*btagWgt;
+      //std::cout << "l1trig: " << l1trigprefireProb.first << std::endl;
+      //std::cout << "trigSF: " << trigSF.first << std::endl;
+      //std::cout << "sel1SF: " << sel1SF.first << std::endl;
+      //std::cout << "sel2SF: " << sel2SF.first << std::endl;
+      //std::cout << "btagWgt: " << btagWgt << std::endl;
+      
+      // generator level weights
+      wgt *= (ev.g_nw>0 ? ev.g_w[0] : 1.0);
+      if(debug) std::cout << "gen_weight: " << ev.g_w[0] << std::endl;
+
+      //update weight for plotter
+      if(debug) std::cout << "final weight: " << wgt << std::endl;
+      plotwgts[0]=wgt;
+
+      //combined offline efficiencies
+      if(abs(leptons[0].id())==11) {
+        combinedESF.second+=pow(combinedESF.first*sel1SF.second,2)+pow(sel1SF.first*combinedESF.second,2);
+        combinedESF.first *=sel1SF.first;
+      }
+      if(abs(leptons[0].id())==13) {
+        combinedMSF.second+=pow(combinedMSF.first*sel1SF.second,2)+pow(sel1SF.first*combinedMSF.second,2);
+        combinedMSF.first *=sel1SF.first;
+      }
+      if(abs(leptons[1].id())==11) {
+        combinedESF.second+=pow(combinedESF.first*sel2SF.second,2)+pow(sel2SF.first*combinedESF.second,2);
+        combinedESF.first *=sel2SF.first;
+      }
+      if(abs(leptons[1].id())==13) {
+        combinedMSF.second+=pow(combinedMSF.first*sel2SF.second,2)+pow(sel2SF.first*combinedMSF.second,2);
+        combinedMSF.first *=sel2SF.first;
+      }
+      combinedESF.second=sqrt(combinedESF.second);
+      combinedMSF.second=sqrt(combinedMSF.second);
+    }
+
+    //control histograms
+    double kinReco_m = -1, kinReco_y = -10; 
+
+    if(!prepareProtonData) {
+      ht.fill("nvtx",       ev.nvtx,         plotwgts, cats);      
+      //event yields
+      ht.fill("evyields",  0,  plotwgts, cats);
+      
+      ht.fill("nlep",       (float)leptons.size(),  plotwgts, cats);        
+      if(bJets.size()>0) {
+        ht.fill("evyields",  1,  plotwgts, cats);
+        ht.fill("Mlb", lb_min.M(),  plotwgts, cats);
+        if(lb_min.M()<160)  ht.fill("evyields",  2,  plotwgts, cats);
+        if(bJets.size()>1)  ht.fill("evyields",  4,  plotwgts, cats);
+      }
+
+      //ht.fill("jet1pt", allJets[0].Pt(),  plotwgts, cats);
+      ht.fill("mll",        ll.M(),         plotwgts, cats);        
+      ht.fill("drll",       dilepton_dr,plotwgts,cats);
+      ht.fill("deltaphill",       fabs(leptons[0].Phi()-leptons[1].Phi()),plotwgts,cats);
+      if(bJets.size()>1) ht.fill("deltaphibb",       fabs(bJets[0].Phi()-bJets[1].Phi()),plotwgts,cats);
+
+      ht.fill("ptll",       ll.Pt(),        plotwgts, cats);
+        
+      //bjets
+      ht.fill("nbjets",     bJets.size(),    plotwgts, cats);
+      ht.fill("scalarhtb",     scalarhtb,    plotwgts, cats);
+        
+      //light jets
+      ht.fill("nljets",     lightJets.size(),    plotwgts, cats);
+
+      ht.fill("h", h.Pt(), plotwgts, cats);  
+      ht.fill("met",           met.Pt(),    plotwgts, cats);
+      ht.fill("scalarhtj",  scalarhtj,    plotwgts, cats);
+
+      do_kin_reco(leptons, allJets, bJets, met, debug, kinReco_m, kinReco_y);
+
+      ht.fill("kin_reco_ttbar_mass", kinReco_m, plotwgts, cats);
+      ht.fill("kin_reco_ttbar_rapidity", kinReco_y, plotwgts, cats);
+
+      ht.fill("gen_ttbar_mass", gen_mtt, plotwgts, cats);
+      ht.fill("gen_ttbar_rapidity", gen_ytt, plotwgts, cats);
+
+      ht.fill("gen_mtt_reco_mtt", (gen_mtt - kinReco_m)/gen_mtt, plotwgts, cats);    
+
+      ht.fill2D("gen_mtt_vs_reco_mtt", gen_mtt, kinReco_m, plotwgts, cats);
+    }
+    
+    ////////////////////////////////////////////
+    //fill bkg MC with roman pot information ///
+    ////////////////////////////////////////////
+
+    nRPtk=0;
+    double goodmRP=10000, goodyRP=10;
+    bool passRPcut = false;            
+    std::vector<double> nearCsi0, nearCsi1;
+           
+    //get random entry from pps_data file (with n0,n1,xi0,xi1)
+    if(!ev.isData && !isSignal && !prepareProtonData) {
+      
+      //generate random event from data
+      int ent = (int) generator.Uniform(0,pps_data->GetEntriesFast());
+      pps_data->GetEntry(ent);  
+	
+      if(data_n0==1 && data_n1==1) {
+	      //	      cout << "event is bkg MC and has 1 track on each side" << endl;
+	      nearCsi0.push_back(data_xi0);
+	      nearCsi1.push_back(data_xi1);
+	    }
+
+      //check if tracks are in PPS acceptance and only then compute mRP and yRP   
+      if(nearCsi0.size()==1 && nearCsi1.size()==1) // && nearCsi0[0]>0.03 && nearCsi0[0]<0.12 && nearCsi1[0]>0.03 && nearCsi1[0]<0.16)
+      {   
+        goodmRP = 13000*sqrt(nearCsi0[0]*nearCsi1[0]);
+        goodyRP = 0.5*TMath::Log(nearCsi0[0]/nearCsi1[0]);
+      }
+
+    }
+
+    std::map<int,int> ntks;
+      
+    ntks[3]=0; ntks[103]=0;
+
+    if (ev.isData || isSignal) {
+      
+      if(debug) std::cout << "entering pps part" << std::endl;
+
+      try{
+        if(ev.isData) {
+          beamXangle = ev.beamXangle;
+          ht.fill("beamXangle", beamXangle, plotwgts, selCat);
         }
-    #endif
-        outT->Write();
-        if(isData) outPT->Write();
-        fOut->Close();
-}  // end of RunExclusiveTop()
+          
+        //only dispersions for these angles are available (@ CTPPSAnalysisTools/data/2017/dispersions.txt)
+        //150 is interpolated
+        if(beamXangle==120 || beamXangle==130 || beamXangle==140 || beamXangle==150 || isSignal) {
 
-// --- THAT'S ALL FOLKS ---
+          for (int ift=0; ift<ev.nfwdtrk; ift++) {
+            
+            const unsigned short pot_raw_id = ev.fwdtrk_pot[ift];
+            
+            if(ev.fwdtrk_method[ift]!=1)  continue;  //multi RP
+            
+            //std::cout << "method is multiRP" << std::endl;
 
+            float xi=ev.fwdtrk_xi[ift];
+            
+            nRPtk++;
+		        if(pot_raw_id < 100) nearCsi0.push_back(xi);
+		        if(pot_raw_id > 100) nearCsi1.push_back(xi);
+		
+		        //monitor track multiplicity and csi values
+		        if(ntks.find(pot_raw_id)==ntks.end()) ntks[pot_raw_id]=0;
+		        ntks[pot_raw_id]++;
+          }
+
+          // compute mRP and yRP for data and signal
+          if(ntks[3]==1 && ntks[103]==1) {
+		
+	    //for signal, need to apply pixel efficiencies
+            if(isSignal)
+		        {
+		         pixeff.push_back(multiRP_efficiency->getEff(nearCsi0[0],0,ev.run) * strip_radiation_efficiency->getEff(nearCsi0[0],0,ev.run));
+			       pixeff.push_back(multiRP_efficiency->getEff(nearCsi1[0],1,ev.run) * strip_radiation_efficiency->getEff(nearCsi1[0],1,ev.run));
+
+		         plotwgts[0]=plotwgts[0]*pixeff[0]*pixeff[1];
+		         wgt*=pixeff[0]*pixeff[1];
+		        }
+	         
+           //check if tracks are in PPS acceptance and only then compute mRP and yRP 
+	    //if(nearCsi0[0]>0.03 && nearCsi0[0]<0.12 && nearCsi1[0]>0.025 && nearCsi1[0]<0.16)
+	    //{
+		  goodmRP = 13000*sqrt(nearCsi0[0]*nearCsi1[0]);
+		  goodyRP = 0.5*TMath::Log(nearCsi0[0]/nearCsi1[0]);////		    
+	    //}
+	    // else std::cout << "not in acceptance" << std::endl;
+          }
+
+          for(auto nit : ntks) 
+	         ht.fill("ntkrp", nit.second, plotwgts, Form("%s_%d",selCat.Data(),nit.first));	    
+        }
+      }catch(...){
+      }
+
+    }
+
+    ///////////////////////////////////////////
+    // assign PPS info to write in data file //
+    ///////////////////////////////////////////
+          
+    if(prepareProtonData) {
+
+      pps_n0 = ntks[3];
+      pps_n1 = ntks[103];
+      if(ntks[3]>0) pps_xi0 = nearCsi0[0];
+      else pps_xi0 = -1.;
+
+      if(ntks[103]>0) pps_xi1 = nearCsi1[0];
+      else pps_xi1 = -1.;
+
+      pps_info->Fill();
+    }
+
+
+    if(nearCsi0.size()>0 && nearCsi1.size()>0) {
+  	  ht.fill("xi0",nearCsi0[0],plotwgts,cats);
+      ht.fill("xi1",nearCsi1[0],plotwgts,cats);
+    }
+
+    if(goodmRP<600 && goodmRP>300) passRPcut = true;
+
+    if(passRPcut) {
+      ht.fill("evyields",  6,  plotwgts, cats);
+      //int categorysize=(int)cats.size();
+      //for(int i=0;i<categorysize;i++) cats.push_back(cats[i]+"_RPcut");
+    }
+
+    if(goodmRP<5000 && goodmRP>0) {
+      ht.fill("mRP",goodmRP,plotwgts,cats);
+      ht.fill("yRP",goodyRP,plotwgts,cats);
+    }      
+      
+    float px2=0,py2=0,pz2=0,E2=0,yvis=0,ysum=0,max_dy=0,min_dy=0;
+
+    if( ( bJets.size()>1 ) && lb_min.M()<160) {
+      //iseventselected = true;
+      //entrynumber++;
+      //compute some other variables
+      Jet secondJet = bJets[1];
+      
+      px2=(bJets[0].Px()+secondJet.Px()+leptons[0].Px()+leptons[1].Px()+met.Px())*(bJets[0].Px()+secondJet.Px()+leptons[0].Px()+leptons[1].Px()+met.Px());
+      py2=(bJets[0].Py()+secondJet.Py()+leptons[0].Py()+leptons[1].Py()+met.Py())*(bJets[0].Py()+secondJet.Py()+leptons[0].Py()+leptons[1].Py()+met.Py());
+      pz2=(bJets[0].Pz()+secondJet.Pz()+leptons[0].Pz()+leptons[1].Pz()+met.Pz())*(bJets[0].Pz()+secondJet.Pz()+leptons[0].Pz()+leptons[1].Pz()+met.Pz());
+      E2=(bJets[0].E()+secondJet.E()+leptons[0].E()+leptons[1].E()+met.Pt())*(bJets[0].E()+secondJet.E()+leptons[0].E()+leptons[1].E()+met.Pt());
+	    
+      yvis=(bJets[0]+secondJet+leptons[0]+leptons[1]).Rapidity();
+      ysum=fabs(bJets[0].Rapidity())+fabs(secondJet.Rapidity())+fabs(leptons[0].Rapidity())+fabs(leptons[1].Rapidity());
+      max_dy= max(fabs((bJets[0]+leptons[0]).Rapidity())-fabs((secondJet+leptons[1]).Rapidity()),  fabs((bJets[0]+leptons[1]).Rapidity())-fabs((secondJet+leptons[0]).Rapidity()));
+      min_dy=min( fabs((bJets[0]+leptons[0]).Rapidity())-fabs((secondJet+leptons[1]).Rapidity()),  fabs((bJets[0]+leptons[1]).Rapidity())-fabs((secondJet+leptons[0]).Rapidity()));
+  	
+      ht.fill("E2",  E2,    plotwgts, cats);
+      ht.fill("yvis",  yvis,    plotwgts, cats);
+      ht.fill("ysum",  ysum,    plotwgts, cats);
+      ht.fill("mindy",  min_dy,    plotwgts, cats);
+  
+    }
+    
+    if(runSysts) {
+      
+      //experimental systs are computed for MC
+      if(!ev.isData) {
+  	   for(size_t is=0; is<nexpSysts; is++){
+  	  
+    	   TString sname=expSystNames[is];
+    	   bool isUpVar(sname.EndsWith("up"));
+            
+    	   //base values and kinematics
+    	   bool reSelect(false);        
+    	   double iwgt=(normH? normH->GetBinContent(1) : 1.0);
+    	   
+	       if(isSignal) iwgt = iwgt*pixeff[0]*pixeff[1];
+    	   
+	       iwgt *= (ev.g_nw>0 ? ev.g_w[0] : 1.0); 
+
+    	   //	  iwgt *= widthWgt;
+    	   if(debug) {
+          std::cout << "combinedESF is "<< combinedESF.first << ", " << combinedESF.second << std::endl;
+          std::cout << "combinedMSF is "<< combinedMSF.first << ", " << combinedMSF.second << std::endl;
+          std::cout << "l1prefire is " << l1trigprefireProb.first << ", " << l1trigprefireProb.second << std::endl;
+          std::cout << "bfrag weight" << bfragWgts[0] << ", " << bfragWgts[1] << std::endl;
+          std::cout << "trigger scale factor (trigSF) is " << trigSF.first << ", " << trigSF.second << std::endl;
+    	   }
+
+    	   EffCorrection_t selSF(sel1SF.first*sel2SF.first,0.0);
+
+    	   if(sname=="puup")       iwgt *= puWgts[1]*trigSF.first*selSF.first*l1trigprefireProb.first*btagWgt;
+    	   else if(sname=="pudn")  iwgt *= puWgts[2]*trigSF.first*selSF.first*l1trigprefireProb.first*btagWgt;
+    	   /*else if( (sname.Contains("eetrig") && selCode==11*11) ||
+    		   (sname.Contains("emtrig") && selCode==11*13) ||
+    		   (sname.Contains("mmtrig") && selCode==13*13) ) {
+    	       double newTrigSF( max(double(0.),double(trigSF.first+(isUpVar ? +1 : -1)*trigSF.second)) );
+    	       iwgt *= puWgts[0]*newTrigSF*selSF.first*l1trigprefireProb.first*btagWgt;
+    	   }*/
+    	   else if(sname.BeginsWith("esel") ) {
+    	     double newESF( max(double(0.),double(combinedESF.first+(isUpVar ? +1 : -1)*combinedESF.second)) );
+    	     iwgt *= puWgts[0]*trigSF.first*newESF*combinedMSF.first*l1trigprefireProb.first*btagWgt;
+    	   }
+    	   else if(sname.BeginsWith("msel") ) {
+    	     double newMSF( max(double(0.),double(combinedMSF.first+(isUpVar ? +1 : -1)*combinedMSF.second)) );
+    	     iwgt *= puWgts[0]*trigSF.first*combinedESF.first*newMSF*l1trigprefireProb.first*btagWgt;
+    	   }
+    	   else if(sname.BeginsWith("l1prefire") ){
+    	     double newL1PrefireProb( max(double(0.),double(l1trigprefireProb.first+(isUpVar ? +1 : -1)*l1trigprefireProb.second)) );
+    	     iwgt *= puWgts[0]*trigSF.first*selSF.first*newL1PrefireProb*btagWgt;
+    	   }
+    	   else if(sname=="topptup")     iwgt *= puWgts[0]*trigSF.first*selSF.first*l1trigprefireProb.first*btagWgt*topptWgts[0];
+    	   else if(sname=="topptdn")     iwgt *= puWgts[0]*trigSF.first*selSF.first*l1trigprefireProb.first*btagWgt*topptWgts[1];
+    	   else if(sname=="bfragup")     iwgt *= puWgts[0]*trigSF.first*selSF.first*l1trigprefireProb.first*btagWgt*bfragWgts[0];
+    	   else if(sname=="bfragdn")     iwgt *= puWgts[0]*trigSF.first*selSF.first*l1trigprefireProb.first*btagWgt*bfragWgts[1];
+    	 
+    	   else {
+    	     iwgt = wgt;           
+    	   }
+         
+    	   //leptons
+    	   std::vector<Particle> ileptons(leptons);
+    	   
+         /*if(sname.BeginsWith("ees") || sname.BeginsWith("mes")) {
+    	     reSelect=true;
+    	     ileptons.clear();
+    	     ileptons=selector.flaggedLeptons(ev);
+    	     for(size_t il=0; il<ileptons.size(); il++) {
+    	       int id=abs(ileptons[il].id());
+    	       int idx=ileptons[il].originalReference();
+    	       double eScale(0.0);
+    	       if( (id==11 && sname.Contains("ees1")) || (id==13 && sname.Contains("mes1")) ) eScale=ev.l_scaleUnc1[idx];
+    	       if( (id==11 && sname.Contains("ees2")) || (id==13 && sname.Contains("mes2")) ) eScale=ev.l_scaleUnc2[idx];
+    	       if( (id==11 && sname.Contains("ees3")) || (id==13 && sname.Contains("mes3")) ) eScale=ev.l_scaleUnc3[idx];
+    	       if( (id==11 && sname.Contains("ees4")) || (id==13 && sname.Contains("mes4")) ) eScale=ev.l_scaleUnc4[idx];
+    	       if( (id==11 && sname.Contains("ees5")) || (id==13 && sname.Contains("mes5")) ) eScale=ev.l_scaleUnc5[idx];
+    	       if( (id==11 && sname.Contains("ees6")) || (id==13 && sname.Contains("mes6")) ) eScale=ev.l_scaleUnc6[idx];
+    	       if( (id==11 && sname.Contains("ees7")) || (id==13 && sname.Contains("mes7")) ) eScale=ev.l_scaleUnc7[idx];
+
+    	       if( sname.BeginsWith("ees") && id==11 ) {
+    		        if(isUpVar) eScale=(1+fabs(eScale)/ileptons[il].Pt());
+    		        else        eScale=(1-fabs(eScale)/ileptons[il].Pt());
+    	       } else if (sname.BeginsWith("mes") && id==13 ) {
+    		        if(isUpVar) eScale=(1+fabs(1-eScale));
+    		        else        eScale=(1-fabs(1-eScale));
+    		     } else {
+    		        eScale=1.0;
+    	       }
+    	       ileptons[il] *= eScale;
+            }
+    	   
+    	     ileptons=selector.selLeptons(ileptons,SelectionTool::TIGHT,SelectionTool::MVA90,20,2.4);        
+    	     bool isTrigSafe_i(ileptons[0].Pt()>30 && fabs(ileptons[0].Eta())<2.1);
+    	     if(!isTrigSafe_i) continue;
+    	     if(ileptons.size()<2) continue;        
+    	     if((ileptons[0]+ileptons[1]).M()<20) continue;
+    	    }*/
+
+          //std::cout << "original lepton 1 pt: " << leptons[0].Pt() << ", varied l1pt: " << ileptons[0].Pt() << std::endl;
+
+    	   //jets
+    	   TLorentzVector ilb_min(lb_min); 
+    	   std::vector<Jet> ijets(allJets);
+    	   std::vector<Jet> ibJets(bJets);
+    	   std::vector<Jet> iljets(lightJets);
+    	
+    	   float iE2=0;
+	       float iyvis=0,iysum=0,imax_dy=0,imin_dy=0;
+    	   double iscalarht = 0;
+    	   if(sname.Contains("JEC") || sname.Contains("JER") )  {
+    	     reSelect=true;
+                
+    	     int jecIdx=-1;
+    	     if(sname.Contains("AbsoluteStat"))     jecIdx=0;
+    	     if(sname.Contains("AbsoluteScale"))    jecIdx=1; 
+    	     if(sname.Contains("AbsoluteMPFBias"))  jecIdx=2; 
+    	     if(sname.Contains("Fragmentation"))    jecIdx=3; 
+    	     if(sname.Contains("SinglePionECAL"))   jecIdx=4; 
+    	     if(sname.Contains("SinglePionHCAL"))   jecIdx=5; 
+    	     if(sname.Contains("FlavorPureGluon"))  jecIdx=6; 
+    	     if(sname.Contains("FlavorPureQuark"))  jecIdx=7; 
+    	     if(sname.Contains("FlavorPureCharm"))  jecIdx=8; 
+    	     if(sname.Contains("FlavorPureBottom")) jecIdx=9; 
+    	     if(sname.Contains("TimePtEta"))        jecIdx=10; 
+    	     if(sname.Contains("RelativeJEREC1"))   jecIdx=11; 
+    	     if(sname.Contains("RelativeJEREC2"))   jecIdx=12; 
+    	     if(sname.Contains("RelativeJERHF"))    jecIdx=13; 
+    	     if(sname.Contains("RelativePtBB"))     jecIdx=14; 
+    	     if(sname.Contains("RelativePtEC1"))    jecIdx=15; 
+    	     if(sname.Contains("RelativePtEC2"))    jecIdx=16; 
+    	     if(sname.Contains("RelativePtHF"))     jecIdx=17; 
+    	     if(sname.Contains("RelativeBal"))      jecIdx=18; 
+    	     if(sname.Contains("RelativeFSR"))      jecIdx=19; 
+    	     if(sname.Contains("RelativeStatFSR"))  jecIdx=20; 
+    	     if(sname.Contains("RelativeStatEC"))   jecIdx=21; 
+    	     if(sname.Contains("RelativeStatHF"))   jecIdx=22; 
+    	     if(sname.Contains("PileUpDataMC"))     jecIdx=23; 
+    	     if(sname.Contains("PileUpPtRef"))      jecIdx=24; 
+    	     if(sname.Contains("PileUpPtBB"))       jecIdx=25; 
+    	     if(sname.Contains("PileUpPtEC1"))      jecIdx=26; 
+    	     if(sname.Contains("PileUpPtEC2"))      jecIdx=27; 
+    	     if(sname.Contains("PileUpPtHF"))       jecIdx=28;
+            
+    	     //re-scale and re-select jets
+    	     //	    applyMC2MC(newJets);
+    	     std::vector<Jet> newJets = selector.getGoodJets(ev,30.,2.4,leptons);
+    	     ijets.clear();
+    	     ibJets.clear();
+    	     iljets.clear();
+
+           if(sname.Contains("btag")) { 
+              string option = isUpVar ? "up" : "dn";
+              btvSF.updateBTagDecisions(ev,option,option); 
+            }
+
+    	     for(auto j : newJets) {
+
+    	       int idx=j.getJetIndex();
+    	       int jflav(abs(ev.j_flav[idx]));
+
+    	       //shift jet energy
+    	       double scaleVar(1.0);
+    	       if(jecIdx<0) {
+    		        if(sname.BeginsWith("JER")) scaleVar = isUpVar ? ev.j_jerUp[idx] : ev.j_jerDn[idx];
+    		        if(debug)		std::cout << (isUpVar ? "jet scale var up: " : "jet scale var dn: ")  << scaleVar << endl;
+              } 
+
+    	       else {
+    		        bool flavorMatches(true);
+    		        if(jecIdx==6 && jflav!=21) flavorMatches=false; //FlavorPureGluon
+    		        if(jecIdx==7 && jflav>=4)  flavorMatches=false; //FlavorPureQuark
+    		        if(jecIdx==8 && jflav!=4)  flavorMatches=false; //FlavorPureCharm
+    		        if(jecIdx==9 && jflav!=5)  flavorMatches=false; //FlavorPureGluon
+    		        if(flavorMatches) 
+                  scaleVar=isUpVar ? ev.j_jecUp[jecIdx][idx] : ev.j_jecDn[jecIdx][idx];
+              }
+
+    	       j*=scaleVar;           
+
+    	       int ijid=ev.j_id[idx];
+    	       bool ipassLoosePu((ijid>>2)&0x1);
+    	       if(!ipassLoosePu) continue;
+    	       ijets.push_back(j);
+    	       iscalarht += j.Pt();          
+    	       if(ev.j_btag[idx]>0) ibJets.push_back(j);
+    	       else iljets.push_back(j);
+    	     }
+
+           #undef jecVariation
+    	   }
+
+      
+          //re-select lb pairs if needed
+    	    if(reSelect && ibJets.size()>0) {
+    	     std::vector<int> newBestLB = ComputeLBcombination(ileptons,ibJets);
+    	     ilb_min=ileptons[newBestLB[0]]+ibJets[newBestLB[1]];
+    	    }
+
+    	    //fill with new values/weights
+    	    std::vector<double> eweights(1,iwgt);
+    	  
+    	   
+    	    if( ( bJets.size()>1 ) && ilb_min.M()<160) {
+
+            Jet isecondJet = ibJets[1];
+            
+	    if(nearCsi0.size()==0 || nearCsi1.size()==0) {
+	      nearCsi0.push_back(-1);
+	      nearCsi1.push_back(-1);
+            }
+
+    	      //compute some other variables
+    	      //ipx2=(ibJets[0].Px()+ibJets[1].Px()+ileptons[0].Px()+ileptons[1].Px()+met.Px())*(ibJets[0].Px()+ibJets[1].Px()+ileptons[0].Px()+ileptons[1].Px()+met.Px());
+    	      //ipy2=(ibJets[0].Py()+ibJets[1].Py()+ileptons[0].Py()+ileptons[1].Py()+met.Py())*(ibJets[0].Py()+ibJets[1].Py()+ileptons[0].Py()+ileptons[1].Py()+met.Py());
+    	      //ipz2=(ibJets[0].Pz()+ibJets[1].Pz()+ileptons[0].Pz()+ileptons[1].Pz()+met.Pz())*(ibJets[0].Pz()+ibJets[1].Pz()+ileptons[0].Pz()+ileptons[1].Pz()+met.Pz());
+    	      iE2=(ibJets[0].E()+isecondJet.E()+ileptons[0].E()+ileptons[1].E()+met.Pt())*(ibJets[0].E()+isecondJet.E()+ileptons[0].E()+ileptons[1].E()+met.Pt());
+    	    
+    	      iyvis=(ibJets[0]+isecondJet+ileptons[0]+ileptons[1]).Rapidity();
+    	      iysum=fabs(ibJets[0].Rapidity())+fabs(isecondJet.Rapidity())+fabs(ileptons[0].Rapidity())+fabs(ileptons[1].Rapidity());
+    	      imax_dy= max(fabs((ibJets[0]+ileptons[0]).Rapidity())-fabs((isecondJet+ileptons[1]).Rapidity()),  fabs((ibJets[0]+ileptons[1]).Rapidity())-fabs((isecondJet+ileptons[0]).Rapidity()));
+    	      imin_dy=min( fabs((ibJets[0]+ileptons[0]).Rapidity())-fabs((isecondJet+ileptons[1]).Rapidity()),  fabs((ibJets[0]+ileptons[1]).Rapidity())-fabs((isecondJet+ileptons[0]).Rapidity()));
+
+	          if(iE2!=iE2) iE2=E2; 
+    	      if(iyvis!=iyvis) iyvis=yvis; 
+    	      if(iysum!=iysum) iysum=ysum;
+    	      if(imax_dy!=imax_dy) imax_dy=max_dy;
+    	      if(imin_dy!=imin_dy) imin_dy=min_dy;
+            double ikinReco_m = -1., ikinReco_y = -10.;
+            do_kin_reco(ileptons, ijets, ibJets, met, debug,  ikinReco_m, ikinReco_y);
+	    
+            run_bdt=ev.run;
+            lumi_bdt=ev.lumi;
+            event_bdt=ev.event;
+            rho_bdt=ev.rho;
+            mpp_bdt=goodmRP;
+            ypp_bdt=goodyRP;
+            reco_mtt_bdt=ikinReco_m;
+            reco_ytt_bdt=ikinReco_y;
+            yvis_bdt=iyvis;
+            deltarll_bdt=ileptons[0].DeltaR(ileptons[1]);
+            mll_bdt=(ileptons[0]+ileptons[1]).M();
+            deltaphibb_bdt=fabs(ibJets[1].Phi()-ibJets[0].Phi());
+            ysum_bdt=iysum;
+            //metphi_bdt=met.Phi();
+            min_dy_bdt=imin_dy;
+            nljets_bdt=iljets.size();
+            metpt_bdt=met.Pt();
+            E2_bdt=iE2;
+
+            std::vector<double> eweights(1,iwgt);
+
+            //std::cout << "BDToutput: " << reader->EvaluateMVA(method) << std::endl;
+            //ht.fill(Form("BDToutput_%s",is),reader->EvaluateMVA(method),plotwgts,cats);
+
+            if(mpp_bdt<6000 && !prepareProtonData && !prepareTraining) {
+              ht.fill2D("BDToutput_exp", reader->EvaluateMVA(method), is, eweights, cats);
+              ht.fill("BDToutput_"+expSystNames[is], reader->EvaluateMVA(method), eweights, cats);
+            }
+	    
+    	      ///Fill all the systematics variation information
+    	      //ntuple_vec[is+1]->Fill(varsel_syst);
+
+    	      if(debug) cout << "filled hist for syst" << is << endl;
+    	      //delete[] varsel_syst;
+    	      //testvariable = 1;
+    	      if(debug)	      cout << "event "<<iev << ", syst " << is << endl;
+  	      }
+        }
+      }
+    }
+
+    if( bJets.size()>1 )
+    {
+
+      Jet secondJet = bJets[1];
+      
+	    //testvariable=2;
+      if(nearCsi0.size()==0 || nearCsi1.size()==0)
+	    {
+	      nearCsi0.push_back(-1);
+	      nearCsi1.push_back(-1);
+	    }
+
+	    Float_t varsel[]={(float)ev.run,
+			    (float)ev.lumi,(float)ev.event,(float)ev.nvtx,(float)ev.rho,
+			    (float)leptons[0].id()*leptons[1].id(),(float) ll.M(),(float)lightJets.size(), (float)bJets.size(), (float) scalarht, 
+			    (float) met.Pt(),(float) met.Phi(),
+			    (float) leptons[0].Pt(),(float)leptons[0].Eta(),(float)leptons[0].Phi(),(float)leptons[0].M(),(float)
+			    leptons[1].Pt(),(float)leptons[1].Eta(),(float)leptons[1].Phi(),(float)leptons[1].M(),
+			    (float) bJets[0].Pt(),(float)bJets[0].Eta(),(float)bJets[0].Phi(),(float)bJets[0].M(),(float)
+			    secondJet.Pt(),(float)secondJet.Eta(),(float)secondJet.Phi(),(float)secondJet.M(),
+			    px2,py2,pz2,E2,yvis,ysum,max_dy,min_dy,(float)
+			    leptons[0].DeltaR(leptons[1]),(float) leptons[0].DeltaPhi(leptons[1]), (float) lb_min.M(), (float) nearCsi0[0],
+			    (float) nearCsi1[0], (float)		    
+			    goodmRP,(float) goodyRP, (float) gen_mtt, (float) gen_ytt, (float) kinReco_m, (float) kinReco_y, 
+          (float) wgt};
+	
+      outTsel->Fill(varsel);
+      
+      run_bdt=ev.run;
+      lumi_bdt=ev.lumi;
+      event_bdt=ev.event;
+      rho_bdt=ev.rho;
+      mpp_bdt=goodmRP;
+      ypp_bdt=goodyRP;
+      reco_mtt_bdt=kinReco_m;
+      reco_ytt_bdt=kinReco_y;
+      yvis_bdt=yvis;
+      deltarll_bdt=leptons[0].DeltaR(leptons[1]);
+      mll_bdt=ll.M();
+      deltaphibb_bdt=fabs(bJets[1].Phi()-bJets[0].Phi());
+      ysum_bdt=ysum;
+      //metphi_bdt=met.Phi();
+      min_dy_bdt=min_dy;
+      nljets_bdt=lightJets.size();
+      metpt_bdt=met.Pt();
+      E2_bdt=E2;
+
+      if(debug && !prepareTraining && !prepareProtonData) std::cout << "BDToutput: " << reader->EvaluateMVA(method) << std::endl;
+      if(mpp_bdt<6000 && !prepareTraining && !prepareProtonData) ht.fill("BDToutput",reader->EvaluateMVA(method),plotwgts,cats);
+      
+      //theory uncertainties are filled only for MC
+      if(!ev.isData && runSysts) {
+        if(ev.g_w[0]!=0 && normH!=NULL && normH->GetBinContent(1)!=0) {
+          for(size_t is=0; is<nthSysts; is++){
+          
+            TString sname=thSystNames[is];
+            
+            std::vector<double> sweights(1,plotwgts[0]);
+            
+            if(ev.g_nw>7) {
+              if(sname=="muRup") sweights[0] *= (ev.g_w[2])/ev.g_w[0]*(normH->GetBinContent(3)/normH->GetBinContent(1));
+              if(sname=="muFup") sweights[0] *= (ev.g_w[4])/ev.g_w[0]*(normH->GetBinContent(5)/normH->GetBinContent(1));
+              if(sname=="muRmuFup") sweights[0] *= (ev.g_w[6])/ev.g_w[0]*(normH->GetBinContent(7)/normH->GetBinContent(1));
+            
+              if(sname=="muRdn") sweights[0] *= (ev.g_w[3])/ev.g_w[0]*(normH->GetBinContent(4)/normH->GetBinContent(1));
+              if(sname=="muFdn") sweights[0] *= (ev.g_w[5])/ev.g_w[0]*(normH->GetBinContent(6)/normH->GetBinContent(1));
+              if(sname=="muRmuFdn") sweights[0] *= (ev.g_w[7])/ev.g_w[0]*(normH->GetBinContent(8)/normH->GetBinContent(1));
+            }
+
+            int nW = ev.g_npsw;
+            //std::cout << "n of ps weights: " << nW  << std::endl;
+            //std::cout << "ps weights nominal: " << ev.g_psw[0] << std::endl;
+            //https://github.com/cms-sw/cmssw/blob/master/Configuration/Generator/python/PSweightsPythia/PythiaPSweightsSettings_cfi.py
+            if(nW==46 && ev.g_psw[0]){
+              if(sname=="isrup") sweights[0] *= (ev.g_psw[8])/ev.g_psw[0];
+              if(sname=="fsrup") sweights[0] *= (ev.g_psw[9])/ev.g_psw[0];
+              if(sname=="isrdn") sweights[0] *= (ev.g_psw[6])/ev.g_psw[0];
+              if(sname=="fsrdn") sweights[0] *= (ev.g_psw[7])/ev.g_psw[0];
+            }
+            if(nW==24 && ev.g_psw[0]){
+              std::cout << "no isr" << std::endl;
+              if(sname=="fsrup") sweights[0] *= (ev.g_psw[5])/ev.g_psw[0];
+              if(sname=="fsrdn") sweights[0] *= (ev.g_psw[6])/ev.g_psw[0];
+            }
+
+            if(mpp_bdt<6000 && !prepareTraining && !prepareProtonData) {
+              ht.fill2D("BDToutput_th", reader->EvaluateMVA(method), is, sweights, cats);
+              TString bdtname = "BDToutput_"+sname;
+              ht.fill(bdtname, reader->EvaluateMVA(method), sweights, cats);
+            }
+          }
+        }
+      }
+      
+    }
+  }
+
+if(debug) std::cout << "closing files" << std::endl;
+  //close input file
+  f->Close(); 
+  fakefile->Close();
+
+  //save histos to file  
+  fOut->cd();
+  
+  if( !(prepareProtonData || prepareTraining) ) {
+    
+    for (auto& it : ht.getPlots())  {
+      if(it.second->GetEntries()==0) continue;
+      it.second->SetDirectory(fOut); it.second->Write(); 
+    }
+
+    for (auto& it : ht.get2dPlots())  {
+      if(it.second->GetEntries()==0) continue;
+      it.second->SetDirectory(fOut); it.second->Write(); 
+    }
+  }
+  //save ntuples w/ selected events to file
+  
+  if(!prepareProtonData) outTsel->Write();
+  else pps_info->Write();
+  
+  fOut->Close();
+  
+}
