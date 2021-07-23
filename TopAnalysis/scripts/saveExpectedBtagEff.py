@@ -10,7 +10,7 @@ def saveExpectedBtagEff(opt):
     #prepare data chain
     inputDir=opt.input
     input_list=getEOSlslist(directory=inputDir)
-    data=ROOT.TChain('analysis/data') 
+    data=ROOT.TChain('analysis/tree') 
     for i in xrange(0,min(5,len(input_list))):
         data.Add(input_list[i])
     print 'Projecting tagging efficiency from ',data.GetEntries(),' events'
@@ -78,7 +78,7 @@ def main():
     parser.add_option('-i', '--in',        dest='input',    help='input directory with files [%default]', default='/store/cmst3/group/top/RunIIReReco/f93b8d8/MC13TeV_2017_TTJets')
     parser.add_option('-o', '--out',       dest='output',   help='output file [%default]',           default='data/era2017/expectedBtagEff.root')
     parser.add_option('--taggers',   dest='taggers',  help='tagger:cut,tagger:cut [%default]',      
-                      default='DeepCSV:loose:0.1522,DeepCSV:medium:0.4941,DeepCSV:tight:0.8001')
+                      default='DeepCSV:loose:0.1355,DeepCSV:medium:0.4506,DeepCSV:tight:0.7738')
     (opt, args) = parser.parse_args()
 
     saveExpectedBtagEff(opt)

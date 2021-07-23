@@ -21,7 +21,7 @@ def main():
     parser.add_option('-o', '--output',      dest='cache',       help='output file',                  default='data/era2016/genweights.root',                      type='string')
     (opt, args) = parser.parse_args()
 
-    baseEOS='/eos/cms/'
+    baseEOS='/'
     #eos_cmd = '/afs/cern.ch/project/eos/installation/0.3.15/bin/eos.select'
     #if opt.mount:
     #    baseEOS='eos/cms'

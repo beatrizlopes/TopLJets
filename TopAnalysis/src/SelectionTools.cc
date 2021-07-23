@@ -488,6 +488,120 @@ std::vector<Particle> SelectionTool::selPhotons(std::vector<Particle> &photons,i
 
 
 //
+std::vector<std::pair<Jet,Jet> > SelectionTool::getNominalAndVarJets(MiniEvent_t &ev, double minPt, double maxEta, std::vector<Particle> leptons,std::vector<Particle> photons, int sys) {
+
+  std::vector<std::pair<Jet,Jet> > jets;
+  
+  for (int k=0; k<ev.nj; k++) {
+	
+    // jet preselection
+    if(ev.j_pt[k] < 10 || abs(ev.j_eta[k]) > maxEta) continue;
+
+    // Calculate scale variations and apply in case if needed:
+
+    //jer uncertainty
+    float jerUp(0),jerDn(0);  
+    if(ev.j_jerUp[k]>ev.j_jerDn[k]){jerUp=ev.j_jerUp[k]; jerDn=ev.j_jerDn[k];}
+    else {jerUp=ev.j_jerDn[k]; jerDn=ev.j_jerUp[k];}
+	
+    // scale to average (doesn't make sense to have up/dn biased somehow):
+    float average = 0.5*(jerUp+jerDn); jerUp-=average; jerDn-=average;
+   
+    //jec uncertainty
+    float jecUp(0),jecDn(0); 
+
+    int jflav(abs(ev.j_flav[k]));	
+
+	int iunc_min=0, iunc_max=0; // see python/miniAnalyzer_cfi.py for more info
+	if(abs(sys)==2) {iunc_max=29; }    // Evaluate all systematics
+	else if(abs(sys)==3) {iunc_max=3;} // Absolute variations only
+	else if(abs(sys)==7) {iunc_min=3; iunc_max=6;} // High PT and fragmentation
+	else if(abs(sys)==6) {iunc_min=6; iunc_max=10;} // Flavor variations only
+	else if(abs(sys)==8) {iunc_min=10; iunc_max=11;} // Time variations only
+	else if(abs(sys)==4) {iunc_min=11; iunc_max=23;} // Relative variations only
+	else if(abs(sys)==5) {iunc_min=23; iunc_max=29;} // Pileup variations only
+	
+  for(int iunc=iunc_min; iunc<iunc_max; iunc++){
+           
+      //see python/miniAnalyzer_cfi.py for these
+      if(iunc==6 && jflav!=21) continue; //FlavorPureGluon
+      if(iunc==7 && jflav>=4)  continue; //FlavorPureQuark
+      if(iunc==8 && jflav!=4)  continue; //FlavorPureCharm
+      if(iunc==9 && jflav!=5)  continue; //FlavorPureGluon
+
+      if(ev.j_jecUp[iunc][k]!=0) jecUp += pow(1-ev.j_jecUp[iunc][k],2);
+      if(ev.j_jecDn[iunc][k]!=0) jecDn += pow(1-ev.j_jecDn[iunc][k],2);
+
+  }
+
+  jecUp=TMath::Sqrt(jecUp);
+  jecDn=TMath::Sqrt(jecDn);
+
+  // apply SF correpsonding to the uncertainty:
+  float jet_corr = 1;   // sys = {1:JER, 2:JEC}
+  if(sys==1) jet_corr = 1+jerUp;
+  else if(sys==-1) jet_corr = 1+jerDn; // jerDn is negative by construction
+  else if(sys>1) {jet_corr = 1+jecUp;} 
+  else if(sys<-1) {jet_corr = 1-jecDn;} // jecDn is positive by construction
+	
+  TLorentzVector jp4_var, jp4_nom;
+  jp4_var.SetPtEtaPhiM(ev.j_pt[k]*jet_corr,ev.j_eta[k],ev.j_phi[k],ev.j_mass[k]);
+  jp4_nom.SetPtEtaPhiM(ev.j_pt[k],ev.j_eta[k],ev.j_phi[k],ev.j_mass[k]);
+  
+  //flavor based on b tagging
+  int flavor = 0;
+  if (ev.j_btag[k]) flavor = 5;
+    
+  //jet.setScaleUnc(0.5*(jecUp+jecDn));
+  Jet jet(jp4_var, flavor, k);
+  Jet jet_nom(jp4_nom, flavor, k);
+  jet.setCSV(ev.j_csv[k]);
+  jet.setDeepCSV(ev.j_deepcsv[k]);
+  jet.setPUMVA(ev.j_pumva[k]);
+	
+  //cross clean with leptons/photons
+  bool overlapsWithPhysicsObject(false);
+  for (auto& lepton : leptons) {
+    if(jp4_var.DeltaR(lepton.p4())<0.4) overlapsWithPhysicsObject=true;
+  }
+  for (auto& photon : photons) {
+    if(jp4_var.DeltaR(photon.p4())<0.4) overlapsWithPhysicsObject=true;
+  }
+  if(overlapsWithPhysicsObject) continue;
+  
+  // pT cut on good jets
+  if(jp4_var.Pt() < minPt) continue;
+  
+  if(debug_)
+    cout << "Jet #" << jets.size() 
+	 << " pt=" << jp4_var.Pt() << "+/-" << jet.getScaleUnc()*jp4_var.Pt() << " (jec+jer)"
+	 << " eta=" << jp4_var.Eta() << " deepCSV=" << ev.j_deepcsv[k] << " flav=" << jflav << endl;
+  
+  jets.push_back(std::make_pair(jet_nom,jet));
+  }
+  
+  //additional jet-jet information
+  for (unsigned int i = 0; i < jets.size(); i++) {
+    for (unsigned int j = i+1; j < jets.size(); j++) {
+      //flag jet-jet overlaps
+      if (jets[i].second.p4().DeltaR(jets[j].second.p4()) < 0.8) {
+        jets[i].second.setOverlap(1);
+        jets[j].second.setOverlap(1);
+      }
+      //flag non-b jets as part of W boson candidates: flavor 0->1
+      if (jets[i].second.flavor()==5 or jets[j].second.flavor()==5) continue;
+      TLorentzVector wCand = jets[i].second.p4() + jets[j].second.p4();
+      if (abs(wCand.M()-80.4) < 15.) {
+        jets[i].second.setFlavor(1);
+        jets[j].second.setFlavor(1);
+      }
+    }
+  }
+  
+  return jets;
+  
+}
+
 std::vector<Jet> SelectionTool::getGoodJets(MiniEvent_t &ev, double minPt, double maxEta, std::vector<Particle> leptons,std::vector<Particle> photons, int sys) {
   std::vector<Jet> jets;
   
@@ -501,15 +615,15 @@ std::vector<Jet> SelectionTool::getGoodJets(MiniEvent_t &ev, double minPt, doubl
     //jer uncertainty
     float jerUp(0),jerDn(0);  
     if(ev.j_jerUp[k]>ev.j_jerDn[k]){jerUp=ev.j_jerUp[k]; jerDn=ev.j_jerDn[k];}
-	else {jerUp=ev.j_jerDn[k]; jerDn=ev.j_jerUp[k];}
+	  else {jerUp=ev.j_jerDn[k]; jerDn=ev.j_jerUp[k];}
 	
-	// scale to average (doesn't make sense to have up/dn biased somehow):
-	float average = 0.5*(jerUp+jerDn); jerUp-=average; jerDn-=average;
+	  // scale to average (doesn't make sense to have up/dn biased somehow):
+	  float average = 0.5*(jerUp+jerDn); jerUp-=average; jerDn-=average;
    
     //jec uncertainty
-    float jecUp(0),jecDn(0);   
-    int jflav(abs(ev.j_flav[k]));	
+    float jecUp(0),jecDn(0); 
 
+    int jflav(abs(ev.j_flav[k]));	
 
 	int iunc_min=0, iunc_max=0; // see python/miniAnalyzer_cfi.py for more info
 	if(abs(sys)==2) {iunc_max=29; }    // Evaluate all systematics
@@ -520,27 +634,28 @@ std::vector<Jet> SelectionTool::getGoodJets(MiniEvent_t &ev, double minPt, doubl
 	else if(abs(sys)==4) {iunc_min=11; iunc_max=23;} // Relative variations only
 	else if(abs(sys)==5) {iunc_min=23; iunc_max=29;} // Pileup variations only
 	
-    for(int iunc=iunc_min; iunc<iunc_max; iunc++){
+  for(int iunc=iunc_min; iunc<iunc_max; iunc++){
            
       //see python/miniAnalyzer_cfi.py for these
       if(iunc==6 && jflav!=21) continue; //FlavorPureGluon
       if(iunc==7 && jflav>=4)  continue; //FlavorPureQuark
       if(iunc==8 && jflav!=4)  continue; //FlavorPureCharm
       if(iunc==9 && jflav!=5)  continue; //FlavorPureGluon
-      
+
       if(ev.j_jecUp[iunc][k]!=0) jecUp += pow(1-ev.j_jecUp[iunc][k],2);
       if(ev.j_jecDn[iunc][k]!=0) jecDn += pow(1-ev.j_jecDn[iunc][k],2);
 
-    }	
-    jecUp=TMath::Sqrt(jecUp);
-    jecDn=TMath::Sqrt(jecDn);
-	
-	// apply SF correpsonding to the uncertainty:
-	float jet_corr = 1;   // sys = {1:JER, 2:JEC}
-	if(sys==1) jet_corr = 1+jerUp;
-	else if(sys==-1) jet_corr = 1+jerDn; // jerDn is negative by construction
-	else if(sys== 2) jet_corr = 1+jecUp;
-	else if(sys==-2) jet_corr = 1-jecDn; // jecDn is positive by construction
+  }
+
+  jecUp=TMath::Sqrt(jecUp);
+  jecDn=TMath::Sqrt(jecDn);
+
+  	// apply SF correpsonding to the uncertainty:
+  	float jet_corr = 1;   // sys = {1:JER, 2:JEC}
+  	if(sys==1) jet_corr = 1+jerUp;
+  	else if(sys==-1) jet_corr = 1+jerDn; // jerDn is negative by construction
+  	else if(sys>1) {jet_corr = 1+jecUp;} 
+  	else if(sys<-1) {jet_corr = 1-jecDn;} // jecDn is positive by construction
 	
     TLorentzVector jp4;
     jp4.SetPtEtaPhiM(ev.j_pt[k]*jet_corr,ev.j_eta[k],ev.j_phi[k],ev.j_mass[k]);
@@ -742,6 +857,21 @@ std::vector<Particle> SelectionTool::getGenLeptons(MiniEvent_t &ev, double minPt
   }
   
   return leptons;
+}
+
+std::vector<Particle> SelectionTool::getGenTops(MiniEvent_t &ev){
+  std::vector<Particle> tops;
+                                                                                                 
+  for (int i = 0; i < ev.ngtop; i++) {
+    int absid(abs(ev.gtop_id[i]));
+    if(absid!=6) continue;
+
+    TLorentzVector p4;
+    p4.SetPtEtaPhiM(ev.gtop_pt[i],ev.gtop_eta[i],ev.gtop_phi[i],ev.gtop_m[i]);
+    tops.push_back( Particle(p4, 0, 6, 0, 1));
+  }
+
+  return tops;
 }
 
 //

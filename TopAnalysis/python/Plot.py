@@ -50,6 +50,7 @@ class Plot(object):
     def __init__(self,name,com='13 TeV'):
         self.name = name
         self.cmsLabel='#bf{CMS} #it{preliminary}'
+        self.channelLabel='Dileptonic mode'
         self.com=com
         self.wideCanvas = True if 'ratevsrun' in self.name else False
         self.doPoissonErrorBars=True
@@ -65,7 +66,7 @@ class Plot(object):
         self.savelog = False
         self.doChi2 = False
         self.range=None
-        self.ratiorange = [0.4,1.6]
+        self.ratiorange = [0.6,2.4]
         self.xtit=None
         self.ytit=None
         self.frameMin=0.01
@@ -92,12 +93,11 @@ class Plot(object):
         if 'ratevsrun' in self.name and not isData: return
 
         h.SetTitle(title)
-
         #add overflows
         if not 'ratevsrun' in self.name:
             try:
-                if not h.InheritsFrom('TH2') and not h.InheritsFrom('TGraph'):
-                    fixExtremities(h=h,addOverflow=True,addUnderflow=True)
+                #if not h.InheritsFrom('TH2') and not h.InheritsFrom('TGraph'):
+                #    fixExtremities(h=h,addOverflow=True,addUnderflow=True)
                 if doDivideByBinWidth:
                     divideByBinWidth(h=h)
             except:
@@ -223,6 +223,7 @@ class Plot(object):
             p1.SetLeftMargin(0.12)
             p1.SetTopMargin(0.06)
             p1.SetBottomMargin(0.01)
+            p1.SetTicks(0,1)
             if self.wideCanvas and len(self.mc)==0 : p1.SetBottomMargin(0.12)
         else:
             p1=ROOT.TPad('p1','p1',0.0,0.0,1.0,1.0)
@@ -234,6 +235,7 @@ class Plot(object):
             p1.SetBottomMargin(0.12)
         p1.Draw()
         p1.SetGridx(False)
+        p1.SetTicks(0,1)
         p1.SetGridy(False) #True)
         self._garbageList.append(p1)
         p1.cd()
@@ -242,8 +244,8 @@ class Plot(object):
         iniy=0.9 if self.wideCanvas else 0.85
         dy=0.05
         ndy= max(len(self.mc)+len(self.spimpose),1)
-        inix,dx =0.65,0.4
-        if noRatio: inix=0.6
+        inix,dx =0.5,0.4
+        if noRatio: inix=0.5
         if noStack:
             inix,dx=0.6,0.35
             iniy,dy,ndy=0.85,0.03,len(self.mc)
@@ -253,8 +255,8 @@ class Plot(object):
         leg.SetBorderSize(0)
         leg.SetFillStyle(0)
         leg.SetTextFont(42)
-        leg.SetTextSize(0.045 if self.wideCanvas else 0.04)
-        if noRatio : leg.SetTextSize(0.035)
+        leg.SetTextSize(0.05 if self.wideCanvas else 0.05)
+        if noRatio : leg.SetTextSize(0.03)
         nlegCols = 0
 
         if self.dataH is not None:
@@ -276,7 +278,7 @@ class Plot(object):
                     refH.SetLineWidth(2)
             leg.AddEntry(self.mc[h], self.mc[h].GetTitle(), 'f')
             nlegCols += 1
-
+        
         for m in self.spimpose:
             leg.AddEntry(self.spimpose[m],self.spimpose[m].GetTitle(),'l')
             nlegCols += 1
@@ -284,7 +286,7 @@ class Plot(object):
         if nlegCols ==0 :
             print '%s is empty'%self.name
             return
-
+        
         #if not noStack:
         #    leg.SetNColumns(ROOT.TMath.Min(nlegCols/2,3))
 
@@ -311,7 +313,7 @@ class Plot(object):
                 nominalTTbar.SetDirectory(0)
 
         #systematics
-        if (totalMC and nominalTTbar and len(self.mcsyst)>0):
+        if (totalMC and len(self.mcsyst)>0):
             # complete
             systUp=[0.]
             systDown=[0.]
@@ -319,6 +321,7 @@ class Plot(object):
                 systUp.append(0.)
                 systDown.append(0.)
                 for hname in self.mcsyst:
+                    print self.mcsyst[hname].GetName()
                     diff = self.mcsyst[hname].GetBinContent(xbin) - nominalTTbar.GetBinContent(xbin)
                     if (diff > 0):
                         systUp[xbin] = math.sqrt(systUp[xbin]**2 + diff**2)
@@ -367,7 +370,6 @@ class Plot(object):
             elif self.dataH is None: return
             elif self.dataH.Integral()==0: return
 
-
         frame = None
         if totalMC      : frame=totalMC.Clone('frame')
         elif self.dataH : frame=self.dataH.Clone('frame')
@@ -395,6 +397,7 @@ class Plot(object):
                         maxY=self.dataH.GetMaximum()                                     
             frame.Draw()
             frame.GetYaxis().SetRangeUser(self.frameMin,self.frameMax*maxY)
+            #frame.GetXaxis().SetRangeUser(0.01,0.14)
             frame.SetDirectory(0)
             frame.Reset('ICE')
 
@@ -403,9 +406,16 @@ class Plot(object):
         else:
             frame.Draw('ap')
             maxY=frame.GetYaxis().GetXmax()
-            
-        if self.ytit:
-            frame.GetYaxis().SetTitle(self.ytit)
+        
+        maxbin = frame.GetNbinsX()
+        binsize=frame.GetXaxis().GetBinUpEdge(maxbin)-frame.GetXaxis().GetBinLowEdge(0)
+        binsize/=frame.GetNbinsX()
+
+        ylabel="Events/"+str(round(binsize,2))
+        #if 'TeV' in title :
+        ylabel+=" GeV"
+        #if 'GeV' in title : ylabel+=" GeV"
+        frame.GetYaxis().SetTitle(ylabel)
         if self.xtit:
             frame.GetXaxis().SetTitle(self.xtit)
 
@@ -455,12 +465,12 @@ class Plot(object):
 
         if self.data is not None : self.data.Draw('p')
 
-        if (totalMC is not None and totalMC.GetMaximumBin() > totalMC.GetNbinsX()/2.):
-            inix = 0.15
-            leg.SetX1(inix)
-            leg.SetX2(inix+dx)
-            leg.SetY1(leg.GetY1()-0.05)
-            leg.SetY2(leg.GetY2()-0.05)
+        # if (totalMC is not None and totalMC.GetMaximumBin() > totalMC.GetNbinsX()/2.):
+        #     inix = 0.15
+        #     leg.SetX1(inix)
+        #     leg.SetX2(inix+dx)
+        #     leg.SetY1(leg.GetY1()-0.05)
+        #     leg.SetY2(leg.GetY2()-0.05)
 
         leg.Draw()
 
@@ -474,6 +484,7 @@ class Plot(object):
         ycms=0.9
         if noRatio or self.dataH is None or len(self.mc)==0: ycms=0.88
         txt.DrawLatex(0.16,ycms,self.cmsLabel)
+        txt.DrawLatex(0.16,ycms-0.07,self.channelLabel)
         txt.SetTextAlign(ROOT.kHAlignRight+ROOT.kVAlignCenter)
         if lumi<1:
             txt.DrawLatex(0.95,0.97,'#scale[0.8]{%3.1f nb^{-1} (%s)}' % (lumi*1000.,self.com) )
@@ -518,6 +529,13 @@ class Plot(object):
             ratioframe.SetFillStyle(3254)
             ratioframe.SetFillColor(ROOT.TColor.GetColor('#99d8c9'))
 
+            ratioleg = ROOT.TLegend(0.05, 0.9, 0.35, 0.95)
+            ratioleg.SetBorderSize(0)
+            ratioleg.SetFillStyle(3254)
+            ratioleg.SetTextFont(42)
+            ratioleg.SetTextSize(0.02 if self.wideCanvas else 0.02)
+            ratioleg.AddEntry( self.data, 'Uncertainty','ep')
+            ratioleg.Draw()
 
             #in case we didn't stack compare each distribution
             ratioGrs=[]
@@ -548,17 +566,87 @@ class Plot(object):
                 
                 totalMCnoUnc=totalMC.Clone('totalMCnounc')
                 self._garbageList.append(totalMCnoUnc)
+
+                extrauncertainty=[]
+                #                extrauncertainty.append((0.3497+0.4435)/2)
+                #                extrauncertainty.append((0.3018+0.2706)/2)
+                #                extrauncertainty.append((0.1575+0.1989)/2)
+                #                extrauncertainty.append((0.1035+0.1124)/2)
+                #                extrauncertainty.append((0.0526+0.0805)/2)
+                #                extrauncertainty.append((0.0154+0.0088)/2)
+                #                extrauncertainty.append((0.0670+0.0430)/2)
+                #                extrauncertainty.append((0.1015+0.0719)/2)
+                #                extrauncertainty.append((0.1530+0.1613)/2)
+                #                extrauncertainty.append((0.2024+0.2187)/2)
+                #                extrauncertainty.append((0.2526+0.2351)/2)
+                #                extrauncertainty.append((0.2700+0.2186)/2)
+                #                extrauncertainty.append((0.4260+0.3006)/2)
+                #                extrauncertainty.append((0.5591+0.3496)/2)
+                #                extrauncertainty.append((0.6266+0.3973)/2)
+                #ee
+                #extrauncertainty.append(( 0.40638907599461266 + 0.35547974217718936 )/2)
+                #extrauncertainty.append(( 0.2674109794895094 + 0.26061395139282195 )/2)
+                #extrauncertainty.append(( 0.16912790358891566 + 0.17668749633515518 )/2)
+                #extrauncertainty.append(( 0.1072304804032507 + 0.11489944450159449 )/2)
+                #extrauncertainty.append(( 0.05491115133154331 + 0.0707826080417574 )/2)
+                #extrauncertainty.append(( 0.014705317458673789 + 0.010825623630254617 )/2)
+                #extrauncertainty.append(( 0.05486261483995015 + 0.03718064016264168 )/2)
+                #extrauncertainty.append(( 0.11262528206876936 + 0.10242246447797827 )/2)
+                #extrauncertainty.append(( 0.16405686226415586 + 0.15111788818069052 )/2)
+                #extrauncertainty.append(( 0.19109479922075034 + 0.18894444917450468 )/2)
+                #extrauncertainty.append(( 0.20492404257739052 + 0.20679986967968056 )/2)
+                #extrauncertainty.append(( 0.21270587106450212 + 0.2070819538780074 )/2)
+                #extrauncertainty.append(( 0.2568323805596925 + 0.24154994708764915 )/2)
+                #extrauncertainty.append(( 0.34508544932058305 + 0.41218393585821406 )/2)
+                #extrauncertainty.append(( 0.38921199121077005 + 0.7537201414979177 )/2)
+                #mumu
+                #extrauncertainty.append(( 0.5015643416179907 + 0.39352329977370765 )/2)
+                #extrauncertainty.append(( 0.26569565546257834 + 0.26413739579085294 )/2)
+                #extrauncertainty.append(( 0.13296480994079332 + 0.17688267317020262 )/2)
+                #extrauncertainty.append(( 0.09254686669976057 + 0.1220877425171982 )/2)
+                #extrauncertainty.append(( 0.06309539912272226 + 0.06737986686626497 )/2)
+                #extrauncertainty.append(( 0.016378534205614033 + 0.008498285838975586 )/2)
+                #extrauncertainty.append(( 0.03516799352297036 + 0.035702447264887534 )/2)
+                #extrauncertainty.append(( 0.08326056409302851 + 0.0938605108015146 )/2)
+                #extrauncertainty.append(( 0.143851087562744 + 0.14975269050422424 )/2)
+                #extrauncertainty.append(( 0.2091397211558216 + 0.17628044343699867 )/2)
+                #extrauncertainty.append(( 0.2712823703109098 + 0.18813445522698277 )/2)
+                #extrauncertainty.append(( 0.3075593279048466 + 0.23088556591313977 )/2)
+                #extrauncertainty.append(( 0.4469383221838188 + 0.3079966383294578 )/2)
+                #extrauncertainty.append(( 0.7637514651709874 + 0.40909074375671206 )/2)
+                #extrauncertainty.append(( 1.0883077639427767 + 0.5466369240172322 )/2)
+                #emu
+                #extrauncertainty.append(( 0.35179202254325226 + 0.44319582000403956 )/2)
+                #extrauncertainty.append(( 0.2792067429674603 + 0.2977565480067923 )/2)
+                #extrauncertainty.append(( 0.18095888572251767 + 0.19678926151528492 )/2)
+                #extrauncertainty.append(( 0.1048856331122048 + 0.12571495412719366 )/2)
+                #extrauncertainty.append(( 0.0555888058307946 + 0.06874713350828962 )/2)
+                #extrauncertainty.append(( 0.00967419881446663 + 0.008532314831456408 )/2)
+                #extrauncertainty.append(( 0.058718863357807544 + 0.03887026536769932 )/2)
+                #extrauncertainty.append(( 0.10742468841681196 + 0.09251158763525247 )/2)
+                #extrauncertainty.append(( 0.154380265373144 + 0.16118933922831166 )/2)
+                #extrauncertainty.append(( 0.20489511493076437 + 0.21264297837164475 )/2)
+                #extrauncertainty.append(( 0.24823182393054702 + 0.22935716350314933 )/2)
+                #extrauncertainty.append(( 0.3112270003186235 + 0.25076558744736516 )/2)
+                #extrauncertainty.append(( 0.42836506796823204 + 0.2972822603079379 )/2)
+                #extrauncertainty.append(( 0.540751312549728 + 0.3488020393184766 )/2)
+                #extrauncertainty.append(( 0.5941368990776875 + 0.3954205553558093 )/2)
+
                 for xbin in xrange(1,totalMC.GetNbinsX()+1):
                     ratioframe.SetBinContent(xbin,1)
                     val=totalMC.GetBinContent(xbin)
                     totalMCnoUnc.SetBinError(xbin,0.)
                     if val==0 : continue
                     if (len(self.mcsyst)>0):
+                        ##### ERASE THIS AFTER
+                        #totalUnc=ROOT.TMath.Sqrt((totalMCUnc.GetBinError(xbin)/val)**2+extrauncertainty[xbin-1]**2+self.mcUnc**2)
                         totalUnc=ROOT.TMath.Sqrt((totalMCUnc.GetBinError(xbin)/val)**2+self.mcUnc**2)
+                        #totalUncShape=ROOT.TMath.Sqrt((totalMCUncShape.GetBinError(xbin)/val)**2+extrauncertainty[xbin-1]**2+self.mcUnc**2)
                         totalUncShape=ROOT.TMath.Sqrt((totalMCUncShape.GetBinError(xbin)/val)**2+self.mcUnc**2)
                         ratioframeshape.SetBinContent(xbin,totalMCUncShape.GetBinContent(xbin)/val)
                         ratioframeshape.SetBinError(xbin,totalUncShape)
                     else: totalUnc=ROOT.TMath.Sqrt((totalMC.GetBinError(xbin)/val)**2+self.mcUnc**2)
+                    #else: totalUnc=ROOT.TMath.Sqrt((totalMC.GetBinError(xbin)/val)**2+extrauncertainty[xbin-1]**2+self.mcUnc**2)
                     ratioframe.SetBinContent(xbin,totalMCnoUnc.GetBinContent(xbin)/val)
                     ratioframe.SetBinError(xbin,totalUnc)
                 ratioframe.Draw('e2')

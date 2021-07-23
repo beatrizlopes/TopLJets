@@ -369,7 +369,7 @@ void TOP17010::runAnalysis()
         l2SF   = gammaEffWR_->getOfflineCorrection(leptons[1].id(),leptons[1].pt(),leptons[1].eta(), lperiod);
         
         //b-tagging scale factor
-        btagWgt= btvSF_->getBtagWeightMethod1a(tweSelJets,ev_,"central");
+	btagWgt= btvSF_->getBtagWeight(tweSelJets,ev_,"central",BTagSFUtil::METHOD1A);
 
         //for signal top pt weights        
         if(isSignal_) {
@@ -482,7 +482,7 @@ void TOP17010::runAnalysis()
           TString btagSys(sname.ReplaceAll("btag",""));
           if(btagSys.EndsWith("dn")) { btagSys=btagSys.ReplaceAll("dn",""); btagSys="down_"+btagSys;  }
           if(btagSys.EndsWith("up")) { btagSys=btagSys.ReplaceAll("up",""); btagSys="up_"+btagSys;    }
-          double newBtagWgt=btvSF_->getBtagWeightMethod1a(tweSelJets,ev_,btagSys);
+          double newBtagWgt=btvSF_->getBtagWeight(tweSelJets,ev_,btagSys,BTagSFUtil::SFWeightMethod::METHOD1A);
           iwgt=wgt*newBtagWgt/btagWgt;
         }
         else {

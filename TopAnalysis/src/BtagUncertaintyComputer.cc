@@ -27,36 +27,94 @@ void BTagSFUtil::addBTagDecisions(MiniEvent_t &ev,float wp,float wpl) {
 }
 
 // method 1a -weight ev
-double BTagSFUtil::getBtagWeightMethod1a(std::vector<Jet> &jetColl, MiniEvent_t &ev,TString sys) {
+double BTagSFUtil::getBtagWeight(std::vector<Jet> &jetColl, MiniEvent_t &ev,TString sys,SFWeightMethod method) {
 
-  double csvWgtHF = 1., csvWgtLF = 1., csvWgtC = 1.;
+  double csvWgtHF(1.), csvWgtLF(1.), csvWgtC(1.);
+  double prob_data(1.), prob_mc(1.);
   for(auto j : jetColl) {
 
     float jptForBtag(j.Pt()>1000. ? 999. : j.Pt()), jetaForBtag(fabs(j.Eta()));
     int k=j.getJetIndex();
     float csv=ev.j_deepcsv[k];
 
-    if (abs(ev.j_hadflav[k])==5) {
-      std::string sysHF(sys.Contains("cferr") ? "central" : sys);
-      double iCSVWgtHF = btvCSVCalibReaders_[BTagEntry::FLAV_B]->eval_auto_bounds(sysHF,BTagEntry::FLAV_B, jetaForBtag, jptForBtag, csv);      
-      if( iCSVWgtHF!=0 ) csvWgtHF *= iCSVWgtHF;                
+    if(method==CSVREWEIGHT) {
+      if (abs(ev.j_hadflav[k])==5) {
+	std::string sysHF(sys.Contains("cferr") ? "central" : sys);
+        double iCSVWgtHF = btvCSVCalibReaders_[BTagEntry::FLAV_B]->eval_auto_bounds(sysHF,BTagEntry::FLAV_B, jetaForBtag, jptForBtag, csv);      
+        if( iCSVWgtHF!=0 ) csvWgtHF *= iCSVWgtHF;                
+      }
+      else if(abs(ev.j_hadflav[k])==4) {
+	std::string sysC(sys.Contains("cferr") ? sys : "central");
+        double iCSVWgtC = btvCSVCalibReaders_[BTagEntry::FLAV_C]->eval_auto_bounds(sysC, BTagEntry::FLAV_C, jetaForBtag, jptForBtag, csv);
+        if( iCSVWgtC!=0 ) csvWgtC *= iCSVWgtC;   
+      }
+      else { //LF
+	std::string sysLF(sys.Contains("cferr") ? "central" : sys);       
+        double iCSVWgtLF = btvCSVCalibReaders_[BTagEntry::FLAV_UDSG]->eval_auto_bounds(sysLF,BTagEntry::FLAV_UDSG, jetaForBtag, jptForBtag, csv);
+        if( iCSVWgtLF!=0 ) csvWgtLF *= iCSVWgtLF;
+      } 
     }
-    else if(abs(ev.j_hadflav[k])==4) {
-      std::string sysC(sys.Contains("cferr") ? sys : "central");
-      double iCSVWgtC = btvCSVCalibReaders_[BTagEntry::FLAV_C]->eval_auto_bounds(sysC, BTagEntry::FLAV_C, jetaForBtag, jptForBtag, csv);
-      if( iCSVWgtC!=0 ) csvWgtC *= iCSVWgtC;	   
+    else {
+
+      std::string option("central");
+      BTagEntry::JetFlavor hadFlav=BTagEntry::FLAV_UDSG;
+      if(abs(ev.j_hadflav[k])==4) {
+        hadFlav=BTagEntry::FLAV_C;
+        if(sys=="up_hf") option="up";  
+        if(sys=="down_hf") option="down";  
+      }
+      else if(abs(ev.j_hadflav[k])==5) {
+        hadFlav=BTagEntry::FLAV_B;
+        if(sys=="up_hf") option="up";  
+        if(sys=="down_hf") option="down";  
+      }
+      else {
+        if(sys=="up_lf") option="up";  
+        if(sys=="down_lf") option="down";  
+      }
+
+      //expected and expected corrected efficiency
+      //if fails b-tag use the complementary probability
+      double expEff    = expBtagEff_[hadFlav]->Eval(jptForBtag); 
+      double expcorEff = expEff*btvCalibReaders_[hadFlav]->eval_auto_bounds( option, hadFlav, jetaForBtag, jptForBtag);
+      if( j.flavor()!=5) {
+        expEff    = (1-expEff);
+        expcorEff = (1-expcorEff);
+      }
+
+      prob_mc   *= expEff;
+      prob_data *= expcorEff;
+
     }
-    else { //LF
-      std::string sysLF(sys.Contains("cferr") ? "central" : sys);       
-      double iCSVWgtLF = btvCSVCalibReaders_[BTagEntry::FLAV_UDSG]->eval_auto_bounds(sysLF,BTagEntry::FLAV_UDSG, jetaForBtag, jptForBtag, csv);
-      if( iCSVWgtLF!=0 ) csvWgtLF *= iCSVWgtLF;
-    } 
   }
   
-  double csvWgtTotal = csvWgtHF * csvWgtC * csvWgtLF;
-  
-  return csvWgtTotal;
+  double evWeight = method==CSVREWEIGHT ?  csvWgtHF * csvWgtC * csvWgtLF : prob_data/prob_mc;
+
+  return evWeight;
 }     
+
+//
+double BTagSFUtil::getSFUncertainty(Jet &j,MiniEvent_t &ev){
+
+  float jptForBtag(j.Pt()>1000. ? 999. : j.Pt()), jetaForBtag(fabs(j.Eta()));
+  int k=j.getJetIndex();
+  
+  BTagEntry::JetFlavor hadFlav=BTagEntry::FLAV_UDSG;
+  if(abs(ev.j_hadflav[k])==4) {
+    hadFlav=BTagEntry::FLAV_C;
+  }
+  else if(abs(ev.j_hadflav[k])==5) {
+    hadFlav=BTagEntry::FLAV_B;
+  }
+  
+  //expected and expected corrected efficiency
+  //if fails b-tag use the complementary probability
+  double expEff    = expBtagEff_[hadFlav]->Eval(jptForBtag); 
+  double expcorEff = expEff*btvCalibReaders_[hadFlav]->eval_auto_bounds( "central", hadFlav, jetaForBtag, jptForBtag);
+  double expcorEffUp = expEff*btvCalibReaders_[hadFlav]->eval_auto_bounds( "up", hadFlav, jetaForBtag, jptForBtag);
+
+  return expcorEffUp/expcorEff;
+}
 
 //
 void BTagSFUtil::updateBTagDecisions(MiniEvent_t &ev,std::string optionbc, std::string optionlight) {
@@ -130,7 +188,7 @@ bool BTagSFUtil::applySF(bool& isBTagged, float Btag_SF, float Btag_eff){
 void BTagSFUtil::startBTVcalibrationReaders(TString era,BTagEntry::OperatingPoint btagOP)
 {
   //start the btag calibration
-  TString btagUncUrl( era+"/DeepCSV_106XUL17SF_WPonly.csv"); 
+  TString btagUncUrl(era+"/DeepCSV_106XUL17SF_WPonly_V2.csv"); 
   if(era.Contains("2016")) btagUncUrl=era+"/DeepCSV_2016LegacySF_V1.csv"; 
   gSystem->ExpandPathName(btagUncUrl);
   BTagCalibration btvcalib("DeepCSV",btagUncUrl.Data());
@@ -149,8 +207,8 @@ void BTagSFUtil::startBTVcalibrationReaders(TString era,BTagEntry::OperatingPoin
   //                                                                 {"up_jes","down_jes","up_lf","down_lf","up_hf","down_hf", "up_hfstats1", "down_hfstats1","up_hfstats2","down_hfstats2","up_lfstats1","down_lfstats1","up_lfstats2","down_lfstats2"});
   //btvCSVCalibReaders_[BTagEntry::FLAV_B]->load(btvcalib,BTagEntry::FLAV_B,"iterativefit");
   //btvCSVCalibReaders_[BTagEntry::FLAV_UDSG]=new BTagCalibrationReader(BTagEntry::OP_RESHAPING, 
-  //                                                                 "central",
-  //                                                                 {"up_jes","down_jes","up_lf","down_lf","up_hf","down_hf", "up_hfstats1", "down_hfstats1","up_hfstats2","down_hfstats2","up_lfstats1","down_lfstats1","up_lfstats2","down_lfstats2"});
+  //								      "central",
+  //								      {"up_jes","down_jes","up_lf","down_lf","up_hf","down_hf", "up_hfstats1", "down_hfstats1","up_hfstats2","down_hfstats2","up_lfstats1","down_lfstats1","up_lfstats2","down_lfstats2"});
   //btvCSVCalibReaders_[BTagEntry::FLAV_UDSG]->load(btvcalib,BTagEntry::FLAV_C,"iterativefit");
   //btvCSVCalibReaders_[BTagEntry::FLAV_C]=new BTagCalibrationReader(BTagEntry::OP_RESHAPING, "central",{"up_cferr1","down_cferr1","up_cferr2","down_cferr2"});
   //btvCSVCalibReaders_[BTagEntry::FLAV_C]->load(btvcalib,BTagEntry::FLAV_UDSG,"iterativefit");

@@ -35,18 +35,37 @@ void EfficiencyScaleFactorsWrapper::init(TString era)
        << "\t          uncertainties returned are of statistical nature only" << endl
        << "\tDon't forget to fix these and update these items!" << endl;
 
+  //DILEPTONS
+  TString ll_trigSF;
+  if(era_==2017){
+    ll_trigSF=era+"/TriggerSF_2017_dilep.root";
+  }
+
+  gSystem->ExpandPathName(ll_trigSF);
+  TFile* fIn=TFile::Open(ll_trigSF);
+  if(fIn && !fIn->IsZombie()) {
+    cout << "dileptons: trigger SF from " << ll_trigSF << endl;
+    scaleFactorsH_["ee_trig"]=(TH2 *)fIn->Get("h2D_SF_ee_lepABpt_FullError")->Clone();
+    scaleFactorsH_["emu_trig"]=(TH2 *)fIn->Get("h2D_SF_emu_lepABpt_FullError")->Clone();
+    scaleFactorsH_["mumu_trig"]=(TH2 *)fIn->Get("h2D_SF_mumu_lepABpt_FullError")->Clone();
+    scaleFactorsH_["ee_trig"]->SetDirectory(0);
+    scaleFactorsH_["emu_trig"]->SetDirectory(0);
+    scaleFactorsH_["mumu_trig"]->SetDirectory(0);
+    fIn->Close();
+  }
+
   //ELECTRONS
   TString e_recoSF,e_idSF;
   if(era_==2016){
     e_recoSF=era+"/EGM2D_BtoH_GT20GeV_RecoSF_Legacy2016.root";
     e_idSF=era+"/2016LegacyReReco_ElectronTight_Fall17V2.root";
   }else if(era_==2017){
-    e_recoSF=era+"/egammaEffi.txt_EGM2D_runBCDEF_passingRECO.root";
-    e_idSF=era+"/2017_ElectronTight.root";
+    e_recoSF=era+"/egammaEffi_ptAbove20.txt_EGM2D_UL2017.root";
+    e_idSF=era+"/egammaEffi.txt_EGM2D_Tight_UL17.root";
   }
 
   gSystem->ExpandPathName(e_recoSF);
-  TFile *fIn=TFile::Open(e_recoSF);
+  fIn=TFile::Open(e_recoSF);
   if(fIn && !fIn->IsZombie()) {
     cout << "electrons: reco SF from " << e_recoSF << endl;
     scaleFactorsH_["e_rec"]=(TH2 *)fIn->Get("EGamma_SF2D")->Clone();
@@ -78,9 +97,14 @@ void EfficiencyScaleFactorsWrapper::init(TString era)
     lumiWgts.push_back(0.5);
   }
   else{
-    m_idSF.push_back( era+"/RunBCDEF_UL_SF_ID.root");
-    m_isoSF.push_back( era+"/RunBCDEF_UL_SF_ISO.root");
-    m_trigSF.push_back( era+"/EfficienciesAndSF_RunBtoF_Nov17Nov2017.root");
+    m_tkSF.push_back( era+"/Run2_UL_2017_Efficiency_muon_generalTracks_Run2017_UL_trackerMuon.root");
+    m_idSF.push_back( era+"/Run2_UL_2017_2017_Z_Efficiencies_muon_generalTracks_Z_Run2017_UL_ID.root");
+    m_isoSF.push_back( era+"/Run2_UL_2017_2017_Z_Efficiencies_muon_generalTracks_Z_Run2017_UL_ISO.root");
+    m_trigSF.push_back( era+"/Efficiencies_muon_generalTracks_Z_Run2017_UL_SingleMuonTriggers.root");
+    //m_idSF.push_back( era+"/RunBCDEF_UL_SF_ID.root");
+    //m_isoSF.push_back( era+"/RunBCDEF_UL_SF_ISO.root");
+    //m_trigSF.push_back( era+"/EfficienciesAndSF_RunBtoF_Nov17Nov2017.root");
+    
     lumiWgts.push_back(1.0);
   }
 
@@ -89,7 +113,13 @@ void EfficiencyScaleFactorsWrapper::init(TString era)
     fIn=TFile::Open(m_tkSF[i]);
     if(fIn && !fIn->IsZombie()) {
       cout << "muons: tk SF from " << m_tkSF[i] << " with weight " << lumiWgts[i] << endl;
-      scaleFactorsGr_["m_tkSF"]=(TGraphAsymmErrors *)fIn->Get("ratio_eff_aeta_dr030e030_corr");
+      if(era_==2016){
+        scaleFactorsGr_["m_tk"]=(TGraphAsymmErrors *)fIn->Get("ratio_eff_aeta_dr030e030_corr");
+      }
+      if(era_==2017){
+        scaleFactorsH_["m_tk"]=(TH2F *)fIn->Get("NUM_TrackerMuons_DEN_genTracks_abseta_pt")->Clone();
+        scaleFactorsH_["m_tk"]->SetDirectory(0);
+      }
       fIn->Close();
     }
   }
@@ -98,7 +128,7 @@ void EfficiencyScaleFactorsWrapper::init(TString era)
     fIn=TFile::Open(m_idSF[i]);
     if(fIn && !fIn->IsZombie()) {
       cout << "muons: id SF from " << m_idSF[i] << " with weight " << lumiWgts[i] << endl;
-      scaleFactorsH_["m_id"]=(TH2F *)fIn->Get("NUM_TightID_DEN_genTracks_pt_abseta")->Clone();
+      scaleFactorsH_["m_id"]=(TH2F *)fIn->Get("NUM_TightID_DEN_TrackerMuons_abseta_pt")->Clone();
       scaleFactorsH_["m_id"]->SetDirectory(0);
       fIn->Close();
     }
@@ -108,7 +138,7 @@ void EfficiencyScaleFactorsWrapper::init(TString era)
     fIn=TFile::Open(m_isoSF[i]);
     if(fIn && !fIn->IsZombie()) {
       cout << "muons: iso SF from " << m_isoSF[i] << " with weight " << lumiWgts[i] << endl;
-      scaleFactorsH_["m_iso"]=(TH2F *)fIn->Get("NUM_TightRelIso_DEN_TightIDandIPCut_pt_abseta")->Clone();
+      scaleFactorsH_["m_iso"]=(TH2F *)fIn->Get("NUM_TightRelIso_DEN_TightIDandIPCut_abseta_pt")->Clone();
       scaleFactorsH_["m_iso"]->SetDirectory(0);
       fIn->Close();
     }
@@ -118,7 +148,7 @@ void EfficiencyScaleFactorsWrapper::init(TString era)
     fIn=TFile::Open(m_trigSF[i]);
     if(fIn && !fIn->IsZombie()) {
       cout << "muons: Trigger SF from" << m_trigSF[i] << " with weight " << lumiWgts[i] << endl;
-      scaleFactorsH_["m_trig"]=(TH2F *)fIn->Get("IsoMu27_PtEtaBins/abseta_pt_ratio")->Clone();
+      scaleFactorsH_["m_trig"]=(TH2F *)fIn->Get("NUM_IsoMu27_DEN_CutBasedIdTight_and_PFIsoTight_abseta_pt")->Clone();
       scaleFactorsH_["m_trig"]->SetDirectory(0);
       fIn->Close();
     }
@@ -131,6 +161,28 @@ EffCorrection_t EfficiencyScaleFactorsWrapper::getDileptonTriggerCorrection(std:
 
   int dilCode=abs(leptons[0].id()*leptons[1].id());
   EffCorrection_t corr(1.0,0.0);
+
+  if(era_==2017) {
+    //implement here dilepton triggerSF
+    TString hname;
+
+    if(dilCode==11*11) hname="ee_trig";
+    else if(dilCode==11*13) hname="emu_trig";
+    else if(dilCode==13*13) hname="mumu_trig";
+
+    TH2 *h=scaleFactorsH_[hname];
+    float minl1PtForEff( h->GetXaxis()->GetXmin() ), maxl1PtForEff( h->GetXaxis()->GetXmax()-0.01 );
+    float l1PtForEff=TMath::Max(TMath::Min(float(fabs(leptons[0].pt())),maxl1PtForEff),minl1PtForEff);
+    Int_t l1PtBinForEff=h->GetXaxis()->FindBin(l1PtForEff);
+
+    float minl2PtForEff( h->GetYaxis()->GetXmin() ), maxl2PtForEff( h->GetYaxis()->GetXmax()-0.01 );
+    float l2PtForEff=TMath::Max(TMath::Min(float(leptons[1].pt()),maxl2PtForEff),minl2PtForEff);
+    Int_t l2PtBinForEff=h->GetYaxis()->FindBin(l2PtForEff);
+    
+    corr.first=h->GetBinContent(l1PtBinForEff,l2PtBinForEff);
+    corr.second=h->GetBinError(l1PtBinForEff,l2PtBinForEff);
+  }
+
   if(era_==2016) {
     //values from AN 2016/392 (v3) 
     //as scale factors are approximately constant as function of number of jets take:
@@ -208,6 +260,7 @@ EffCorrection_t EfficiencyScaleFactorsWrapper::getTriggerCorrection(std::vector<
   EffCorrection_t corr(1.0,0.0);
   if(era_==2017)
     {
+      if(leptons.size()==2) corr = getDileptonTriggerCorrection(leptons);
       if(leptons.size()==1)
         {
           TString hname(abs(leptons[0].id())==11 ? "e_trig" : "m_trig");          

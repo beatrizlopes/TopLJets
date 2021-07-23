@@ -15,24 +15,30 @@ Wrapper to be used when run in parallel
 """
 def RunMethodPacked(args):
 
-    method,inF,outF,channel,charge,flag,runSysts,systVar,era,tag,debug,CR,QCDTemp,SRfake,skimtree,genWeights,xsec=args
+    method,inF,outF,channel,charge,flag,runSysts,systVar,prepareTraining,prepareProtonData,era,tag,debug,CR,QCDTemp,SRfake,mvatree,genWeights,xsec=args
     print args
     print 'Running ',method,' on ',inF
     print 'Output file',outF
     print 'Selection ch=',channel,' charge=',charge,' flag=',flag,' systs=',runSysts
     print 'Normalization applied from tag=',tag,'from',genWeights,'xsec=',xsec
     print 'Corrections will be retrieved for era=',era
-    print 'Make the skim tree? ', skimtree
+    print 'Make the mva tree? ', mvatree
     print 'Make CR for photon fake rate? ', CR
     print 'Is QCD?', QCDTemp
     print 'Prepare the region to apply fake ratio?', SRfake
+    print 'Prepare data file?', prepareProtonData
+    print 'Prepare training?', prepareTraining
+
+
 
     try:
         cmd='analysisWrapper --era %s --normTag %s --in %s --out %s --method %s --charge %d --channel %d --flag %d --systVar %s --genWeights %s --xsec %f'\
             %(era, tag, inF, outF, method, charge, channel, flag, systVar,genWeights,xsec)
         if runSysts : cmd += ' --runSysts'
+        if prepareTraining : cmd += ' --prepareTraining'
+        if prepareProtonData : cmd += ' --prepareProtonData'
         if debug : cmd += ' --debug'
-        if skimtree : cmd += ' --skimtree'
+        if mvatree : cmd += ' --mvatree'
         if CR : cmd += ' --CR'
         if QCDTemp : cmd += ' --QCDTemp'
         if SRfake : cmd += ' --SRfake'
@@ -59,6 +65,8 @@ def main():
     parser.add_option(      '--only',        dest='only',        help='csv list of samples to process  [%default]',             default=None,       type='string')
     parser.add_option(      '--skip',        dest='skip',        help='csv list of samples to skip  [%default]',             default=None,       type='string')
     parser.add_option(      '--runSysts',    dest='runSysts',    help='run systematics  [%default]',                            default=False,      action='store_true')
+    parser.add_option(      '--prepareTraining',    dest='prepareTraining',    help='prepare sample for BDT training  [%default]',                            default=False,      action='store_true')
+    parser.add_option(      '--prepareProtonData',    dest='prepareProtonData',    help='prepare data sample for enriching bkg in proton info  [%default]',   default=False,      action='store_true')
     parser.add_option(      '--systVar',     dest='systVar',     help='single systematic variation  [%default]',   default='nominal',       type='string')
     parser.add_option(      '--debug',       dest='debug',       help='debug mode  [%default]',                            default=False,      action='store_true')
     parser.add_option(      '--flag',        dest='flag',        help='job specific flag  [%default]',   default=0,          type=int)
@@ -75,10 +83,10 @@ def main():
     parser.add_option(      '--outputonly',  dest='outputonly',  help='filter job submission for a csv list of output files  [%default]',             default=None,       type='string')
     parser.add_option(      '--farmappendix',dest='farmappendix',help='Appendix to condor FARM directory [%default]',             default='',       type='string')
     parser.add_option(      '--genWeights',  dest='genWeights',  help='genWeights to get the normalization from (found within data/era directory) [%default]',             default='genweights.root',       type='string')
-    parser.add_option(      '--skimtree',    dest='skimtree',    help='make skim tree  [%default]',                            default=False,      action='store_true'),
+    parser.add_option(      '--mvatree',     dest='mvatree',     help='make mva tree  [%default]',                            default=False,      action='store_true'),
     parser.add_option(      '--CR',          dest='CR',          help='provide control region for photon FR  [%default]',                            default=False,      action='store_true')
     parser.add_option(      '--QCDTemp',     dest='QCDTemp',     help='provide template for fake photons [%default]',                            default=False,      action='store_true')
-    parser.add_option(      '--SRfake',      dest='SRfake',      help='provide the region to apply the fake ratio [%default]',                            default=False,      action='store_true')
+    parser.add_option(      '--SRfake',      dest='SRfake',     help='provide the region to apply the fake ratio [%default]',                            default=False,      action='store_true')
     (opt, args) = parser.parse_args()
 
     #parse selection lists
@@ -150,15 +158,16 @@ def main():
     task_list = []
     processedTags=[]
     if '.root' in opt.input:
-        inF=opt.input;
-        if '/store/' in inF and '/eos/' not in inF[0:5] and not 'root:' in inF : inF='root://eoscms//eos/cms'+opt.input              
+        inF=opt.input
+        #if '/store/' in inF and not 'root:' in inF : inF='root://eoscms//eos/cms'+opt.input              
+        if '/store/' in inF and not 'root:' in inF : inF=opt.input              
         for systVar in varList:
             outF=opt.output
             xsec=1.
             if opt.tag in onlyListXsec: xsec=onlyListXsec[opt.tag]
             if opt.xsec: xsec=opt.xsec
             if systVar != 'nominal' and not systVar in opt.output: outF=opt.output[:-5]+'_'+systVar+'.root'
-            task_list.append( (opt.method,inF,outF,opt.channel,opt.charge,opt.flag,opt.runSysts,systVar,opt.era,opt.tag,opt.debug, opt.CR, opt.QCDTemp, opt.SRfake, opt.skimtree,opt.genWeights,xsec) )
+            task_list.append( (opt.method,inF,outF,opt.channel,opt.charge,opt.flag,opt.runSysts,opt.prepareTraining,opt.prepareProtonData,systVar,opt.era,opt.tag,opt.debug, opt.CR, opt.QCDTemp, opt.SRfake, opt.mvatree,opt.genWeights,xsec) )
     else:
 
         inputTags=getEOSlslist(directory=opt.input,prepend='')
@@ -201,7 +210,7 @@ def main():
                         continue
                     if (len(outputOnlyList) > 1 and not outF in outputOnlyList):
                         continue
-                    task_list.append( (opt.method,inF,outF,opt.channel,opt.charge,opt.flag,opt.runSysts,systVar,opt.era,tag,opt.debug, opt.CR, opt.QCDTemp, opt.SRfake, opt.skimtree,opt.genWeights,xsec) )
+                    task_list.append( (opt.method,inF,outF,opt.channel,opt.charge,opt.flag,opt.runSysts,opt.prepareTraining,opt.prepareProtonData,systVar,opt.era,tag,opt.debug, opt.CR, opt.QCDTemp, opt.SRfake, opt.mvatree,opt.genWeights,xsec) )
                 if (opt.skipexisting and nexisting): print '--skipexisting: %s - skipping %d of %d tasks as files already exist'%(systVar,nexisting,len(input_list))
 
     #run the analysis jobs
@@ -236,9 +245,8 @@ def main():
             condor.write('log        = {0}/output_common.log\n'.format(FarmDirectory))
             condor.write('requirements = (OpSysAndVer =?= "{0}")\n'.format(OpSysAndVer)) 
             condor.write('+JobFlavour = "{0}"\n'.format(opt.queue))
-
             jobNb=0
-            for method,inF,outF,channel,charge,flag,runSysts,systVar,era,tag,debug,CR,QCDTemp,SRfake,skimtree,genWeights,xsec in task_list:
+            for method,inF,outF,channel,charge,flag,runSysts,prepareTraining,prepareProtonData,systVar,era,tag,debug,CR,QCDTemp,SRfake,mvatree,genWeights,xsec in task_list:
 
                 jobNb+=1
                 cfgFile='%s'%(os.path.splitext(os.path.basename(outF))[0])
@@ -258,8 +266,10 @@ def main():
                     runOpts='-i %s -o ${WORKDIR}/%s --charge %d --ch %d --era %s --tag %s --flag %d --method %s --systVar %s --genWeights %s --xsec %f'\
                         %(inF, localOutF, charge, channel, era, tag, flag, method, systVar,genWeights,xsec)
                     if runSysts : runOpts += ' --runSysts'
+                    if prepareTraining : runOpts += ' --prepareTraining'
+                    if prepareProtonData : runOpts += ' --prepareProtonData'
                     if debug :    runOpts += ' --debug'
-                    if skimtree :  runOpts += ' --skimtree'                    
+                    if mvatree :  runOpts += ' --mvatree'                    
                     if CR :       runOpts += ' --CR'
                     if QCDTemp :  runOpts += ' --QCDTemp'
                     if SRfake :  runOpts += ' --SRfake'

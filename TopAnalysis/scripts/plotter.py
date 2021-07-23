@@ -27,10 +27,11 @@ def main():
     parser.add_option('-o', '--outName',     dest='outName' ,    help='name of the output file',        default='plotter.root',    type='string')
     parser.add_option(      '--noStack',     dest='noStack',     help='don\'t stack distributions',     default=False,             action='store_true')
     parser.add_option(      '--normToData',  dest='normToData',  help='normalize to data yields',       default=False,             action='store_true')
+    parser.add_option(      '--NormalizeProtons',  dest='NormalizeProtons',  help='normalize to RP proton rate',       default=False,             action='store_true')
     parser.add_option(      '--binWid',      dest='binWid',      help='divide by bin width',            default=False,             action='store_true')
     parser.add_option(      '--saveLog',     dest='saveLog' ,    help='save log versions of the plots', default=False,             action='store_true')
     parser.add_option(      '--silent',      dest='silent' ,     help='only dump to ROOT file',         default=False,             action='store_true')
-    parser.add_option(      '--ratioRange',  dest='ratioRange' , help='ratio range',                    default="0.4,1.6",         type='string')
+    parser.add_option(      '--ratioRange',  dest='ratioRange' , help='ratio range',                    default="0.6,1.4",         type='string')
     parser.add_option(      '--onlyData',    dest='onlyData' ,   help='only plots containing data',     default=False,             action='store_true')
     parser.add_option(      '--saveTeX',     dest='saveTeX' ,    help='save as tex file as well',       default=False,             action='store_true')
     parser.add_option(      '--rebin',       dest='rebin',       help='rebin factor',                   default=1,                 type=int)
@@ -41,6 +42,8 @@ def main():
     parser.add_option(      '--skip',        dest='skip',        help='skip these samples (csv)',          default='MC13TeV_TTJets_cflip',                type='string')
     parser.add_option(      '--puNormSF',    dest='puNormSF',    help='Use this histogram to correct pu weight normalization', default=None, type='string')
     parser.add_option(      '--procSF',      dest='procSF',      help='Use this to scale a given process component e.g. "W":.wjetscalefactors.pck,"DY":dyscalefactors.pck', default=None, type='string')
+    parser.add_option(      '--rpSF',      dest='rpSF',      help='Use this to scale a given process component to normalize to proton number in RP', default=None, type='string')
+   
     (opt, args) = parser.parse_args()
 
     opt.ratioRange=[float(x) for x in opt.ratioRange.split(',')]
@@ -74,7 +77,6 @@ def main():
     skipList=opt.skip.split(',')
 
 
-
     #lumi specifications per tag
     lumiSpecs={}
     if opt.lumiSpecs:
@@ -89,18 +91,11 @@ def main():
         procList=opt.procSF.split(',')
         for newProc in procList:
             proc,cacheUrl=newProc.split(':')
-            if os.path.isfile(cacheUrl) : 
-                cache=open(cacheUrl,'r')
-                procSF[proc]=pickle.load(cache)
-                cache.close()
-                print 'Scale factors added for',proc
-            else:
-                try:
-                    procSF[proc]={'':(float(cacheUrl),0)}
-                    print 'Scale factors added for',proc
-                except:
-                    pass
-
+            if not os.path.isfile(cacheUrl) : continue
+            cache=open(cacheUrl,'r')
+            procSF[proc]=pickle.load(cache)
+            cache.close()
+            print 'Scale factors added for',proc
 
     onlyList=opt.only.split(',')
 
@@ -146,6 +141,14 @@ def main():
                     except:
                         print 'Check pu weight control histo',opt.puNormSF,'for',sp[0]
 
+                #fix proton normalization
+                RP_SF=1
+                if opt.NormalizeProtons and not isData:
+                    try:
+                        RP_SF=opt.rpSF
+                    except:
+                        print 'Check proton normalization factor',opt.rpSF,'for',sp[0]
+
                 for tkey in fIn.GetListOfKeys():
                     keyIsSyst=False
                     try:
@@ -161,41 +164,39 @@ def main():
                         if not keep: continue
                         histos = []
                         obj=fIn.Get(key)
-                        if obj.InheritsFrom('TH2'):
-                            if key[-5:]=='_syst':
-                                if sample[3]=='t#bar{t}':
-                                    keyIsSyst=True
-                                    key = key[:-5]
-                                    for ybin in xrange(1,obj.GetNbinsY()+1):
-                                        for xbin in xrange(0,obj.GetNbinsX()+2):
-                                            if math.isnan(obj.GetBinContent(xbin, ybin)):
-                                                obj.SetBinContent(xbin, ybin, 0)
-                                                obj.SetBinError(xbin, ybin, 0)
-                                        weighthist = obj.ProjectionX('_px'+str(ybin), ybin, ybin)
-                                        weighthist.SetTitle(sp[1]+' weight '+str(ybin))                                  
-                                        weighthist.Draw()
-                                        if (weighthist.Integral() > 0): histos.append(weighthist)
-                                else:
-                                    continue
-                            else:
-                                histos.append(obj)
-                                histos[-1].SetTitle(sp[1])
-                        else:
-                            histos.append(obj)
-                            histos[-1].SetTitle(sp[1])
+                        #if (key[-2:]=='up' or key[-2:]=='dn') :
+                        #    keyIsSyst=True
+                        #    underscoreindex = key.rfind('_')
+                        #    key=key[:-underscoreindex]
+                        #                        if obj.InheritsFrom('TH2'):
+                        #                            if (key[-3:]=='_th' or  key[-4:]=='_exp') :
+                        #                                keyIsSyst=True
+                        #                                if key[-3:]=='_th' : key = key[:-3]
+                        #                                if key[-4:]=='_exp' : key = key[:-4]
+                        #                                for ybin in xrange(1,obj.GetNbinsY()+1):
+                        #                                    for xbin in xrange(0,obj.GetNbinsX()+2):
+                        #                                        if math.isnan(obj.GetBinContent(xbin, ybin)):
+                        #                                            obj.SetBinContent(xbin, ybin, 0)
+                        #                                            obj.SetBinError(xbin, ybin, 0)
+                        #                                    weighthist = obj.ProjectionX('_px'+str(ybin), ybin, ybin)
+                        #                                    weighthist.SetTitle(sp[1]+' weight '+str(ybin))                                  
+                        #                                    weighthist.Draw()
+                        #                                    if (weighthist.Integral() > 0): histos.append(weighthist)
+                        #                            
+                        #                            else:
+                        #                                histos.append(obj)
+                        #                                histos[-1].SetTitle(sp[1])
+                        #                        else:
+                        histos.append(obj)
+                        histos[-1].SetTitle(sp[1])
 
                         for hist in histos:
-                            if "vbfmvaOrig" in hist.GetName() and isData:
-                                tmpBin = hist.GetXaxis().FindBin(0.2)
-                                for iBin in range(tmpBin,hist.GetXaxis().GetNbins()):
-                                    hist.SetBinContent(iBin, 0.0000001)
-                                
                             if not isData and not '(data)' in sp[1]: 
 
                                 #check if a special scale factor needs to be applied
-                                sfVal=1.0                                                 
+                                sfVal=1.0                            
                                 for procToScale in procSF:
-                                    if sp[1]==procToScale:                                        
+                                    if sp[1]==procToScale:
                                         for pcat in procSF[procToScale]:                                    
                                             if pcat not in key: continue
                                             sfVal=procSF[procToScale][pcat][0]
@@ -203,13 +204,15 @@ def main():
 
                                 #scale by lumi
                                 lumi=opt.lumi
-                                for tag in lumiSpecs:                                    
-                                    if not tag in key.split('_'): continue
+                                for tag in lumiSpecs:
+                                    if not tag+'_' in key: continue
                                     lumi=lumiSpecs[tag]
                                     break
                                 if not opt.rawYields:
-                                    hist.Scale(xsec*lumi*puNormSF*sfVal)       
-             
+                                    if not isSignal:
+                                        hist.Scale(xsec*lumi*puNormSF*sfVal)  
+                                    else :
+                                        hist.Scale(xsec*lumi*puNormSF*sfVal)               
                             #rebin if needed
                             if opt.rebin>1:  hist.Rebin(opt.rebin)
 
@@ -228,7 +231,7 @@ def main():
                                            doDivideByBinWidth=opt.binWid)
                             
                     except Exception as e:
-                        print e
+                       # print e
                         pass
 
     #show plots
@@ -247,13 +250,15 @@ def main():
         if opt.silent : skipPlot=True
         lumi=opt.lumi
         for tag in lumiSpecs:
-            if not tag in p.split('_'): continue
+            if not tag+'_' in p: continue
             lumi=lumiSpecs[tag]
             break
 
-        #continue
+        #continue (uncomment the commented line to show signal/MC ratio)
         if opt.normToData: plots[p].normToData()
-        if not skipPlot: plots[p].show(outDir=outDir,lumi=lumi,noStack=opt.noStack,saveTeX=opt.saveTeX)
+        #if opt.normTo1: plots[p].normTo1()
+        if not skipPlot: plots[p].show(outDir=outDir,lumi=lumi,noStack=opt.noStack,saveTeX=opt.saveTeX,extraText=None,noRatio=False)
+#        if not skipPlot: plots[p].show(outDir=outDir,lumi=lumi,noStack=opt.noStack,saveTeX=opt.saveTeX,extraText=None,noRatio=True)
         plots[p].appendTo('%s/%s'%(outDir,opt.outName))
         plots[p].reset()
 

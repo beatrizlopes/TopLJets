@@ -72,6 +72,8 @@ for basename, files in counters.iteritems():
     filenames = " ".join(files)
     target = os.path.join(outputdir,"%s.root" % basename)
 
+    if 'runSysts' in target : target=target.replace('_runSysts','')
+
     # merging:
     print '... processing', basename
     if noTrees:

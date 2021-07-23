@@ -140,11 +140,11 @@ void createMiniEventTree(TTree *t,MiniEvent_t &ev,Int_t njecUncs, std::vector<st
   t->Branch("j_jerUp",    ev.j_jerUp,   "j_jerUp[nj]/F");
   t->Branch("j_jerDn",    ev.j_jerDn,   "j_jerDn[nj]/F");
   if(runSyst){
-	  for(int i=0; i<njecUncs; i++) {
-	  //for(int i=0; i<ev.MAXJETSYS; i++) {
-		t->Branch(Form("j_jecUp%d",i),    ev.j_jecUp[i],   Form("j_jecUp%d[nj]/F",i));
-		t->Branch(Form("j_jecDn%d",i),    ev.j_jecDn[i],   Form("j_jecDn%d[nj]/F",i));
-	  }
+    for(int i=0; i<njecUncs; i++) {
+      //for(int i=0; i<ev.MAXJETSYS; i++) {
+      t->Branch(Form("j_jecUp%d",i),    ev.j_jecUp[i],   Form("j_jecUp%d[nj]/F",i));
+      t->Branch(Form("j_jecDn%d",i),    ev.j_jecDn[i],   Form("j_jecDn%d[nj]/F",i));
+    }
   }
   t->Branch("j_rawsf",    ev.j_rawsf,   "j_rawsf[nj]/F");
   t->Branch("j_pt",       ev.j_pt,      "j_pt[nj]/F");
@@ -216,14 +216,13 @@ void createMiniEventTree(TTree *t,MiniEvent_t &ev,Int_t njecUncs, std::vector<st
   t->Branch("met_phi",     &ev.met_phi,    "met_phi/F");
   t->Branch("met_sig",     &ev.met_sig,    "met_sig/F");
   if(runSyst){
-  t->Branch("met_ptShifted",   ev.met_ptShifted,    "met_ptShifted[14]/F");
-  t->Branch("met_phiShifted",   ev.met_phiShifted,    "met_phiShifted[14]/F");
+    t->Branch("met_ptShifted",   ev.met_ptShifted,    "met_ptShifted[14]/F");
+    t->Branch("met_phiShifted",   ev.met_phiShifted,    "met_phiShifted[14]/F");
   }
   t->Branch("met_filterBits", &ev.met_filterBits, "met_filterBits/I");
   t->Branch("e_met_px",       &ev.e_met_px,     "e_met_px/F");
   t->Branch("e_met_py",       &ev.e_met_py,     "e_met_py/F");
   t->Branch("e_met_pxpy",     &ev.e_met_pxpy,   "e_met_pxpy/F");
-
 
   } // end store met
 

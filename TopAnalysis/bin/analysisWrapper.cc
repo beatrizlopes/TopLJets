@@ -106,7 +106,7 @@ int main(int argc, char* argv[])
   if(method=="ExclusiveZX::RunExclusiveZX") {
     RunExclusiveZX(in,out,channel,charge,normH,puH,era,debug);
   }
-  else if(method=="RunExclusiveTop") {
+  else if(method=="ExclusiveTop::RunExclusiveTop") {
     RunExclusiveTop(in,out,0,0,normH,puH,era,debug,systVar);
   }
   else if(method=="RunLowMu") {
