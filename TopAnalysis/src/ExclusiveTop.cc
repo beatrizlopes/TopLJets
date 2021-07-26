@@ -114,7 +114,7 @@ bool do_kin_reco(std::vector<Particle>& leptons, std::vector<Jet>& jets, std::ve
 }
 
 
-std::vector<int> ComputeLBcombination(std::vector<Particle> leptons, std::vector<Jet> bJets)
+/*std::vector<int> ComputeLBcombination(std::vector<Particle> leptons, std::vector<Jet> bJets)
 {
   std::vector<int> lb_bestpair(0,0);
   TLorentzVector lb_min(0,0,0,0);
@@ -142,6 +142,7 @@ std::vector<int> ComputeLBcombination(std::vector<Particle> leptons, std::vector
   
   return lb_bestpair; 
 }
+*/
 
 void RunExclusiveTop(TString filename,
                      TString outname,
@@ -226,7 +227,7 @@ void RunExclusiveTop(TString filename,
   fOut->cd();
 
   //create output tree
-  TNtuple *outTsel=new TNtuple("sel","sel","run:lumi:ev:nvtx:rho:channel:mll:nljets:nbjets:ht:extrasystem_y:extra_ysum:metpt:metphi:l1pt:l1eta:l1phi:l1m:l2pt:l2eta:l2phi:l2m:b1pt:b1eta:b1phi:b1m:b2pt:b2eta:b2phi:b2m:px2:py2:pz2:E2:yvis:ysum:max_dy:min_dy:deltarll:deltaphill:mlb:xi0:xi1:mpp:ypp:gen_mtt:gen_ytt:kinreco_mtt:kinreco_ytt:weight:nprotons");
+  TNtuple *outTsel=new TNtuple("sel","sel","run:lumi:ev:nvtx:rho:channel:mll:nljets:nbjets:ht:extrasystem_y:extra_ysum:metpt:metphi:l1pt:l1eta:l1phi:l1m:l2pt:l2eta:l2phi:l2m:b1pt:b1eta:b1phi:b1m:b2pt:b2eta:b2phi:b2m:px2:py2:pz2:E2:yvis:ysum:max_dy:min_dy:deltarll:deltaphill:xi0:xi1:mpp:ypp:gen_mtt:gen_ytt:kinreco_mtt:kinreco_ytt:weight:nprotons");
   outTsel->SetDirectory(fOut);
 
   // BOOK PROTON TREE (DATA ONLY)
@@ -288,7 +289,6 @@ void RunExclusiveTop(TString filename,
     if(filename.Contains("150")) beamXangle = 150;
     if(debug) cout << "LHC crossing angle is " << beamXangle << "micro rad." << endl;   
   } 
-
 
   // NEW code, create pools from the data files, calculate relative cross-sections and nvtx distributions (era,xangle)
   // Read data, prerare PU trees:
@@ -443,7 +443,7 @@ void RunExclusiveTop(TString filename,
       int n_p1_RP0 = (n_p1_eRP0+n_p1_mRP0+n_p1_emRP0+n_p1_mmRP0+n_p1_eeRP0), n_p1_RP1 = (n_p1_eRP1+n_p1_mRP1+n_p1_emRP1+n_p1_mmRP1+n_p1_eeRP1);
     
       // events with exactly 0 pu tracks
-      int n_p0 = n - n_p1_RP0 - n_p1_RP1 - n_p2; 
+      int n_p0 = n - n_p1_RP0 - n_p1_RP1 - n_p2;
 
       for(int i_xa=0;i_xa<n_xa;i_xa++){ // create proton pools
 	//TChain * _ch = new TChain("protons");
@@ -624,8 +624,8 @@ void RunExclusiveTop(TString filename,
 
   if(isTT) { 
     
-    weightSystNames.push_back("topptup");
-    weightSystNames.push_back("topptdn");
+    //    weightSystNames.push_back("topptup");
+    //weightSystNames.push_back("topptdn");
 
     weightSystNames.push_back("isrG2GGmuRup");
     weightSystNames.push_back("isrG2GGmuRdn");
@@ -702,7 +702,6 @@ void RunExclusiveTop(TString filename,
   //ht.addHist("mll",          new TH1F("mll",         ";Dilepton invariant mass [GeV];Events",sizeof(mllbins)/sizeof(Float_t)-1,mllbins));
   ht.addHist("mll",          new TH1F("mll",         ";Dilepton invariant mass [GeV];Events",30,0,200));
   ht.addHist("drll",         new TH1F("drll",        ";#DeltaR(l,l');Events",50,0,5.));
-	     ht.addHist("Mlb",         new TH1F("Mlb",        ";Invariant mass of lb ;Events",50,0,180));
   ht.addHist("mRP",         new TH1F("mRP",        ";di-proton mass [TeV] ;Events",25,0.4,1.8));
   ht.addHist("yRP",         new TH1F("yRP",        ";di-proton rapidity ;Events",25,-1,1));
   ht.addHist("jet1pt",         new TH1F("jet1pt",        ";Leading jet transverse momentum [GeV] ;Events",50,0,250));
@@ -998,14 +997,15 @@ void RunExclusiveTop(TString filename,
       if(isTT) {
   
         topptWgts[0] = 1;
-        topptWgts[1] = 1;
+	//        topptWgts[1] = 1;
 
         for(Int_t igen=0; igen<ev.ngtop; igen++) {
           if(abs(ev.gtop_id[igen])!=6) continue;
-          double topsf=TMath::Exp(0.0615-0.0005*ev.gtop_pt[igen]);
-          if(debug) std::cout << "topsf was calculated to be " << topsf << std::endl;
+          //double topsf=TMath::Exp(0.0615-0.0005*ev.gtop_pt[igen]);
+          double topsf=0.103*TMath::Exp(-0.0118*ev.gtop_pt[igen])-0.000134*ev.gtop_pt[igen]+0.973;
+	  if(debug) std::cout << "topsf was calculated to be " << topsf << std::endl;
           topptWgts[0] *= topsf;
-          topptWgts[1] *= 1./topsf;
+	  //topptWgts[1] *= 1./topsf;
         }
       }
     
@@ -1017,7 +1017,7 @@ void RunExclusiveTop(TString filename,
       sel1SF = lepEffH.getOfflineCorrection(leptons[l1idx], period);
       sel2SF = lepEffH.getOfflineCorrection(leptons[l2idx], period);
 
-      wgt *= trigSF.first*sel1SF.first*sel2SF.first;
+      wgt *= trigSF.first*sel1SF.first*sel2SF.first*topsf;
 
       //combined offline efficiencies
       if(abs(leptons[0].id())==11) {
@@ -1085,7 +1085,7 @@ void RunExclusiveTop(TString filename,
       for (int ift=0; ift<ev.nfwdtrk; ift++) {
             
 	if(ev.fwdtrk_method[ift]!=1)  continue;  //multi RP
-	const unsigned short pot_raw_id = ev.fwdtrk_pot[ift];            
+	const unsigned short pot_raw_id = ev.fwdtrk_pot[ift];
 	
 	nRPtk++;
 	
@@ -1138,6 +1138,7 @@ void RunExclusiveTop(TString filename,
 
       // fix run number and crossing-angle from proton pool
       pool_run = poll_run[i_reg];
+
       if(!isSignal) {
 	beamXangle = xangle[i_reg % n_xa];
       }
@@ -1371,11 +1372,11 @@ void RunExclusiveTop(TString filename,
       if(!prepareProtonData && bJets.size()<2) continue;
       protonvars_nBjets = bJets.size();
 
-      TLorentzVector lb_min(0,0,0,0);
+      /*      TLorentzVector lb_min(0,0,0,0);
       if(bJets.size()>0 && leptons.size()>1) {
         std::vector<int> lbpair = ComputeLBcombination(leptons,bJets);  
         lb_min = leptons[lbpair[0]]+bJets[lbpair[1]];     
-      }
+	}*/
 
       //compute hadronic recoil
       TLorentzVector h = met+ll;
@@ -1385,7 +1386,7 @@ void RunExclusiveTop(TString filename,
     
       //histogram categories for different selection steps
       std::vector<TString> cats(1,"");
-      bool passkinreco = false;
+      //      bool passkinreco = false;
       //int catsize = 1;
 
       if(isSF) cats.push_back(cats[0]+selCat+"_2b_notZ");
@@ -1406,7 +1407,7 @@ void RunExclusiveTop(TString filename,
         max_dy= max(fabs((bJets[0]+leptons[0]).Rapidity())-fabs((bJets[1]+leptons[1]).Rapidity()),  fabs((bJets[0]+leptons[1]).Rapidity())-fabs((bJets[1]+leptons[0]).Rapidity()));
         min_dy=min( fabs((bJets[0]+leptons[0]).Rapidity())-fabs((bJets[1]+leptons[1]).Rapidity()),  fabs((bJets[0]+leptons[1]).Rapidity())-fabs((bJets[1]+leptons[0]).Rapidity()));
 
-        passkinreco = do_kin_reco(leptons, jets, bJets, met, debug, kinReco_m, kinReco_y);
+        do_kin_reco(leptons, jets, bJets, met, debug, kinReco_m, kinReco_y);
 	
 	// cats.push_back(cats[1]+"_passKinReco");
 
@@ -1442,8 +1443,10 @@ void RunExclusiveTop(TString filename,
 
         btagWgt= btvSF.getBtagWeight(jets,ev,"central",BTagSFUtil::METHOD1A);
         l1trigprefireProb=l1PrefireWR->getCorrection(allJets);
-      
+
+	std::cout << "btag weight:" << btagWgt << std::endl;
         iwgt *= l1trigprefireProb.first*btagWgt;
+	
 	double nominalMCweight = iwgt;
 
 	if(sname=="nominal") {
@@ -1471,8 +1474,8 @@ void RunExclusiveTop(TString filename,
 	      double newL1PrefireProb( max(double(0.),double(l1trigprefireProb.first+(isUpVar ? +1 : -1)*l1trigprefireProb.second)) );
 	      iwgt *= newL1PrefireProb/l1trigprefireProb.first;
 	    }
-	    else if(wsname=="topptup")     iwgt *= topptWgts[0];
-	    else if(wsname=="topptdn")     iwgt *= topptWgts[1];
+	    //else if(wsname=="topptup")     iwgt *= topptWgts[0];
+	    //else if(wsname=="topptdn")     iwgt *= topptWgts[1];
 	    else if(wsname=="bfragup")     iwgt *= bfragWgts[0];
 	    else if(wsname=="bfragdn")     iwgt *= bfragWgts[1];
 	    
@@ -1660,7 +1663,7 @@ void RunExclusiveTop(TString filename,
 	    //evaluate and fill BDT
 	    plotwgts[0]=iwgt;
 
-	    if(!prepareProtonData && !prepareTraining && bJets.size()>1 && passkinreco) {
+	    if(!prepareProtonData && !prepareTraining && bJets.size()>1) {
 	      ht.fill("BDToutput_"+weightSystNames[wSyst], reader->EvaluateMVA(method), plotwgts, cats);
 	      ht.fill("nljets_"+weightSystNames[wSyst], nljets_bdt, plotwgts, cats);
 	    }
@@ -1698,7 +1701,7 @@ void RunExclusiveTop(TString filename,
         ht.fill("drll",       dilepton_dr,plotwgts,cats);
         ht.fill("deltaphill",       fabs(leptons[0].Phi()-leptons[1].Phi()),plotwgts,cats);
         ht.fill("nljets",     lightJets.size(),    plotwgts, cats);
-        ht.fill("Mlb", lb_min.M(),  plotwgts, cats);}
+	//        ht.fill("Mlb", lb_min.M(),  plotwgts, cats);}
       }
     
       if( bJets.size()>1) {
@@ -1731,7 +1734,7 @@ void RunExclusiveTop(TString filename,
               (float) bJets[0].Pt(),(float)bJets[0].Eta(),(float)bJets[0].Phi(),(float)bJets[0].M(),(float)
               bJets[1].Pt(),(float)bJets[1].Eta(),(float)bJets[1].Phi(),(float)bJets[1].M(),
               px2,py2,pz2,E2,yvis,ysum,max_dy,min_dy,(float)
-              leptons[0].DeltaR(leptons[1]),(float) leptons[0].DeltaPhi(leptons[1]), (float) lb_min.M(), (float) p1_xi,
+              leptons[0].DeltaR(leptons[1]),(float) leptons[0].DeltaPhi(leptons[1]), , (float) p1_xi,
               (float) p2_xi, (float)       
               goodmRP,(float) goodyRP, (float) gen_mtt, (float) gen_ytt, (float) kinReco_m, (float) kinReco_y, 
               (float) wgt, (float) signal_protons};
@@ -1743,7 +1746,7 @@ void RunExclusiveTop(TString filename,
           if(ev.isData) ev_period = get_period_from_run(ev.run);
           else ev_period = get_period_from_run(pool_run);
 	  
-          if(!prepareTraining && !prepareProtonData && bJets.size()>1 && passkinreco) {
+          if(!prepareTraining && !prepareProtonData && bJets.size()>1) {
 	    
             int region(-1);
             if(ev_period=="B") region=0;
@@ -1775,7 +1778,7 @@ void RunExclusiveTop(TString filename,
         }
 
 	//evaluate and fill BDT	
-	if(!prepareProtonData && !prepareTraining && bJets.size()>1 && passkinreco) {
+	if(!prepareProtonData && !prepareTraining && bJets.size()>1) {
 	  ht.fill("BDToutput_"+expSystNames[is], reader->EvaluateMVA(method), plotwgts, cats);
 	  ht.fill("nljets_"+expSystNames[is], nljets_bdt, plotwgts, cats);
 	}
