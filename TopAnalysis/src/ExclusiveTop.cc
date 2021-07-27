@@ -993,11 +993,10 @@ void RunExclusiveTop(TString filename,
       // generator level weights
       wgt *= (ev.g_nw>0 ? ev.g_w[0] : 1.0);
     
-      //for ttbar compute top pt SF        
+      //for ttbar compute top pt SF
       if(isTT) {
   
         topptWgts[0] = 1;
-	//        topptWgts[1] = 1;
 
         for(Int_t igen=0; igen<ev.ngtop; igen++) {
           if(abs(ev.gtop_id[igen])!=6) continue;
@@ -1017,7 +1016,7 @@ void RunExclusiveTop(TString filename,
       sel1SF = lepEffH.getOfflineCorrection(leptons[l1idx], period);
       sel2SF = lepEffH.getOfflineCorrection(leptons[l2idx], period);
 
-      wgt *= trigSF.first*sel1SF.first*sel2SF.first*topsf;
+      wgt *= trigSF.first*sel1SF.first*sel2SF.first*topptWgts[0];
 
       //combined offline efficiencies
       if(abs(leptons[0].id())==11) {
@@ -1702,6 +1701,7 @@ void RunExclusiveTop(TString filename,
         ht.fill("deltaphill",       fabs(leptons[0].Phi()-leptons[1].Phi()),plotwgts,cats);
         ht.fill("nljets",     lightJets.size(),    plotwgts, cats);
 	//        ht.fill("Mlb", lb_min.M(),  plotwgts, cats);}
+	}
       }
     
       if( bJets.size()>1) {
@@ -1725,19 +1725,19 @@ void RunExclusiveTop(TString filename,
 
           if(prepareTraining) {
             Float_t varsel[]={(float)ev.run,
-              (float)ev.lumi,(float)ev.event,(float)ev.nvtx,(float)ev.rho,
-              (float)leptons[0].id()*leptons[1].id(),(float) ll.M(),(float)lightJets.size(), (float)bJets.size(), (float) scalarht, 
-              (float) extra_rapidity,(float) extra_rapidity_sum,
-              (float) met.Pt(),(float) met.Phi(),
-              (float) leptons[0].Pt(),(float)leptons[0].Eta(),(float)leptons[0].Phi(),(float)leptons[0].M(),(float)
-              leptons[1].Pt(),(float)leptons[1].Eta(),(float)leptons[1].Phi(),(float)leptons[1].M(),
-              (float) bJets[0].Pt(),(float)bJets[0].Eta(),(float)bJets[0].Phi(),(float)bJets[0].M(),(float)
-              bJets[1].Pt(),(float)bJets[1].Eta(),(float)bJets[1].Phi(),(float)bJets[1].M(),
-              px2,py2,pz2,E2,yvis,ysum,max_dy,min_dy,(float)
-              leptons[0].DeltaR(leptons[1]),(float) leptons[0].DeltaPhi(leptons[1]), , (float) p1_xi,
-              (float) p2_xi, (float)       
-              goodmRP,(float) goodyRP, (float) gen_mtt, (float) gen_ytt, (float) kinReco_m, (float) kinReco_y, 
-              (float) wgt, (float) signal_protons};
+			      (float)ev.lumi,(float)ev.event,(float)ev.nvtx,(float)ev.rho,
+			      (float)leptons[0].id()*leptons[1].id(),(float) ll.M(),(float)lightJets.size(), (float)bJets.size(), (float) scalarht, 
+			      (float) extra_rapidity,(float) extra_rapidity_sum,
+			      (float) met.Pt(),(float) met.Phi(),
+			      (float) leptons[0].Pt(),(float)leptons[0].Eta(),(float)leptons[0].Phi(),(float)leptons[0].M(),(float)
+			      leptons[1].Pt(),(float)leptons[1].Eta(),(float)leptons[1].Phi(),(float)leptons[1].M(),
+			      (float) bJets[0].Pt(),(float)bJets[0].Eta(),(float)bJets[0].Phi(),(float)bJets[0].M(),(float)
+			      bJets[1].Pt(),(float)bJets[1].Eta(),(float)bJets[1].Phi(),(float)bJets[1].M(),
+			      px2,py2,pz2,E2,yvis,ysum,max_dy,min_dy,(float)
+			      leptons[0].DeltaR(leptons[1]),(float) leptons[0].DeltaPhi(leptons[1]),(float) p1_xi,
+			      (float) p2_xi, (float)       
+			      goodmRP,(float) goodyRP, (float) gen_mtt, (float) gen_ytt, (float) kinReco_m, (float) kinReco_y, 
+			      (float) wgt, (float) signal_protons};
 
             outTsel->Fill(varsel);
           }
@@ -1784,7 +1784,7 @@ void RunExclusiveTop(TString filename,
 	}
 	    	    
       }//close bsize
-
+   
       //reset all BDT variables
       mpp_bdt=0;
       mtt_bdt=0;
